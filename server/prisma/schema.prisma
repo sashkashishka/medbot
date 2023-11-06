@@ -1,0 +1,74 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["linux-musl-openssl-3.0.x", "linux-musl-arm64-openssl-3.0.x"]
+}
+
+model User {
+  id           Int           @id @default(autoincrement())
+  name         String
+  surname      String
+  patronymic   String?
+  birthDate    DateTime
+  topicForumId Int
+  phone        String
+  email        String
+  order        Order[]
+  appointment  Appointment[]
+}
+
+model Product {
+  id                   Int              @id @default(autoincrement())
+  name                 String           @db.Text
+  description          String           @db.Text
+  price                Float
+  memberQty            Int
+  subscriptionDuration Int
+  order                Order[]
+  activationCode       ActivationCode[]
+}
+
+enum OrderStatus {
+  ACTIVE
+  DONE
+}
+
+model Order {
+  id                 Int           @id @default(autoincrement())
+  user               User          @relation(fields: [userId], references: [id])
+  userId             Int
+  product            Product?      @relation(fields: [productId], references: [id])
+  productId          Int?
+  status             OrderStatus
+  createdAt          DateTime
+  subscriptionEndsAt DateTime
+  appointment        Appointment[]
+}
+
+model Appointment {
+  id                Int      @id @default(autoincrement())
+  order             Order?   @relation(fields: [orderId], references: [id])
+  orderId           Int
+  user              User?    @relation(fields: [userId], references: [id])
+  userId            Int?
+  complaints        String
+  complaintsStarted String
+  medicine          String
+  chronicDiseases   String
+  createdAt         DateTime
+}
+
+model ActivationCode {
+  id        Int      @id @default(autoincrement())
+  code      Int
+  product   Product? @relation(fields: [productId], references: [id])
+  productId Int?
+  invalidAt DateTime
+}

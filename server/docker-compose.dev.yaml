@@ -1,0 +1,47 @@
+version: "3.8"
+services:
+  app:
+    container_name: app
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - '8000:8000'
+    expose:
+      - 8000
+    volumes:
+      - .:/usr/app
+      - /app/node_modules
+    env_file:
+      - ".env"
+    networks:
+      - medbot_bridge
+    depends_on:
+      - db
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+    networks:
+      - medbot_bridge
+
+  db:
+    container_name: mysql_db
+    platform: linux/amd64
+    image: mysql:5.7.42
+    ports:
+      - "3306:3306"
+    expose:
+      - 3306
+    volumes:
+      - "./prisma/tmp/data:/var/lib/mysql"
+      - "./prisma/mysql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d"
+    env_file:
+      - ".env"
+    networks:
+      - medbot_bridge
+
+networks:
+  medbot_bridge:

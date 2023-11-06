@@ -1,0 +1,11 @@
+  {
+    "watch": [
+      "src/**/*.ts"
+    ],
+    "ignore": [
+      "src/**/*.spec.ts"
+    ],
+    "execMap": {
+      "ts": "tsx"
+    }
+  }

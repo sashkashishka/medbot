@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# TODO: provide host to user
+echo "** Creating default DB and users"
+
+mysql -u root -p${MYSQL_ROOT_PASSWORD} --execute "CREATE DATABASE IF NOT EXISTS $PRISMA_DATABASE;"
+
+mysql -u root -p${MYSQL_ROOT_PASSWORD} --execute "CREATE USER IF NOT EXISTS '$PRISMA_USER_DEV'@'%' IDENTIFIED BY '$PRISMA_PASSWORD_DEV';"
+mysql -u root -p${MYSQL_ROOT_PASSWORD} --execute "CREATE USER IF NOT EXISTS '$PRISMA_USER_PROD'@'%' IDENTIFIED BY '$PRISMA_PASSWORD_PROD';"
+
+mysql -u root -p${MYSQL_ROOT_PASSWORD} --execute \
+"GRANT ALL PRIVILEGES ON *.* to '$PRISMA_USER_DEV'@'%';"
+mysql -u root -p${MYSQL_ROOT_PASSWORD} --execute \
+"GRANT ALTER,CREATE,DELETE,DROP,INDEX,INSERT,SELECT,UPDATE,TRIGGER,ALTER ROUTINE, CREATE ROUTINE, EXECUTE, CREATE TEMPORARY TABLES ON $PRISMA_DATABASE.* TO '$PRISMA_USER_PROD'@'%';"
+
+echo "** Finished creating default DB and users"
