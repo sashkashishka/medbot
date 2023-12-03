@@ -1,8 +1,11 @@
 start:
 	docker compose -f docker-compose.dev.yaml up
 
-build:
+build_app:
 	docker compose -f docker-compose.dev.yaml build
+
+build_nocache:
+	docker compose -f docker-compose.dev.yaml build --no-cache
 
 exec_app_sh:
 	docker compose -f docker-compose.dev.yaml exec -it app /bin/sh

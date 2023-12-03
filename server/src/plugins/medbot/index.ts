@@ -1,7 +1,10 @@
 import fp from 'fastify-plugin';
 import { FastifyPluginAsync } from 'fastify';
-import { Telegraf, Scenes, session } from 'telegraf';
-import { message } from 'telegraf/filters';
+import { Telegraf, session } from 'telegraf';
+
+import { commands } from './commands/index.js';
+import { stage } from './scenes/index.js';
+import { PrismaSessionStorage } from './storage/prisma.js';
 
 // Use TypeScript module augmentation to declare the type of server.medbot to be medbotClient
 declare module 'fastify' {
@@ -10,65 +13,56 @@ declare module 'fastify' {
   }
 }
 
-const token = process.env.TG_BOT_TOKEN;
-const forumId = process.env.TG_BOT_FORUM_ID;
+// bot.command('quit', async (ctx) => {
+//   // Explicit usage
+//   await ctx.telegram.leaveChat(ctx.message.chat.id);
 
-const bot = new Telegraf(token);
+//   // Using context shortcut
+//   await ctx.leaveChat();
+// });
 
-// const stage = new Scenes.Stage([contactDataWizard]);
+// bot.command('close', (ctx) => {
+//   console.log('$$$ close command', ctx.message);
+// });
 
-bot.use(session()); // to  be precise, session is not a must have for Scenes to work, but it sure is lonely without one
-// bot.use(stage.middleware());
+// let forumTopic;
 
-bot.command('quit', async (ctx) => {
-  // Explicit usage
-  await ctx.telegram.leaveChat(ctx.message.chat.id);
+// bot.on('message', async (ctx) => {
+//   const chatId = ctx.message.chat.id;
 
-  // Using context shortcut
-  await ctx.leaveChat();
-});
+//   // if (forumId !== chatId) {
+//   //   if (!forumTopic) {
+//   //     forumTopic = await bot.telegram.createForumTopic(forumId, `User: ${ctx.message.from.id}`);
+//   //   }
 
-// bot.hears('scene', Scenes.Stage.enter('CONTACT_DATA_WIZARD_SCENE_ID'));
+//   //   console.log(ctx.message)
 
-bot.telegram.setMyCommands(
-  [
-    {
-      command: 'close',
-      description: 'End consultation',
-    },
-  ],
-  { scope: { type: 'chat_administrators', chat_id: forumId } },
-);
+//   //   return await ctx.telegram.copyMessage(forumId, chatId, ctx.message.message_id, { message_thread_id: forumTopic.message_thread_id })
+//   // }
 
-bot.command('close', (ctx) => {
-  console.log('$$$ close command', ctx.message);
-});
+//   console.log('$$$ message', ctx.message);
 
-let forumTopic;
+//   // fs.writeFileSync('./update.json', JSON.stringify(ctx, null, '  '))
 
-bot.on('message', async (ctx) => {
-  const chatId = ctx.message.chat.id;
-
-  // if (forumId !== chatId) {
-  //   if (!forumTopic) {
-  //     forumTopic = await bot.telegram.createForumTopic(forumId, `User: ${ctx.message.from.id}`);
-  //   }
-
-  //   console.log(ctx.message)
-
-  //   return await ctx.telegram.copyMessage(forumId, chatId, ctx.message.message_id, { message_thread_id: forumTopic.message_thread_id })
-  // }
-
-  console.log('$$$ message', ctx.message);
-
-  // fs.writeFileSync('./update.json', JSON.stringify(ctx, null, '  '))
-
-  // console.log(ctx.update)
-  // Explicit usage
-  // await ctx.telegram.sendMessage(ctx.message.chat.id, `Hello ${ctx.state.role}`)
-});
+//   // console.log(ctx.update)
+//   // Explicit usage
+//   // await ctx.telegram.sendMessage(ctx.message.chat.id, `Hello ${ctx.state.role}`)
+// });
 
 const medbotPlugin: FastifyPluginAsync = fp(async (server) => {
+  const token = process.env.TG_BOT_TOKEN;
+  const forumId = process.env.TG_BOT_FORUM_ID;
+
+  const bot = new Telegraf(token);
+  const store = new PrismaSessionStorage(server.prisma);
+
+  // const prisma = server.prisma
+
+  bot.use(session({ store })); // to  be precise, session is not a must have for Scenes to work, but it sure is lonely without one
+  bot.use(stage.middleware());
+
+  commands(bot);
+
   // Make medbot Client available through the fastify server instance: server.medbot
   server.decorate('medbot', bot);
 

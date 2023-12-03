@@ -6,5 +6,6 @@ COPY package.json .
 COPY package-lock.json .
 
 RUN npm ci
+RUN npm rebuild esbuild
 
 CMD ["npm", "start"]

@@ -72,3 +72,8 @@ model ActivationCode {
   productId Int?
   invalidAt DateTime
 }
+
+model TelegrafSessions {
+  key     String @id
+  session String
+}
