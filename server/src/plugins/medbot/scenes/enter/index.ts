@@ -1,35 +1,27 @@
-import { Scenes } from 'telegraf';
+import { Scenes, Composer, Markup } from 'telegraf';
 import { SCENES } from '../../constants/scenes.js';
+import type { iMedbotContext } from '../../types.js';
+import { MESSAGES } from './messages.js';
 
-export const enterScene = new Scenes.WizardScene(
-  SCENES.ENTER,
-  (ctx) => {
-    ctx.reply('What is your name?');
-    ctx.wizard.state.contactData = {};
-    return ctx.wizard.next();
-  },
-  (ctx) => {
-    // validation example
-    if (ctx.message.text.length < 2) {
-      ctx.reply('Please enter name for real');
-      return;
-    }
-    ctx.wizard.state.contactData.fio = ctx.message.text;
-    ctx.reply('Enter your e-mail');
-    return ctx.wizard.next();
-  },
-  async (ctx) => {
-    ctx.wizard.state.contactData.email = ctx.message.text;
-    ctx.reply("Thank you for your replies, we'll contact your soon");
-    // await mySendContactDataMomentBeforeErase(ctx.wizard.state.contactData);
-    return ctx.scene.enter(SCENES.TEST);
-  },
-);
+const webAppUrl = process.env.TG_BOT_WEBAPP_URL;
 
-export const testScene = new Scenes.WizardScene(SCENES.TEST, (ctx) => {
-  ctx.reply('This is test message!!!!!');
+const enterHandler = new Composer<iMedbotContext>();
 
-  return ctx.scene.leave();
+enterHandler.start(async (ctx) => {
+  await Promise.all([
+    ctx.reply(
+      MESSAGES.ENTRY,
+      Markup.keyboard([Markup.button.webApp('Launch', webAppUrl)]).resize(),
+    ),
+    ctx.setChatMenuButton({
+      text: 'Launch',
+      type: 'web_app',
+      web_app: { url: webAppUrl },
+    }),
+  ]);
 });
 
-// enterScene.on('text', () => {});
+export const enterScene = new Scenes.WizardScene<iMedbotContext>(
+  SCENES.ENTER,
+  enterHandler,
+);

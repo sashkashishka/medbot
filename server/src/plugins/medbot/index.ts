@@ -2,12 +2,14 @@ import fp from 'fastify-plugin';
 import { FastifyPluginAsync } from 'fastify';
 import { Telegraf, session } from 'telegraf';
 
-import { commands } from './commands/index.js';
 import { stage } from './scenes/index.js';
-import { PrismaSessionStorage } from './storage/prisma.js';
+import { commands } from './commands/index.js';
+import { PrismaSessionStorage } from './services/storage/prisma.js';
+import type { iMedbotContext } from './types.js';
+import { SCENES } from './constants/scenes.js';
 
-// Use TypeScript module augmentation to declare the type of server.medbot to be medbotClient
 declare module 'fastify' {
+  // eslint-disable-next-line
   interface FastifyInstance {
     medbot: Telegraf;
   }
@@ -51,17 +53,29 @@ declare module 'fastify' {
 
 const medbotPlugin: FastifyPluginAsync = fp(async (server) => {
   const token = process.env.TG_BOT_TOKEN;
+  const testEnv = !!Number(process.env.TG_BOT_TEST);
   const forumId = process.env.TG_BOT_FORUM_ID;
 
-  const bot = new Telegraf(token);
+  const bot = new Telegraf<iMedbotContext>(token, { telegram: { testEnv }});
   const store = new PrismaSessionStorage(server.prisma);
 
-  // const prisma = server.prisma
-
   bot.use(session({ store })); // to  be precise, session is not a must have for Scenes to work, but it sure is lonely without one
-  bot.use(stage.middleware());
+  bot.use((ctx, next) => {
+    ctx.prisma = server.prisma;
 
-  commands(bot);
+    return next();
+  });
+
+  // clear scene and start from scratch
+  bot.command('start', (ctx, next) => {
+    if (ctx.session?.__scenes?.current !== SCENES.ENTER) {
+      ctx.session = {};
+    }
+
+    return next();
+  });
+
+  bot.use(stage.middleware());
 
   // Make medbot Client available through the fastify server instance: server.medbot
   server.decorate('medbot', bot);

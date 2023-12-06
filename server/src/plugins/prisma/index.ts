@@ -2,8 +2,8 @@ import fp from 'fastify-plugin';
 import { FastifyPluginAsync } from 'fastify';
 import { PrismaClient } from '@prisma/client';
 
-// Use TypeScript module augmentation to declare the type of server.prisma to be PrismaClient
 declare module 'fastify' {
+  // eslint-disable-next-line
   interface FastifyInstance {
     prisma: PrismaClient;
   }

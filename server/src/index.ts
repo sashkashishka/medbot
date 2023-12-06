@@ -6,6 +6,7 @@ const fastify = Fastify({
 
 fastify.register(import('./plugins/prisma/index.js'));
 fastify.register(import('./plugins/medbot/index.js'));
+fastify.register(import('./plugins/api/index.js'), { prefix: '/api' });
 
 // TODO remove
 // Declare a route
