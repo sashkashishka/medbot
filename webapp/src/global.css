@@ -5,6 +5,10 @@ body {
   font-family: system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;
 }
 
+* {
+  box-sizing: border-box;
+}
+
 
 /* TODO REMOVE */
 :root {

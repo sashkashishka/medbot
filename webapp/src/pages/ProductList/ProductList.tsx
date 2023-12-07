@@ -11,7 +11,6 @@ import styles from './ProductList.module.css';
 
 // TODO if user has active order - show error state
 export function ProductListPage() {
-  const user = useStore(user$);
   const { data, loading, error } = useStore(productList$);
 
   useEffect(() => {

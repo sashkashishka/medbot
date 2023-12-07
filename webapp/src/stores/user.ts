@@ -6,21 +6,21 @@ import type { iUser } from '../types';
 
 export const user$ = atom<iUser>({});
 
-onMount(user$, () => {
-  const userId = tg.initDataUnsafe.user?.id;
-  const searchParams = new URLSearchParams({ id: String(userId) });
+// onMount(user$, () => {
+//   const userId = tg.initDataUnsafe.user?.id;
+//   const searchParams = new URLSearchParams({ id: String(userId) });
 
-  const api = createApi(`${API.USER}?${searchParams}`);
+//   const api = createApi(`${API.USER}?${searchParams}`);
 
-  task(async () => {
-    const [resp] = await api.request<iUser>();
+//   task(async () => {
+//     const [resp] = await api.request<iUser>();
 
-    if (resp) {
-      user$.set(resp);
-    }
-  });
+//     if (resp) {
+//       user$.set(resp);
+//     }
+//   });
 
-  return () => {
-    api.controller.abort();
-  };
-});
+//   return () => {
+//     api.controller.abort();
+//   };
+// });
