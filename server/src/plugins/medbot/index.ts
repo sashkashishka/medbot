@@ -12,6 +12,7 @@ declare module 'fastify' {
   // eslint-disable-next-line
   interface FastifyInstance {
     medbot: Telegraf;
+    medbotToken: string;
   }
 }
 
@@ -56,7 +57,7 @@ const medbotPlugin: FastifyPluginAsync = fp(async (server) => {
   const testEnv = !!Number(process.env.TG_BOT_TEST);
   const forumId = process.env.TG_BOT_FORUM_ID;
 
-  const bot = new Telegraf<iMedbotContext>(token, { telegram: { testEnv }});
+  const bot = new Telegraf<iMedbotContext>(token, { telegram: { testEnv } });
   const store = new PrismaSessionStorage(server.prisma);
 
   bot.use(session({ store })); // to  be precise, session is not a must have for Scenes to work, but it sure is lonely without one
@@ -79,6 +80,7 @@ const medbotPlugin: FastifyPluginAsync = fp(async (server) => {
 
   // Make medbot Client available through the fastify server instance: server.medbot
   server.decorate('medbot', bot);
+  server.decorate('medbotToken', token);
 
   server.addHook('onListen', async () => {
     bot.launch();

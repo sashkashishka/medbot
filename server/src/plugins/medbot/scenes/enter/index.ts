@@ -3,7 +3,7 @@ import { SCENES } from '../../constants/scenes.js';
 import type { iMedbotContext } from '../../types.js';
 import { MESSAGES } from './messages.js';
 
-const webAppUrl = process.env.TG_BOT_WEBAPP_URL;
+const webAppUrl = `${process.env.TG_BOT_WEBAPP_URL}/products`;
 
 const enterHandler = new Composer<iMedbotContext>();
 
