@@ -1,0 +1,8 @@
+.container {
+  padding: 8px;
+  border-radius: 8px;
+  background: var(--tg-theme-section-bg-color);
+  text-decoration: none;
+  color: var(--tg-theme-text-color);
+  cursor: pointer;
+}
