@@ -1,26 +1,17 @@
 import type { RouteOptions } from 'fastify';
 
-interface iQuery {
+interface iParams {
   id: number;
 }
 
 export const userRoute: RouteOptions = {
   method: 'GET',
-  url: '/user',
-  schema: {
-    querystring: {
-      type: 'object',
-      properties: {
-        id: { type: 'string' },
-      }
-    }
-  },
+  url: '/user/:id',
   handler(req) {
-    const query = req.query as iQuery;
+    const { id } = req.params as iParams;
 
     return this.prisma.user.findFirst({
-      where: { id: Number(query.id) }
+      where: { id: Number(id) },
     });
   },
 };
-

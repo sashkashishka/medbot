@@ -17,9 +17,7 @@ export const createUserRoute: RouteOptions = {
         phone: { type: 'string' },
         email: { type: 'string' },
       },
-      required: [
-        'id',
-      ],
+      required: ['id', 'name', 'surname', 'birthDate', 'phone', 'email'],
     },
   },
   handler(req) {
