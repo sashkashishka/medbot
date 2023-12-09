@@ -4,7 +4,7 @@
   padding-bottom: 14px;
 }
 
-.input {
+.textarea {
   width: 100%;
   margin-top: 8px;
   padding: 8px;
@@ -14,8 +14,9 @@
   color: var(--tg-theme-text-color);
   outline: none;
   transition: border 0.2s ease-in-out;
+  resize: vertical;
 }
 
-.inputError {
+.textareaError {
   border: 1px solid var(--tg-theme-accent-text-color);
 }

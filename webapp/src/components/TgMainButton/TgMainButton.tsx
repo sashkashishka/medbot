@@ -1,5 +1,7 @@
-import { useLayoutEffect } from 'react';
+import { useId, useLayoutEffect } from 'react';
 import { tg } from '../../utils/tg';
+import { useWebAppContext } from '../WebAppProvider/context';
+import { useSmoothButtonsTransition } from '../../hooks/useSmoothTgButtonTransition';
 
 type tMainButtonProps = Partial<Window['Telegram']['WebApp']['MainButton']>;
 
@@ -17,6 +19,16 @@ export function TgMainButton({
   textColor,
   handleClick,
 }: iProps): null {
+  const buttonId = useId();
+  const { MainButton } = useWebAppContext();
+
+  useSmoothButtonsTransition({
+    show: tg?.MainButton?.show,
+    hide: tg?.MainButton?.hide,
+    currentShowedIdRef: MainButton,
+    id: buttonId,
+  });
+
   useLayoutEffect(() => {
     tg?.MainButton?.setParams({
       color,
@@ -59,14 +71,6 @@ export function TgMainButton({
       tg?.MainButton?.offClick(handleClick);
     };
   }, [handleClick]);
-
-  useLayoutEffect(() => {
-    tg?.MainButton?.show();
-
-    return () => {
-      tg?.MainButton?.hide();
-    };
-  }, []);
 
   return null;
 }
