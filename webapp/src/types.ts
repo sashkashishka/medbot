@@ -20,7 +20,7 @@ export interface iProduct {
 
 export interface iOrder {
   id: number;
-  status: 'ACTIVE' | 'DONE';
+  status: 'WAITING_FOR_PAYMENT' | 'ACTIVE' | 'DONE';
   userId: number;
   productId: number;
   subscriptionEndsAt: string;

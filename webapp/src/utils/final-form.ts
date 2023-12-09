@@ -41,11 +41,11 @@ export const isError = <tValue>(meta: FieldMetaState<tValue>) =>
  * @param {boolean} formState.dirtySinceLastSubmit
  * @param {string|undefined} formState.submitError
  */
-export const isFormError = (formState) =>
-  formState.hasSubmitErrors &&
-  !formState.submitting &&
-  !formState.dirtySinceLastSubmit &&
-  formState.submitError;
+// export const isFormError = (formState) =>
+//   formState.hasSubmitErrors &&
+//   !formState.submitting &&
+//   !formState.dirtySinceLastSubmit &&
+//   formState.submitError;
 
 /**
  * @param {Object} meta
@@ -53,7 +53,7 @@ export const isFormError = (formState) =>
  * @param {Boolean|undefined} meta.touched
  * @returns {String|boolean}
  */
-export const isSubmitError = (meta) => meta.submitError && meta.touched;
+// export const isSubmitError = (meta) => meta.submitError && meta.touched;
 
 type tValidateResult = string | undefined;
 
@@ -61,6 +61,6 @@ export const composeValidators =
   (...validators: ((value?: unknown) => tValidateResult)[]) =>
   <tValue>(value: tValue) =>
     validators.reduce(
-      (error, validator) => error || validator(value),
+      (error: string | undefined, validator) => error || validator(value),
       undefined,
     );

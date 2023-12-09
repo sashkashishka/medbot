@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "dependencies": {
     "@nanostores/query": "^0.2.8",
@@ -21,6 +22,10 @@
     "react-router-dom": "^6.20.1"
   },
   "devDependencies": {
+    "@jest/globals": "^29.7.0",
+    "@testing-library/jest-dom": "^6.1.5",
+    "@testing-library/react": "^14.1.2",
+    "@types/jest": "^29.5.11",
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
@@ -31,9 +36,36 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.3",
+    "identity-obj-proxy": "^3.0.0",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "jest-svg-transformer": "^1.0.0",
     "prettier": "^3.1.0",
     "terser": "^5.24.0",
+    "ts-jest": "^29.1.1",
     "typescript": "^5.0.2",
     "vite": "^4.4.5"
+  },
+  "jest": {
+    "testEnvironment": "jsdom",
+    "transform": {
+      "^.+\\.tsx?$": [
+        "ts-jest",
+        {
+          "useESM": true
+        }
+      ]
+    },
+    "moduleNameMapper": {
+      "^.+\\.svg$": "jest-svg-transformer",
+      "^.+\\.(css|less|scss)$": "identity-obj-proxy"
+    },
+    "extensionsToTreatAsEsm": [
+      ".ts",
+      ".tsx"
+    ],
+    "setupFilesAfterEnv": [
+      "<rootDir>/src/setupTests.ts"
+    ]
   }
 }

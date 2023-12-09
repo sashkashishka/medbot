@@ -7,7 +7,7 @@ export function debounce<tFn extends (...args: any[]) => any>(
   function debouncedFn(...args: any[]) {
     clearTimeout(timeout);
 
-    timeout = setTimeout(() => fn(...args), ms);
+    timeout = window.setTimeout(() => fn(...args), ms);
   }
 
   return debouncedFn;

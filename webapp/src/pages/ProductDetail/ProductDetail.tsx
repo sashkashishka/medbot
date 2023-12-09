@@ -4,14 +4,14 @@ import { useStore } from '@nanostores/react';
 
 import { createProduct$, productList$ } from '../../stores/product';
 import { ROUTES } from '../../constants/routes';
-import type { iProduct } from '../../types';
+// import type { iProduct } from '../../types';
 import { ErrorOpenViaTelegram } from '../../components/ErrorOpenViaTelegram';
 import { TgBackButton } from '../../components/TgBackButton';
 import { TgMainButton } from '../../components/TgMainButton';
 
 import styles from './ProductDetail.module.css';
 
-interface iProps extends iProduct {}
+// interface iProps extends iProduct {}
 
 export function ProductDetailPage() {
   const { id } = useParams();

@@ -4,21 +4,24 @@ import { Input } from '../../components/Input';
 import { TgBackButton } from '../../components/TgBackButton';
 import { Textarea } from '../../components/Textarea';
 import { required } from '../../utils/final-form';
+import { createApi } from '../../utils/api';
+
 import { persistDecorator } from './decorators/persist';
+import type { iFormValues } from './types';
 
 import styles from './Checkout.module.css';
-import { createApi } from '../../utils/api';
 
 const decorators = [persistDecorator];
 
 const api = createApi('/api/medbot');
 
 export function CheckoutPage(): ReactElement {
+
   return (
     <>
       <TgBackButton />
 
-      <Form onSubmit={console.log} decorators={decorators}>
+      <Form<iFormValues> onSubmit={console.log} decorators={decorators}>
         {({ handleSubmit }) => {
           return (
             <form onSubmit={handleSubmit} className={styles.container}>
