@@ -71,12 +71,14 @@ const medbotPlugin: FastifyPluginAsync = fp(async (server) => {
   bot.command('start', (ctx, next) => {
     if (ctx.session?.__scenes?.current !== SCENES.ENTER) {
       ctx.session = {};
+      // TODO mark all active orders as done
     }
 
     return next();
   });
 
   bot.use(stage.middleware());
+
 
   // Make medbot Client available through the fastify server instance: server.medbot
   server.decorate('medbot', bot);
