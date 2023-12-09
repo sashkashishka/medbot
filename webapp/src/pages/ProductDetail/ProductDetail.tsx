@@ -1,7 +1,7 @@
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useStore } from '@nanostores/react';
 
-import { productList$ } from '../../stores/product';
+import { productList$, product$ } from '../../stores/product';
 import { ROUTES } from '../../constants/routes';
 // import type { iProduct } from '../../types';
 import { ErrorOpenViaTelegram } from '../../components/ErrorOpenViaTelegram';
@@ -13,16 +13,9 @@ import styles from './ProductDetail.module.css';
 // interface iProps extends iProduct {}
 
 export function ProductDetailPage() {
-  const { id } = useParams();
   const navigate = useNavigate();
-  const { data, loading, error } = useStore(productList$);
-
-  const product = data?.find((p) => Number(p.id) === Number(id));
-
-  if (loading || !product) {
-    // TODO show skeletons
-    return 'product detail loading...';
-  }
+  const product = useStore(product$);
+  const { error } = useStore(productList$);
 
   if (error) {
     return <ErrorOpenViaTelegram testid="product-detail-error" />;
@@ -32,11 +25,11 @@ export function ProductDetailPage() {
     <div className={styles.container} data-testid="product-detail-container">
       <TgBackButton />
 
-      <h2>{product.name}</h2>
+      <h2>{product?.name}</h2>
 
-      <p>{product.description}</p>
+      <p>{product?.description}</p>
 
-      <p>Ціна: {product.price}</p>
+      <p>Ціна: {product?.price}</p>
 
       <TgMainButton
         text="Замовити"

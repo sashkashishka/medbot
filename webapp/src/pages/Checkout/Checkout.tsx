@@ -1,31 +1,32 @@
 import { ReactElement } from 'react';
 import { Form } from 'react-final-form';
-import { Input } from '../../components/Input';
-import { TgBackButton } from '../../components/TgBackButton';
-import { Textarea } from '../../components/Textarea';
-import { required } from '../../utils/final-form';
-import { createApi } from '../../utils/api';
 
-import { persistDecorator } from './decorators/persist';
+import { TgBackButton } from '../../components/TgBackButton';
+import { Input } from '../../components/Input';
+import { Datepicker } from '../../components/Datepicker';
+import { composeValidators, email, required } from '../../utils/final-form';
+
+import { getPersistDecorator } from './decorators/persist';
 import type { iFormValues } from './types';
 
 import styles from './Checkout.module.css';
 
-const decorators = [persistDecorator];
-
-const api = createApi('/api/medbot');
+const decorators = [getPersistDecorator()];
 
 export function CheckoutPage(): ReactElement {
-
   return (
     <>
       <TgBackButton />
 
-      <Form<iFormValues> onSubmit={console.log} decorators={decorators}>
+      <Form<iFormValues>
+        onSubmit={console.log}
+        decorators={decorators}
+        subscription={{}}
+      >
         {({ handleSubmit }) => {
           return (
             <form onSubmit={handleSubmit} className={styles.container}>
-              <h2 onClick={() => api.request()}>Замовлення</h2>
+              <h2>Замовлення</h2>
               <Input
                 labelName="Прізвище"
                 fieldName="surname"
@@ -36,30 +37,32 @@ export function CheckoutPage(): ReactElement {
                 fieldName="name"
                 fieldConfig={{ validate: required('Обовʼязкове поле') }}
               />
+
               <Input labelName="По батькові" fieldName="patronymic" />
 
-              <Textarea
-                labelName="Скарги"
-                fieldName="complaints"
+              <Datepicker
+                labelName="Дата народження"
+                fieldName="birthDate"
+                fieldConfig={{
+                  validate: required('Обовʼязкове поле'),
+                }}
+              />
+
+              <Input
+                labelName="Номер телефону"
+                fieldName="phone"
                 fieldConfig={{ validate: required('Обовʼязкове поле') }}
               />
 
-              <Textarea
-                labelName="Коли почались скарги?"
-                fieldName="complaintsStarted"
-                fieldConfig={{ validate: required('Обовʼязкове поле') }}
-              />
-
-              <Textarea
-                labelName="Які ліки приймали?"
-                fieldName="medicine"
-                fieldConfig={{ validate: required('Обовʼязкове поле') }}
-              />
-
-              <Textarea
-                labelName="Хронічні захворювання"
-                fieldName="chronicDiseases"
-                fieldConfig={{ validate: required('Обовʼязкове поле') }}
+              <Input
+                labelName="Електронна пошта"
+                fieldName="email"
+                fieldConfig={{
+                  validate: composeValidators(
+                    required('Обовʼязкове поле'),
+                    email('Email невірний'),
+                  ),
+                }}
               />
             </form>
           );

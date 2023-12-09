@@ -1,0 +1,42 @@
+.row {
+  position: relative;
+  width: 100%;
+  padding-bottom: 14px;
+}
+
+.row :global(.react-date-picker) {
+  width: 100%;
+}
+
+.datepicker :global(.react-date-picker__wrapper) {
+  width: 100%;
+  margin-top: 8px;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: var(--tg-theme-section-bg-color);
+  color: var(--tg-theme-text-color);
+  outline: none;
+  transition: border 0.2s ease-in-out;
+}
+
+.datepicker :global(.react-date-picker__inputGroup__input) {
+  color: var(--tg-theme-text-color);
+  outline: none;
+}
+
+.datepicker :global(.react-date-picker__inputGroup__input):invalid {
+  background: none;
+}
+
+.datepickerError :global(.react-date-picker__wrapper) {
+  border: 1px solid var(--tg-theme-accent-text-color);
+}
+
+.datepicker :global(.react-date-picker__button) svg {
+  stroke: var(--tg-theme-text-color);
+}
+
+.datepicker :global(.react-calendar) {
+  border-radius: 16px;
+}

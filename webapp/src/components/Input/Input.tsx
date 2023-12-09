@@ -2,9 +2,9 @@ import React from 'react';
 import { UseFieldConfig, useField } from 'react-final-form';
 import cn from 'classnames';
 import { ValidationError } from '../ValidationError';
+import { isError } from '../../utils/final-form';
 
 import styles from './Input.module.css';
-import { isError } from '../../utils/final-form';
 
 interface iProps<tValue> extends React.InputHTMLAttributes<HTMLInputElement> {
   labelName: string;

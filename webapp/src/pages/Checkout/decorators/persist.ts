@@ -1,25 +1,16 @@
-import type { FormApi } from 'final-form';
-import { debounce } from '../../../utils/debounce';
+import { createPersistDecorator } from '../../../utils/final-form';
+import { product$ } from '../../../stores/product';
+import { tg } from '../../../utils/tg';
+import type { iFormValues } from '../types';
 
 const PERSIST_KEY = 'order-form';
 
-export function persistDecorator<tFormValues = Record<string, any>>(
-  form: FormApi<tFormValues>,
-) {
-  const persistedValues = localStorage.getItem(PERSIST_KEY) || '{}';
-  const { initialValues } = form.getState();
+export function getPersistDecorator() {
+  // TODO init with WAITING_FOR_PAYMENT order id
+  const populateValues: Partial<iFormValues> = {
+    userId: tg.initDataUnsafe.user?.id,
+    productId: product$.get()?.id,
+  };
 
-  // TODO init with user store
-  form.initialize({ ...initialValues, ...JSON.parse(persistedValues) });
-
-  const unsubscribe = form.subscribe(
-    debounce(({ values, pristine }) => {
-      if (!pristine) {
-        localStorage.setItem(PERSIST_KEY, JSON.stringify(values));
-      }
-    }, 500),
-    { values: true, pristine: true },
-  );
-
-  return unsubscribe;
+  return createPersistDecorator<iFormValues>({ lsKey: PERSIST_KEY, populateValues });
 }

@@ -1,6 +1,6 @@
 export enum ROUTES {
   MAIN = '/',
   PRODUCTS = '/products',
-  PRODUCT_ITEM = '/products/:id',
-  CHECKOUT = '/checkout',
+  PRODUCT_ITEM = '/products/:productId',
+  CHECKOUT = '/checkout/:productId',
 }
