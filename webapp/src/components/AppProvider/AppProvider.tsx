@@ -21,10 +21,5 @@ export function AppProvider({ children }: iProps) {
     return 'app context loading...';
   }
 
-  if (initData.error) {
-    // TODO use error state
-    return 'error';
-  }
-
   return children;
 }

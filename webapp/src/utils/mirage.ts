@@ -6,6 +6,7 @@ import {
   belongsTo,
   createServer,
   hasMany,
+  Response,
 } from 'miragejs';
 import { faker } from '@faker-js/faker';
 import { API } from '../constants/api';
@@ -102,7 +103,7 @@ function productEndpoints(server: Server) {
   server.get(API.PRODUCT_LIST, (schema: tAppSchema) => {
     const product = schema.all('product');
 
-    return product.models;
+    return new Response(200, {}, product.models);
   });
 }
 
@@ -110,7 +111,7 @@ function userEndpoints(server: Server) {
   server.get(API.USER, (schema: tAppSchema, request) => {
     const user = schema.find('user', request.params.id);
 
-    return user ? user : null;
+    return new Response(200, {}, user ? user : 'null');
   });
 }
 
@@ -122,7 +123,7 @@ function orderEndpoints(server: Server) {
       );
     });
 
-    return order ? order : null;
+    return new Response(200, {}, order ? order : 'null');
   });
 }
 
