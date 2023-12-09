@@ -11,6 +11,7 @@ export function ProductItem({ id, name }: iProps) {
     <Link
       to={generatePath(ROUTES.PRODUCT_ITEM, { id: String(id) })}
       className={styles.container}
+      data-testid="product-item-link"
     >
       {name}
     </Link>

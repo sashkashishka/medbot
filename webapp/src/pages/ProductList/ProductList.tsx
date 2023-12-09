@@ -9,15 +9,10 @@ import styles from './ProductList.module.css';
 // TODO if user has active order - show error state 
 // write guard and wrap it this component in router config
 export function ProductListPage() {
-  const { data, loading, error } = useStore(productList$);
-
-  if (loading || !data) {
-    // TODO show skeletons
-    return 'loading...';
-  }
+  const { data, error } = useStore(productList$);
 
   if (error) {
-    return <ErrorOpenViaTelegram />;
+    return <ErrorOpenViaTelegram testid="prodict-list-error" />;
   }
 
   return (

@@ -34,6 +34,7 @@ const Telegram: TelegramWebApps.SDK = {
     initData: '',
     initDataUnsafe: {
       user: {
+        id: 2102,
         is_bot: false,
         first_name: 'User',
       },
