@@ -1,5 +1,6 @@
 import type { Decorator } from 'final-form';
 import { debounce } from '../../../utils/debounce';
+import { mergeRightDeep } from '../../merge';
 
 interface iOptions<tFormValues> {
   lsKey: string;
@@ -17,11 +18,15 @@ export function createPersistDecorator<tFormValues = Record<string, any>>({
 
     const persistedValues = localStorage.getItem(lsKey) || '{}';
 
-    form.initialize({
-      ...initialValues,
-      ...JSON.parse(persistedValues),
-      ...populateValues,
-    });
+    const values = mergeRightDeep(
+      {
+        ...initialValues,
+        ...JSON.parse(persistedValues),
+      },
+      populateValues!,
+    ) as tFormValues;
+
+    form.initialize(values);
 
     const unsubscribe = form.subscribe(
       debounce(({ values, pristine }) => {
@@ -29,11 +34,11 @@ export function createPersistDecorator<tFormValues = Record<string, any>>({
 
         const valuesToPersist = { ...values };
 
-        for (const key of valuesToPersist) {
-          if (exclude.includes(key)) {
+        Object.keys(valuesToPersist).forEach((key) => {
+          if (exclude.includes(key as keyof tFormValues)) {
             delete valuesToPersist[key];
           }
-        }
+        });
 
         localStorage.setItem(lsKey, JSON.stringify(valuesToPersist));
       }, 500),
