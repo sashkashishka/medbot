@@ -5,8 +5,9 @@ export enum TIDS {
 
   PRODUCT_ITEM_LINK = 'product-item-link',
 
-
   PRODUCT_DETAIL_CONTAIENR = 'product-detail-container',
   TG_BACK_BUTTON = 'tg-back-button',
   TG_MAIN_BUTTON = 'tg-main-button',
+
+  REACT_DATE_PICKER = 'react-date-picker',
 }

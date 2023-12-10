@@ -23,10 +23,10 @@ export const initProductProviderStore$ = computed(
         waitingForPaymentOrderQuery.error ||
         productListQuery.error,
       fetched:
-        userQuery.data !== undefined &&
-        activeOrderQuery.data !== undefined &&
-        waitingForPaymentOrderQuery.data !== undefined &&
-        productListQuery.data !== undefined,
+        userQuery.fetched &&
+        activeOrderQuery.fetched &&
+        waitingForPaymentOrderQuery.fetched &&
+        productListQuery.fetched,
     };
   },
 );

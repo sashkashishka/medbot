@@ -1,0 +1,42 @@
+{
+  "roots": [
+    "<rootDir>/src"
+  ],
+  "collectCoverageFrom": [
+    "src/**/*.{js,jsx,ts,tsx}",
+    "!src/**/*.d.ts",
+    "!src/mocks/**"
+  ],
+  "coveragePathIgnorePatterns": [],
+  "setupFilesAfterEnv": [
+    "<rootDir>/src/setupTests.tsx"
+  ],
+  "testEnvironment": "jsdom",
+  "modulePaths": [
+    "<rootDir>/src"
+  ],
+  "transform": {
+    "^.+\\.(ts|js|tsx|jsx)$": "@swc/jest"
+  },
+  "transformIgnorePatterns": [
+    "/node_modules/(?!nanostores|@nanostores)",
+    "^.+\\.module\\.(css|sass|scss)$"
+  ],
+  "moduleNameMapper": {
+    "^.+\\.svg$": "jest-svg-transformer",
+    "^.+\\.(css|less|scss)$": "identity-obj-proxy"
+  },
+  "moduleFileExtensions": [
+    "tsx",
+    "ts",
+    "web.js",
+    "js",
+    "web.ts",
+    "web.tsx",
+    "json",
+    "web.jsx",
+    "jsx",
+    "node"
+  ],
+  "resetMocks": true
+}

@@ -1,10 +1,9 @@
 // setupTests.ts
 import '@testing-library/jest-dom';
-import { jest } from '@jest/globals';
 import type { TelegramWebApps } from './telegram-webapp';
 import { TIDS } from './constants/testIds';
 
-jest.unstable_mockModule('./components/TgBackButton', () => ({
+jest.mock('./components/TgBackButton', () => ({
   TgBackButton: function MockTgBackButton(props: any) {
     return <div data-testid={TIDS.TG_BACK_BUTTON} {...props} />;
   },
@@ -22,8 +21,16 @@ function MockTgMainButton({ handleClick, text }: iMockTgMainButtonProps) {
   );
 }
 
-jest.unstable_mockModule('./components/TgMainButton', () => ({
+jest.mock('./components/TgMainButton', () => ({
   TgMainButton: MockTgMainButton,
+}));
+
+function MockDatepicker() {
+  return <div data-testid={TIDS.REACT_DATE_PICKER} />;
+}
+
+jest.mock('react-date-picker', () => ({
+  DatePicker: MockDatepicker,
 }));
 
 const Telegram: TelegramWebApps.SDK = {
