@@ -4,7 +4,7 @@ import { ROUTES } from '../constants/routes';
 import { MainPage } from './Main';
 import { ProductListPage } from './ProductList';
 import { ProductDetailPage } from './ProductDetail';
-import { CheckoutPage } from './Checkout';
+import { ProductCheckoutPage } from './ProductCheckout';
 import { Outlet } from 'react-router-dom';
 
 export const routes = [
@@ -34,7 +34,7 @@ export const routes = [
           },
           {
             path: ROUTES.PRODUCT_CHECKOUT,
-            element: <CheckoutPage />,
+            element: <ProductCheckoutPage />,
           },
         ],
       },

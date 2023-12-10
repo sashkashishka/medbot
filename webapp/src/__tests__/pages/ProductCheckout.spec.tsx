@@ -4,9 +4,9 @@ import type { Server } from 'miragejs';
 // import { render, waitFor } from '@testing-library/react';
 // import { createWrapper } from '../../../utils/testing';
 // import { ROUTES } from '../../../constants/routes';
-import { setupMirage } from '../../../utils/mirage';
+import { setupMirage } from '../../utils/mirage';
 
-describe('Checkout', () => {
+describe('ProductCheckout', () => {
   let server: Server;
 
   beforeEach(() => {
@@ -17,7 +17,7 @@ describe('Checkout', () => {
     server.shutdown();
   });
 
-  it('should render Checkout', async () => {
+  it('should render ProductCheckout', async () => {
     // const { getAllByTestId } = render(
     //   createWrapper({ routerOptions: { initialEntries: [ROUTES.PRODUCTS] } }),
     // );

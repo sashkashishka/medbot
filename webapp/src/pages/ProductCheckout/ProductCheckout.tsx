@@ -9,11 +9,11 @@ import { composeValidators, email, required } from '../../utils/final-form';
 import { getPersistDecorator } from './decorators/persist';
 import type { iFormValues } from './types';
 
-import styles from './Checkout.module.css';
+import styles from './ProductCheckout.module.css';
 import { createApi } from '../../utils/api';
 import { API } from '../../constants/api';
 
-export class CheckoutPage extends Component {
+export class ProductCheckoutPage extends Component {
   get decorators() {
     return [getPersistDecorator()];
   }
