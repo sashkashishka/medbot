@@ -1,20 +1,18 @@
 import { createPersistDecorator } from '../../../utils/final-form';
 import { product$ } from '../../../stores/product';
-import { tg } from '../../../utils/tg';
+import { getUserId } from '../../../utils/tg';
 import { user$ } from '../../../stores/user';
 import type { iFormValues } from '../types';
-import { waitingForPaymentOrder$ } from '../../../stores/order';
+import type { iOrder } from '../../../types';
 
 const PERSIST_KEY = 'order-form';
 
-export function getPersistDecorator() {
+export function getPersistDecorator(waitingForPaymentOrder?: iOrder) {
   const userQuery = user$.get();
-  const waitingForPaymentOrderQuery = waitingForPaymentOrder$.get();
   const user = userQuery.data!;
-  const order = waitingForPaymentOrderQuery.data;
 
   const populateValues: Partial<iFormValues> = {
-    userId: tg.initDataUnsafe.user?.id,
+    userId: getUserId(),
     name: user?.name,
     surname: user?.surname,
     patronymic: user?.patronymic,
@@ -22,7 +20,7 @@ export function getPersistDecorator() {
     email: user?.email,
     phone: user?.phone,
     productId: product$.get()?.id,
-    orderId: order?.id,
+    orderId: waitingForPaymentOrder?.id,
   };
 
   return createPersistDecorator<iFormValues>({

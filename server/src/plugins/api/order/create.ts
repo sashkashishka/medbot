@@ -23,11 +23,11 @@ export const createOrderRoute: RouteOptions = {
       where: { id: Number(body.productId) },
     });
 
-    let subscriptionEndsAt: string = undefined;
+    let subscriptionEndsAt: string = null;
 
     if (product.subscriptionDuration > 1) {
       subscriptionEndsAt = dayjs()
-        .month(product.subscriptionDuration)
+        .add(product.subscriptionDuration, 'month')
         .toISOString();
     }
 

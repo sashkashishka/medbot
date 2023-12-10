@@ -1,5 +1,5 @@
 import { type ReactNode, useEffect } from 'react';
-import { tg } from '../../../utils/tg';
+import { getInitData, tg } from '../../../utils/tg';
 import { ErrorOpenViaTelegram } from '../../ErrorStates';
 
 interface iProps {
@@ -17,7 +17,7 @@ export function WebAppProvider({ children }: iProps) {
     return () => window.removeEventListener('beforeunload', forceHideButtons);
   }, []);
 
-  if (!tg.initData) {
+  if (!getInitData()) {
     return <ErrorOpenViaTelegram />
   }
 

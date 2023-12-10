@@ -1,11 +1,11 @@
 import { generatePath } from 'react-router-dom';
 
-import { tg } from '../utils/tg';
+import { getUserId } from '../utils/tg';
 import { API } from '../constants/api';
 import { createFetcherStore } from './fetcher';
 import type { iOrder } from '../types';
 
-const userId = String(tg.initDataUnsafe.user?.id);
+const userId = String(getUserId());
 
 export const activeOrder$ = createFetcherStore<iOrder>({
   url: generatePath(API.ACTIVE_ORDER, {
@@ -13,6 +13,7 @@ export const activeOrder$ = createFetcherStore<iOrder>({
   }),
 });
 
-export const waitingForPaymentOrder$ = createFetcherStore<iOrder>({
-  url: generatePath(API.WAITING_FOR_PAYMENT_ORDER, { userId }),
-});
+export const createWaitingForPaymentOrder = (productId: string) => () =>
+  createFetcherStore<iOrder>({
+    url: generatePath(API.WAITING_FOR_PAYMENT_ORDER, { userId, productId }),
+  });

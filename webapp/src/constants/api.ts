@@ -4,7 +4,7 @@ export enum API {
   CREATE_USER = '/api/user/create',
   UPDATE_USER = '/api/user/update/:userId',
   ACTIVE_ORDER = '/api/order/active/:userId',
-  WAITING_FOR_PAYMENT_ORDER = '/api/order/waiting-for-payment/:userId',
+  WAITING_FOR_PAYMENT_ORDER = '/api/order/waiting-for-payment/:userId/:productId',
   CREATE_ORDER = '/api/order/create',
   UPDATE_ORDER = '/api/order/update/:orderId',
 }

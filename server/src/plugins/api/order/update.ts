@@ -1,24 +1,28 @@
 import type { RouteOptions } from 'fastify';
 
+interface iParams {
+  orderId: string;
+}
+
 // TODO check why Prisma.OrderScalar sets all values to boolean
 export const updateOrderRoute: RouteOptions = {
-  method: 'POST',
-  url: '/order/update',
+  method: 'PATCH',
+  url: '/order/update/:orderId',
   schema: {
     body: {
       type: 'object',
       properties: {
-        id: { type: 'string' },
         status: { type: 'string' },
       },
-      required: ['id', 'status'],
+      required: ['status'],
     },
   },
   handler(req) {
-    const body = req.body as { id: number };
+    const params = req.params as iParams;
+    const body = req.body;
 
     return this.prisma.order.update({
-      where: { id: body.id },
+      where: { id: Number(params.orderId) },
       data: body,
     });
   },

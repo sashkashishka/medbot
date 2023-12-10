@@ -49,7 +49,7 @@ model Order {
   productId          Int
   status             OrderStatus
   createdAt          DateTime
-  subscriptionEndsAt DateTime
+  subscriptionEndsAt DateTime?
   appointment        Appointment[]
 }
 

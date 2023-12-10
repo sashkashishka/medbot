@@ -2,6 +2,7 @@ import type { FastifyPluginCallback } from 'fastify';
 
 import { userRoute } from './user/index.js';
 import { createUserRoute } from './user/create.js';
+import { updateUserRoute } from './user/update.js';
 
 import { createProductRoute } from './product/create.js';
 import { productListRoute } from './product/list.js';
@@ -9,12 +10,13 @@ import { productListRoute } from './product/list.js';
 import { activeOrderRoute } from './order/active.js';
 import { createOrderRoute } from './order/create.js';
 import { waitingForPaymentOrderRoute } from './order/waitingForPayment.js';
+import { updateOrderRoute } from './order/update.js';
 
 import { preHandler } from './hooks.js';
 
 const api: FastifyPluginCallback = (fastify, _opts, done) => {
   // TODO return back
-  fastify.addHook('preHandler', preHandler);
+  // fastify.addHook('preHandler', preHandler);
 
   fastify.get('/medbot', async (req) => {
     const urlParams = new URLSearchParams(
@@ -38,7 +40,9 @@ const api: FastifyPluginCallback = (fastify, _opts, done) => {
   fastify.route(createUserRoute);
   fastify.route(activeOrderRoute);
   fastify.route(createOrderRoute);
+  fastify.route(updateOrderRoute);
   fastify.route(waitingForPaymentOrderRoute);
+  fastify.route(updateUserRoute);
 
   fastify.setErrorHandler(function errorHandler(error, _req, reply) {
     this.log.error(error);

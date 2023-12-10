@@ -160,6 +160,7 @@ const GET_ENDPOINTS: tEndpoints = {
     const order = schema.findBy('order', (order) => {
       return (
         order.userId === Number(request.params.userId) &&
+        order.productId === Number(request.params.productId) &&
         order.status === 'WAITING_FOR_PAYMENT'
       );
     });
@@ -241,7 +242,7 @@ export function setupMirage({ errorRoutes, scenario }: iMirageOptions = {}) {
     );
   });
 
-  mirageServer.passthrough()
+  mirageServer.passthrough();
 
   return mirageServer;
 }

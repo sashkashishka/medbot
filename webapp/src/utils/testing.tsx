@@ -4,7 +4,7 @@ import { cleanStores as nanostoresCleanStores } from 'nanostores';
 import { routes as defaultRoutes } from '../pages/routes';
 import { user$ } from '../stores/user';
 import { product$, productId$, productList$ } from '../stores/product';
-import { activeOrder$, waitingForPaymentOrder$ } from '../stores/order';
+import { activeOrder$ } from '../stores/order';
 import { initProductProviderStore$ } from '../stores/initProductProvider';
 
 interface iOptions {
@@ -26,7 +26,6 @@ export function wipeStores() {
     user$,
     productList$,
     activeOrder$,
-    waitingForPaymentOrder$,
     initProductProviderStore$,
     product$,
     productId$,

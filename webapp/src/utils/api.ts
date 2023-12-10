@@ -1,4 +1,4 @@
-import { tg } from './tg';
+import { getInitData } from './tg';
 
 class NetworkError extends Error {
   constructor(
@@ -16,11 +16,12 @@ class NetworkError extends Error {
 export function createApi(url: string, options?: RequestInit) {
   const controller = new AbortController();
 
-  const reqOptions = {
+  const reqOptions: RequestInit = {
     ...options,
     headers: {
       ...options?.headers,
-      'x-webapp-info': tg.initData,
+      'content-type': 'application/json',
+      'x-webapp-info': getInitData(),
     },
     signal: controller.signal,
   };

@@ -1,10 +1,10 @@
 import { generatePath } from 'react-router-dom';
-import { tg } from '../utils/tg';
+import { getUserId } from '../utils/tg';
 import { API } from '../constants/api';
 import type { iUser } from '../types';
 import { createFetcherStore } from './fetcher';
 
-const userId = String(tg.initDataUnsafe.user?.id);
+const userId = String(getUserId());
 
 export const user$ = createFetcherStore<iUser>({
   url: generatePath(API.USER, { userId }),
