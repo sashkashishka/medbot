@@ -25,8 +25,8 @@ jest.mock('./components/TgMainButton', () => ({
   TgMainButton: MockTgMainButton,
 }));
 
-function MockDatepicker() {
-  return <div data-testid={TIDS.REACT_DATE_PICKER} />;
+function MockDatepicker(props) {
+  return <input data-testid={props['data-testid']} />;
 }
 
 jest.mock('react-date-picker', () => ({

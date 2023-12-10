@@ -4,16 +4,18 @@ import cn from 'classnames';
 
 import { ValidationError } from '../ValidationError';
 import { isError } from '../../utils/final-form';
+import { isDateValid } from '../../utils/date';
+import { TIDS } from '../../constants/testIds';
 
 import 'react-date-picker/dist/DatePicker.css';
 import 'react-calendar/dist/Calendar.css';
 import styles from './Datepicker.module.css';
-import { isDateValid } from '../../utils/date';
 
 interface iProps<tValue> extends React.InputHTMLAttributes<HTMLInputElement> {
   labelName: string;
   fieldName: string;
   fieldConfig?: UseFieldConfig<tValue>;
+  testid?: string;
 }
 
 function format(value: string) {
@@ -26,6 +28,7 @@ export function Datepicker<tValue extends string>({
   labelName,
   fieldName,
   fieldConfig,
+  testid,
 }: iProps<tValue>) {
   const { input, meta } = useField<tValue, HTMLDivElement, Date>(fieldName, {
     validateFields: [],
@@ -39,6 +42,7 @@ export function Datepicker<tValue extends string>({
       {labelName}
       <div onBlur={input.onBlur} onFocus={input.onFocus}>
         <DatePicker
+          data-testid={testid}
           className={cn(
             styles.datepicker,
             isError(meta) && styles.datepickerError,

@@ -5,8 +5,6 @@ import { ProductItem } from './components/ProductItem';
 
 import styles from './ProductList.module.css';
 
-// TODO if user has active order - show error state
-// write guard and wrap it this component in router config
 export function ProductListPage() {
   const { data } = useStore(productList$);
 

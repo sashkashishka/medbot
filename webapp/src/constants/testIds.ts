@@ -10,4 +10,11 @@ export enum TIDS {
   TG_MAIN_BUTTON = 'tg-main-button',
 
   REACT_DATE_PICKER = 'react-date-picker',
+
+  INPUT_NAME = 'product-checkout-input-name',
+  INPUT_SURNAME = 'product-checkout-input-surname',
+  INPUT_PATRONYMIC = 'product-checkout-input-patronymic',
+  INPUT_BIRTHDATE = 'product-checkout-input-birthDate',
+  INPUT_PHONE = 'product-checkout-input-phone',
+  INPUT_EMAIL = 'product-checkout-input-email',
 }
