@@ -1,4 +1,4 @@
-import type { iOrder, iAppointment, iProduct, iUser } from '../../types';
+import type { iOrder, iProduct, iUser } from '../../types';
 
 export interface iFormValues {
   name: iUser['name'];
@@ -12,9 +12,4 @@ export interface iFormValues {
   productId: iProduct['id'];
 
   orderId?: iOrder['id'];
-
-  complaints: iAppointment['complaints'];
-  complaintsStarted: iAppointment['complaintsStarted'];
-  medicine: iAppointment['medicine'];
-  chronicDiseases: iAppointment['chronicDiseases'];
 }

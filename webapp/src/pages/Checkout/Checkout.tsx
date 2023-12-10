@@ -10,6 +10,8 @@ import { getPersistDecorator } from './decorators/persist';
 import type { iFormValues } from './types';
 
 import styles from './Checkout.module.css';
+import { createApi } from '../../utils/api';
+import { API } from '../../constants/api';
 
 export class CheckoutPage extends Component {
   get decorators() {
@@ -73,5 +75,25 @@ export class CheckoutPage extends Component {
         </Form>
       </>
     );
+  }
+
+  getUserApi(isOrderWaitingForPayment: boolean) {
+    return isOrderWaitingForPayment
+      ? createApi(API.UPDATE_USER, { method: 'PATCH' })
+      : createApi(API.CREATE_USER, { method: 'POST' });
+  }
+
+  getOrderApi(isOrderWaitingForPayment: boolean) {
+    return isOrderWaitingForPayment
+      ? createApi(API.UPDATE_ORDER, { method: 'PATCH' })
+      : createApi(API.CREATE_ORDER, { method: 'POST' });
+  }
+
+  handleSubmit(values: iFormValues) {
+    const userApi = this.getUserApi(!!values.orderId);
+    const orderApi = this.getOrderApi(!!values.orderId);
+
+
+    console.log(userApi, orderApi)
   }
 }

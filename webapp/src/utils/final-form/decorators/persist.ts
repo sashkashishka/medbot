@@ -4,11 +4,13 @@ import { debounce } from '../../../utils/debounce';
 interface iOptions<tFormValues> {
   lsKey: string;
   populateValues?: Partial<tFormValues>;
+  exclude?: (keyof tFormValues)[];
 }
 
 export function createPersistDecorator<tFormValues = Record<string, any>>({
   lsKey,
   populateValues,
+  exclude = [],
 }: iOptions<tFormValues>): Decorator<tFormValues> {
   return function persistDecorator(form) {
     const { initialValues } = form.getState();
@@ -23,9 +25,17 @@ export function createPersistDecorator<tFormValues = Record<string, any>>({
 
     const unsubscribe = form.subscribe(
       debounce(({ values, pristine }) => {
-        if (!pristine) {
-          localStorage.setItem(lsKey, JSON.stringify(values));
+        if (pristine) return;
+
+        const valuesToPersist = { ...values };
+
+        for (const key of valuesToPersist) {
+          if (exclude.includes(key)) {
+            delete valuesToPersist[key];
+          }
         }
+
+        localStorage.setItem(lsKey, JSON.stringify(valuesToPersist));
       }, 500),
       { values: true, pristine: true },
     );

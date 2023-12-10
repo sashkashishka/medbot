@@ -37,8 +37,8 @@ export const isError = <tValue>(meta: FieldMetaState<tValue>) =>
 type tValidateResult = string | undefined;
 
 export const composeValidators =
-  (...validators: ((value?: unknown) => tValidateResult)[]) =>
-  <tValue>(value: tValue) =>
+  <tValue>(...validators: ((value: tValue) => tValidateResult)[]) =>
+  (value: tValue) =>
     validators.reduce(
       (error: string | undefined, validator) => error || validator(value),
       undefined,
