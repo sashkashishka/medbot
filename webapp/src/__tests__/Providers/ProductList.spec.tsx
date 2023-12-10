@@ -2,9 +2,10 @@ import { describe, it } from '@jest/globals';
 import type { Server } from 'miragejs';
 import { allTasks } from 'nanostores';
 import { render, waitFor, act } from '@testing-library/react';
-import { createWrapper } from '../../../utils/testing';
-import { ROUTES } from '../../../constants/routes';
-import { setupMirage } from '../../../utils/mirage';
+import { createWrapper } from '../../utils/testing';
+import { setupMirage } from '../../utils/mirage';
+import { ROUTES } from '../../constants/routes';
+import { TIDS } from '../../constants/testIds';
 
 describe('ProductList', () => {
   let server: Server;
@@ -24,7 +25,7 @@ describe('ProductList', () => {
 
     await waitFor(allTasks);
 
-    expect(getAllByTestId('product-item-link')).toHaveLength(
+    expect(getAllByTestId(TIDS.PRODUCT_ITEM_LINK)).toHaveLength(
       server.schema.db.products.length,
     );
   });
@@ -36,12 +37,12 @@ describe('ProductList', () => {
 
     await waitFor(allTasks);
 
-    const [link] = getAllByTestId('product-item-link');
+    const [link] = getAllByTestId(TIDS.PRODUCT_ITEM_LINK);
 
     act(() => link.click());
 
     await waitFor(allTasks);
 
-    expect(getByTestId('product-detail-container')).toBeInTheDocument();
+    expect(getByTestId(TIDS.PRODUCT_DETAIL_CONTAIENR)).toBeInTheDocument();
   });
 });

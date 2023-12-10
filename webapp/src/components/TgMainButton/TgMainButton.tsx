@@ -1,6 +1,6 @@
 import { useId, useLayoutEffect } from 'react';
 import { tg } from '../../utils/tg';
-import { useWebAppContext } from '../WebAppProvider/context';
+import { useWebAppContext } from '../Providers';
 import { useSmoothButtonsTransition } from '../../hooks/useSmoothTgButtonTransition';
 
 type tMainButtonProps = Partial<Window['Telegram']['WebApp']['MainButton']>;

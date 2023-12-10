@@ -1,34 +1,42 @@
-import { WebAppProvider } from '../components/WebAppProvider';
-import { AppProvider } from '../components/AppProvider';
+import { ProductsProvider, WebAppProvider } from '../components/Providers';
 
 import { ROUTES } from '../constants/routes';
 import { MainPage } from './Main';
 import { ProductListPage } from './ProductList';
 import { ProductDetailPage } from './ProductDetail';
 import { CheckoutPage } from './Checkout';
+import { Outlet } from 'react-router-dom';
 
 export const routes = [
   {
     path: ROUTES.MAIN,
     element: (
       <WebAppProvider>
-        <AppProvider>
-          <MainPage />
-        </AppProvider>
+        <MainPage />
       </WebAppProvider>
     ),
     children: [
       {
         path: ROUTES.PRODUCTS,
-        element: <ProductListPage />,
-      },
-      {
-        path: ROUTES.PRODUCT_ITEM,
-        element: <ProductDetailPage />,
-      },
-      {
-        path: ROUTES.CHECKOUT,
-        element: <CheckoutPage />,
+        element: (
+          <ProductsProvider>
+            <Outlet />
+          </ProductsProvider>
+        ),
+        children: [
+          {
+            path: ROUTES.PRODUCTS,
+            element: <ProductListPage />,
+          },
+          {
+            path: ROUTES.PRODUCT_ITEM,
+            element: <ProductDetailPage />,
+          },
+          {
+            path: ROUTES.PRODUCT_CHECKOUT,
+            element: <CheckoutPage />,
+          },
+        ],
       },
     ],
   },

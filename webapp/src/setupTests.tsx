@@ -2,6 +2,29 @@
 import '@testing-library/jest-dom';
 import { jest } from '@jest/globals';
 import type { TelegramWebApps } from './telegram-webapp';
+import { TIDS } from './constants/testIds';
+
+jest.unstable_mockModule('./components/TgBackButton', () => ({
+  TgBackButton: function MockTgBackButton(props: any) {
+    return <div data-testid={TIDS.TG_BACK_BUTTON} {...props} />;
+  },
+}));
+
+interface iMockTgMainButtonProps extends TelegramWebApps.MainButton {
+  handleClick(): void;
+}
+
+function MockTgMainButton({ handleClick, text }: iMockTgMainButtonProps) {
+  return (
+    <div data-testid={TIDS.TG_MAIN_BUTTON} onClick={handleClick}>
+      {text}
+    </div>
+  );
+}
+
+jest.unstable_mockModule('./components/TgMainButton', () => ({
+  TgMainButton: MockTgMainButton,
+}));
 
 const Telegram: TelegramWebApps.SDK = {
   WebApp: {
@@ -31,7 +54,7 @@ const Telegram: TelegramWebApps.SDK = {
     },
     isVersionAtLeast: jest.fn(() => true),
     ready: jest.fn(),
-    initData: '',
+    initData: 'somedata',
     initDataUnsafe: {
       user: {
         id: 2102,

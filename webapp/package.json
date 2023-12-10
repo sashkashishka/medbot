@@ -69,7 +69,7 @@
       ".tsx"
     ],
     "setupFilesAfterEnv": [
-      "<rootDir>/src/setupTests.ts"
+      "<rootDir>/src/setupTests.tsx"
     ]
   }
 }

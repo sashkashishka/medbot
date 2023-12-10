@@ -5,7 +5,7 @@ interface iWebAppContext {
   BackButton: MutableRefObject<null | string>;
 }
 
-export const DEFAULT_WEBAPP_CONTEXT: iWebAppContext = {
+const DEFAULT_WEBAPP_CONTEXT: iWebAppContext = {
   MainButton: { current: null },
   BackButton: { current: null },
 };

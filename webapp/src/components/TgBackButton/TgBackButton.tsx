@@ -1,7 +1,7 @@
 import { useId, useLayoutEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { useWebAppContext } from '../WebAppProvider/context';
+import { useWebAppContext } from '../Providers';
 import { tg } from '../../utils/tg';
 import { useSmoothButtonsTransition } from '../../hooks/useSmoothTgButtonTransition';
 

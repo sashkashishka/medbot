@@ -1,10 +1,10 @@
-import { useNavigate } from 'react-router-dom';
+import { generatePath, useNavigate } from 'react-router-dom';
 import { useStore } from '@nanostores/react';
 
-import { productList$, product$ } from '../../stores/product';
+import { product$ } from '../../stores/product';
 import { ROUTES } from '../../constants/routes';
+import { TIDS } from '../../constants/testIds';
 // import type { iProduct } from '../../types';
-import { ErrorOpenViaTelegram } from '../../components/ErrorOpenViaTelegram';
 import { TgBackButton } from '../../components/TgBackButton';
 import { TgMainButton } from '../../components/TgMainButton';
 
@@ -15,14 +15,12 @@ import styles from './ProductDetail.module.css';
 export function ProductDetailPage() {
   const navigate = useNavigate();
   const product = useStore(product$);
-  const { error } = useStore(productList$);
-
-  if (error) {
-    return <ErrorOpenViaTelegram testid="product-detail-error" />;
-  }
 
   return (
-    <div className={styles.container} data-testid="product-detail-container">
+    <div
+      className={styles.container}
+      data-testid={TIDS.PRODUCT_DETAIL_CONTAIENR}
+    >
       <TgBackButton />
 
       <h2>{product?.name}</h2>
@@ -33,7 +31,14 @@ export function ProductDetailPage() {
 
       <TgMainButton
         text="Замовити"
-        handleClick={() => navigate(ROUTES.CHECKOUT)}
+        // TODO test if clicking on main button navigates to checkout
+        handleClick={() =>
+          navigate(
+            generatePath(ROUTES.PRODUCT_CHECKOUT, {
+              productId: String(product?.id),
+            }),
+          )
+        }
       />
     </div>
   );

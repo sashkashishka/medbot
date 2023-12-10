@@ -7,7 +7,7 @@ import { createFetcherStore } from './fetcher';
 import type { iUser } from '../types';
 
 const api = createApi(
-  generatePath(API.USER, { id: String(tg.initDataUnsafe.user?.id) }),
+  generatePath(API.USER, { userId: String(tg.initDataUnsafe.user?.id) }),
 );
 
 export const user$ = createFetcherStore<iUser>(['user'], {
