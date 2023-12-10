@@ -7,4 +7,5 @@ export enum API {
   WAITING_FOR_PAYMENT_ORDER = '/api/order/waiting-for-payment/:userId/:productId',
   CREATE_ORDER = '/api/order/create',
   UPDATE_ORDER = '/api/order/update/:orderId',
+  MEDBOT_PROCEED_TO_APPOINTMENT = '/api/medbot/proceed-to-appointment',
 }

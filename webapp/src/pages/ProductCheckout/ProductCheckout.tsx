@@ -121,39 +121,32 @@ class ProductCheckoutForm extends Component<iProps> {
   }
 
   async handleSubmit(values: iFormValues) {
-    if (values.orderId) {
-      const [userUpdateResp, userUpdateErr] = await this.updateUser(values);
+    if (!values.name) {
+      const [, userCreateErr] = await this.createUser(values);
+
+      if (userCreateErr) {
+        return FORM_ERROR;
+      }
+    } else {
+      const [, userUpdateErr] = await this.updateUser(values);
 
       if (userUpdateErr) {
         return FORM_ERROR;
       }
-
-      console.log('$$$ update submit', userUpdateResp);
-      // TODO payment logic
-      return undefined;
     }
 
-    const [userCreateResp, userCreateErr] = await this.createUser(values);
+    if (!values.orderId) {
+      const [, orderCreateErr] = await this.createOrder(values);
 
-    if (userCreateErr) {
-      return FORM_ERROR;
+      if (orderCreateErr) {
+        return FORM_ERROR;
+      }
     }
-
-    const [orderCreateResp, orderCreateErr] = await this.createOrder(values);
-
-    if (orderCreateErr) {
-      return FORM_ERROR;
-    }
-
-    console.log('$$$ create submit', { orderCreateResp, userCreateResp });
     // TODO payment form logic
-    return undefined;
-  }
 
-  getUserApi(values: iFormValues) {
-    return values.orderId
-      ? createApi(API.UPDATE_USER, { method: 'PATCH' })
-      : createApi(API.CREATE_USER, { method: 'POST' });
+    await this.proceedToAppointment();
+
+    return undefined;
   }
 
   async createUser(values: iFormValues) {
@@ -173,10 +166,10 @@ class ProductCheckoutForm extends Component<iProps> {
     });
 
     try {
-      return [await api.request(), null];
+      return [await api.request<iUser>(), null] as const;
     } catch (e) {
       console.error(e);
-      return [null, e];
+      return [null, e] as const;
     }
   }
 
@@ -199,10 +192,10 @@ class ProductCheckoutForm extends Component<iProps> {
     );
 
     try {
-      return [await api.request(), null];
+      return [await api.request<iUser>(), null] as const;
     } catch (e) {
       console.error(e);
-      return [null, e];
+      return [null, e] as const;
     }
   }
 
@@ -210,7 +203,8 @@ class ProductCheckoutForm extends Component<iProps> {
     const body: Partial<iOrder> = {
       userId: values.userId,
       productId: values.productId,
-      status: 'WAITING_FOR_PAYMENT',
+      // TODO set status WAITING_FOR_PAYMENT when will connect payment
+      status: 'ACTIVE',
     };
 
     const api = createApi(API.CREATE_ORDER, {
@@ -219,10 +213,10 @@ class ProductCheckoutForm extends Component<iProps> {
     });
 
     try {
-      return [await api.request(), null];
+      return [await api.request<iOrder>(), null] as const;
     } catch (e) {
       console.error(e);
-      return [null, e];
+      return [null, e] as const;
     }
   }
 
@@ -239,10 +233,24 @@ class ProductCheckoutForm extends Component<iProps> {
 
     try {
       // TODO make navigation logic to appointment scene
-      return [await api.request(), null];
+      return [await api.request<iOrder>(), null] as const;
     } catch (e) {
       console.error(e);
-      return [null, e];
+      return [null, e] as const;
+    }
+  }
+
+  async proceedToAppointment() {
+    const api = createApi(API.MEDBOT_PROCEED_TO_APPOINTMENT, {
+      method: 'GET',
+    });
+
+    try {
+      // TODO make navigation logic to appointment scene
+      return [await api.request(), null] as const;
+    } catch (e) {
+      console.error(e);
+      return [null, e] as const;
     }
   }
 }
