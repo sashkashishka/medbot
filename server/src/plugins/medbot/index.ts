@@ -1,12 +1,16 @@
 import fp from 'fastify-plugin';
 import { FastifyPluginAsync } from 'fastify';
 import { Telegraf, session } from 'telegraf';
+import type { Update } from 'telegraf/types';
 
-import { stage } from './scenes/index.js';
+import { medbotScenes, forumScenes } from './scenes/index.js';
 import { commands } from './commands/index.js';
+import { isForumUpdate } from './filters/isForumUpdate.js';
 import { PrismaSessionStorage } from './services/storage/prisma.js';
 import type { iMedbotContext } from './types.js';
-import { SCENES } from './constants/scenes.js';
+import { ENV_VARS } from './constants/envVars.js';
+import { populateContext } from './middlewares/populateContext.js';
+import { cleanupOnSecondStartCommand } from './middlewares/cleanupOnSecondStartCommand.js';
 
 declare module 'fastify' {
   // eslint-disable-next-line
@@ -16,73 +20,40 @@ declare module 'fastify' {
   }
 }
 
-// bot.command('quit', async (ctx) => {
-//   // Explicit usage
-//   await ctx.telegram.leaveChat(ctx.message.chat.id);
+function getSessionKey(ctx: iMedbotContext): string {
+  const fromId = ctx.from?.id;
+  const chatId = ctx.chat?.id;
+  const messageThreadId = (ctx.update as Update.MessageUpdate).message
+    .message_thread_id;
 
-//   // Using context shortcut
-//   await ctx.leaveChat();
-// });
+  if (messageThreadId && fromId) {
+    return `${fromId}:${chatId}:${messageThreadId}`;
+  }
 
-// bot.command('close', (ctx) => {
-//   console.log('$$$ close command', ctx.message);
-// });
-
-// let forumTopic;
-
-// bot.on('message', async (ctx) => {
-//   const chatId = ctx.message.chat.id;
-
-//   // if (forumId !== chatId) {
-//   //   if (!forumTopic) {
-//   //     forumTopic = await bot.telegram.createForumTopic(forumId, `User: ${ctx.message.from.id}`);
-//   //   }
-
-//   //   console.log(ctx.message)
-
-//   //   return await ctx.telegram.copyMessage(forumId, chatId, ctx.message.message_id, { message_thread_id: forumTopic.message_thread_id })
-//   // }
-
-//   console.log('$$$ message', ctx.message);
-
-//   // fs.writeFileSync('./update.json', JSON.stringify(ctx, null, '  '))
-
-//   // console.log(ctx.update)
-//   // Explicit usage
-//   // await ctx.telegram.sendMessage(ctx.message.chat.id, `Hello ${ctx.state.role}`)
-// });
+  if (fromId == null || chatId == null) return undefined;
+  return `${fromId}:${chatId}`;
+}
 
 const medbotPlugin: FastifyPluginAsync = fp(async (server) => {
-  const token = process.env.TG_BOT_TOKEN;
-  const testEnv = !!Number(process.env.TG_BOT_TEST);
-  const forumId = process.env.TG_BOT_FORUM_ID;
-
-  const bot = new Telegraf<iMedbotContext>(token, { telegram: { testEnv } });
+  const bot = new Telegraf<iMedbotContext>(ENV_VARS.TOKEN, {
+    telegram: { testEnv: ENV_VARS.TEST_ENV },
+  });
   const store = new PrismaSessionStorage(server.prisma);
 
-  bot.use(session({ store })); // to  be precise, session is not a must have for Scenes to work, but it sure is lonely without one
-  bot.use((ctx, next) => {
-    ctx.prisma = server.prisma;
-
-    return next();
-  });
+  bot.use(session({ store, getSessionKey }));
+  bot.use(
+    populateContext({ prisma: server.prisma, forumId: ENV_VARS.FORUM_ID }),
+  );
 
   // clear scene and start from scratch
-  bot.command('start', (ctx, next) => {
-    if (ctx.session?.__scenes?.current !== SCENES.ENTER) {
-      ctx.session = {};
-      // TODO mark all active orders as done
-    }
+  bot.command('start', cleanupOnSecondStartCommand);
 
-    return next();
-  });
-
-  bot.use(stage.middleware());
-
+  bot.on(isForumUpdate, forumScenes.middleware());
+  bot.on('message', medbotScenes.middleware());
 
   // Make medbot Client available through the fastify server instance: server.medbot
   server.decorate('medbot', bot);
-  server.decorate('medbotToken', token);
+  server.decorate('medbotToken', ENV_VARS.TOKEN);
 
   server.addHook('onListen', async () => {
     bot.launch();

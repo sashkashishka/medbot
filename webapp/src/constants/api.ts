@@ -8,4 +8,5 @@ export enum API {
   CREATE_ORDER = '/api/order/create',
   UPDATE_ORDER = '/api/order/update/:orderId',
   MEDBOT_PROCEED_TO_APPOINTMENT = '/api/medbot/proceed-to-appointment',
+  MEDBOT_PROCEED_TO_CHAT = '/api/medbot/proceed-to-chat',
 }

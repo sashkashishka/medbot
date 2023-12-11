@@ -1,4 +1,7 @@
 export enum SCENES {
   ORDER = 'ORDER',
   APPOINTMENT = 'APPOINTMENT',
+  CHAT = 'CHAT',
+
+  FORUM = 'FORUM'
 }

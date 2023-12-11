@@ -1,10 +1,14 @@
 import type { PrismaClient } from '@prisma/client';
 import type { Context, Scenes } from 'telegraf';
 
-export interface iMedbotSession extends Scenes.WizardSession {}
+export interface iMedbotSession extends Scenes.WizardSession {
+  messageThreadId?: number;
+  botChatId?: number;
+}
 
 export interface iMedbotContext extends Context {
   prisma: PrismaClient;
+  forumId: string;
 
   // declare session type
   session: iMedbotSession;

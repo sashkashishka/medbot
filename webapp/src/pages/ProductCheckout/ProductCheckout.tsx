@@ -19,6 +19,7 @@ import type { iFormValues } from './types';
 
 import styles from './ProductCheckout.module.css';
 import { FORM_ERROR } from 'final-form';
+import { user$ } from '../../stores/user';
 
 interface iProps {
   waitingForPaymentOrder?: iOrder;
@@ -121,7 +122,7 @@ class ProductCheckoutForm extends Component<iProps> {
   }
 
   async handleSubmit(values: iFormValues) {
-    if (!values.name) {
+    if (!user$.get().data?.id) {
       const [, userCreateErr] = await this.createUser(values);
 
       if (userCreateErr) {

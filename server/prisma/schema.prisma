@@ -12,16 +12,17 @@ generator client {
 }
 
 model User {
-  id           Int           @id @default(autoincrement())
-  name         String?
-  surname      String?
-  patronymic   String?
-  birthDate    DateTime?
-  topicForumId Int?
-  phone        String?
-  email        String?
-  order        Order[]
-  appointment  Appointment[]
+  id              Int           @id @default(autoincrement())
+  name            String?
+  surname         String?
+  patronymic      String?
+  birthDate       DateTime?
+  messageThreadId Int?
+  botChatId       Int?
+  phone           String?
+  email           String?
+  order           Order[]
+  appointment     Appointment[]
 }
 
 model Product {

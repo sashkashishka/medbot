@@ -6,6 +6,7 @@ import { ProductListPage } from './ProductList';
 import { ProductDetailPage } from './ProductDetail';
 import { ProductCheckoutPage } from './ProductCheckout';
 import { Outlet } from 'react-router-dom';
+import { AppointmentPage } from './Appointment/Appointment';
 
 export const routes = [
   {
@@ -16,6 +17,10 @@ export const routes = [
       </WebAppProvider>
     ),
     children: [
+      {
+        path: ROUTES.APPOINTMENT,
+        element: <AppointmentPage />,
+      },
       {
         path: ROUTES.PRODUCTS,
         element: (

@@ -3,4 +3,5 @@ export enum ROUTES {
   PRODUCTS = '/products',
   PRODUCT_ITEM = '/products/:productId',
   PRODUCT_CHECKOUT = '/products/:productId/checkout',
+  APPOINTMENT = '/appointment',
 }

@@ -13,6 +13,7 @@ import { waitingForPaymentOrderRoute } from './order/waitingForPayment.js';
 import { updateOrderRoute } from './order/update.js';
 
 import { proceedToAppointmentRoute } from './medbot/proceed-to-appointment.js';
+import { proceedToChatRoute } from './medbot/proceed-to-chat.js';
 
 import { preHandler } from './hooks.js';
 
@@ -30,6 +31,7 @@ const api: FastifyPluginCallback = (fastify, _opts, done) => {
   fastify.route(waitingForPaymentOrderRoute);
   fastify.route(updateUserRoute);
   fastify.route(proceedToAppointmentRoute);
+  fastify.route(proceedToChatRoute);
 
   fastify.setErrorHandler(function errorHandler(error, _req, reply) {
     this.log.error(error);

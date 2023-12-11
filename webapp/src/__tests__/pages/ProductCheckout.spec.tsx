@@ -77,6 +77,7 @@ describe('ProductCheckout', () => {
       expect(fields.email).toHaveValue(values.email);
     });
 
+    it.todo('user filled form, clicked submit but payment cancelled. then click once again and we must use update requests')
     it.todo('case when user opens payment form and closes it (status cancelled)')
     it.todo('case when user opens payment form and payment failed')
     it.todo('case when user opens payment form and payment pending')
