@@ -167,7 +167,10 @@ class ProductCheckoutForm extends Component<iProps> {
     });
 
     try {
-      return [await api.request<iUser>(), null] as const;
+      const data = await api.request<iUser>();
+      user$.setKey('data', data);
+
+      return [data, null] as const;
     } catch (e) {
       console.error(e);
       return [null, e] as const;
@@ -193,7 +196,10 @@ class ProductCheckoutForm extends Component<iProps> {
     );
 
     try {
-      return [await api.request<iUser>(), null] as const;
+      const data = await api.request<iUser>();
+      user$.setKey('data', data);
+
+      return [data, null] as const;
     } catch (e) {
       console.error(e);
       return [null, e] as const;
