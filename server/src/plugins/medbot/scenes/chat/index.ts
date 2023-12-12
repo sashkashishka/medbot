@@ -3,6 +3,7 @@ import { SCENES } from '../../constants/scenes.js';
 import type { iMedbotContext } from '../../types.js';
 import { setMessageThreadId } from '../../middlewares/setMessageThreadId.js';
 import { MESSAGES } from './messages.js';
+import { medbotLogger } from '../../../../logger.js';
 
 export const chatScene = new Scenes.BaseScene<iMedbotContext>(SCENES.CHAT);
 
@@ -26,6 +27,6 @@ chatScene.use(async (ctx) => {
       { message_thread_id: ctx.session.messageThreadId },
     );
   } catch (e) {
-    console.error(e);
+    medbotLogger.error(e, 'chatScene');
   }
 });

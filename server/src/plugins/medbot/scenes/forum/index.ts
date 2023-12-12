@@ -3,6 +3,7 @@ import { SCENES } from '../../constants/scenes.js';
 import type { iMedbotContext } from '../../types.js';
 import { setBotChatId } from '../../middlewares/setBotChatId.js';
 import { ignoreGeneralTopicUpdates } from '../../middlewares/ignoreGeneralTopicUpdates.js';
+import { medbotLogger } from '../../../../logger.js';
 
 export const forumScene = new Scenes.BaseScene<iMedbotContext>(SCENES.FORUM);
 
@@ -17,6 +18,6 @@ forumScene.use(async (ctx) => {
       ctx.message.message_id,
     );
   } catch (e) {
-    console.error(e);
+    medbotLogger.error(e, 'forumScene');
   }
 });

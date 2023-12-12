@@ -1,6 +1,7 @@
 import type { MiddlewareFn } from 'telegraf';
 import type { iMedbotContext } from '../types.js';
 import type { Update } from 'telegraf/types';
+import { medbotLogger } from '../../../logger.js';
 
 export const setMessageThreadId: MiddlewareFn<iMedbotContext> =
   async function setMessageThreadId(ctx, next) {
@@ -16,8 +17,7 @@ export const setMessageThreadId: MiddlewareFn<iMedbotContext> =
 
         ctx.session.messageThreadId = user.messageThreadId;
       } catch (e) {
-        // TODO logger
-        console.error(e);
+        medbotLogger.error(e, 'setMessageThreadId');
       }
     }
 

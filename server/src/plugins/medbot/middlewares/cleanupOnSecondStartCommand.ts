@@ -1,6 +1,7 @@
 import type { MiddlewareFn } from 'telegraf';
 import type { iMedbotContext } from '../types.js';
 import { SCENES } from '../constants/scenes.js';
+import { medbotLogger } from '../../../logger.js';
 
 export const cleanupOnSecondStartCommand: MiddlewareFn<iMedbotContext> =
   async function cleanupOnSecondStartCommand(ctx, next) {
@@ -19,7 +20,7 @@ export const cleanupOnSecondStartCommand: MiddlewareFn<iMedbotContext> =
           });
         }
       } catch (e) {
-        console.error(e);
+        medbotLogger.error(e, 'cleanupOnSecondStartCommand');
       }
     }
 

@@ -2,6 +2,7 @@ import { Scenes } from 'telegraf';
 import { SCENES } from '../../constants/scenes.js';
 import type { iMedbotContext } from '../../types.js';
 import { MESSAGES } from './messages.js';
+import { medbotLogger } from '../../../../logger.js';
 
 const webAppUrl = `${process.env.TG_BOT_WEBAPP_URL}/appointment`;
 
@@ -48,7 +49,7 @@ appointmentScene.command('proceedToChat', async (ctx) => {
 
     return ctx.scene.enter(SCENES.CHAT);
   } catch (e) {
-    console.error(e);
+    medbotLogger.error(e, 'appointmentScene');
   }
 
   return undefined;

@@ -1,6 +1,7 @@
 import type { MiddlewareFn } from 'telegraf';
 import type { iMedbotContext } from '../types.js';
 import type { Update } from 'telegraf/types';
+import { medbotLogger } from '../../../logger.js';
 
 export const setBotChatId: MiddlewareFn<iMedbotContext> =
   async function setBotChatId(ctx, next) {
@@ -17,8 +18,7 @@ export const setBotChatId: MiddlewareFn<iMedbotContext> =
 
         ctx.session.botChatId = user.botChatId;
       } catch (e) {
-        // TODO logger
-        console.error(e);
+        medbotLogger.error(e, 'setBotChatId');
       }
     }
 
