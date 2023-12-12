@@ -17,18 +17,15 @@ chatScene.enter(async (ctx) => {
 
 chatScene.use(setMessageThreadId);
 
-chatScene.use((ctx) => {
-  console.log('$$$$$$$$$$$$$$$$$$$$$');
-  console.log('$$$$$$$$$$$$$$$$$$$$$');
-  console.log('$$$$$$$$$$$$$$$$$$$$$');
-  console.log('chat middleware obtain');
-  console.log('chat');
-  console.log(ctx.session);
-
-  return ctx.telegram.copyMessage(
-    ctx.forumId,
-    ctx.message.chat.id,
-    ctx.message.message_id,
-    { message_thread_id: ctx.session.messageThreadId },
-  );
+chatScene.use(async (ctx) => {
+  try {
+    await ctx.telegram.copyMessage(
+      ctx.forumId,
+      ctx.message.chat.id,
+      ctx.message.message_id,
+      { message_thread_id: ctx.session.messageThreadId },
+    );
+  } catch (e) {
+    console.error(e);
+  }
 });

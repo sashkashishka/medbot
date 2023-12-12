@@ -1,7 +1,8 @@
 import Fastify from 'fastify';
+import { logger } from './logger.js';
 
 const fastify = Fastify({
-  logger: true,
+  logger,
 });
 
 fastify.register(import('./plugins/prisma/index.js'));

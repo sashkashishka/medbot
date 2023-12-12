@@ -34,7 +34,7 @@ const api: FastifyPluginCallback = (fastify, _opts, done) => {
   fastify.route(proceedToChatRoute);
 
   fastify.setErrorHandler(function errorHandler(error, _req, reply) {
-    this.log.error(error);
+    this.log.error(error, 'api');
 
     return reply.status(400).send(error);
   });

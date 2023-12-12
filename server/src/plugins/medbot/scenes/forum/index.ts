@@ -11,13 +11,6 @@ forumScene.use(setBotChatId);
 
 forumScene.use(async (ctx) => {
   try {
-    console.log('$$$$$$$$$$$$$$$$$$$$$');
-    console.log('$$$$$$$$$$$$$$$$$$$$$');
-    console.log('$$$$$$$$$$$$$$$$$$$$$');
-    console.log('forum middleware obtain');
-    console.log('forum');
-    console.log(ctx.session);
-
     await ctx.telegram.copyMessage(
       ctx.session.botChatId,
       ctx.message.chat.id,
