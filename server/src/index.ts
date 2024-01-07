@@ -1,20 +1,18 @@
 import Fastify from 'fastify';
 import { logger } from './logger.js';
 
+process.env.TZ = 'Etc/Universal';
+
 const fastify = Fastify({
   logger,
 });
 
 fastify.register(import('./plugins/prisma/index.js'));
+fastify.register(import('./plugins/google-calendar/index.js'));
 fastify.register(import('./plugins/medbot/index.js'));
 fastify.register(import('./plugins/api/index.js'), { prefix: '/api' });
 
-// TODO remove
-// Declare a route
-fastify.get('/', async function handler() {
-  const products = await fastify.prisma.product.findMany();
-  return products;
-});
+// TODO serve static for webapp
 
 // Run the server!
 async function main(): Promise<void> {

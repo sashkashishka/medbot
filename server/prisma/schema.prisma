@@ -54,17 +54,24 @@ model Order {
   appointment        Appointment[]
 }
 
+enum AppointmentStatus {
+  ACTIVE
+  DELETED
+  DONE
+}
+
 model Appointment {
-  id                Int      @id @default(autoincrement())
-  order             Order    @relation(fields: [orderId], references: [id])
+  id                Int               @id @default(autoincrement())
+  order             Order             @relation(fields: [orderId], references: [id])
   orderId           Int
-  user              User     @relation(fields: [userId], references: [id])
+  user              User              @relation(fields: [userId], references: [id])
   userId            Int
   complaints        String
   complaintsStarted String
   medicine          String
   chronicDiseases   String
-  createdAt         DateTime
+  time              DateTime
+  status            AppointmentStatus
 }
 
 model ActivationCode {

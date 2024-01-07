@@ -21,11 +21,12 @@ services:
 
   adminer:
     image: adminer
-    restart: always
     ports:
       - 8080:8080
     networks:
       - medbot_bridge
+    depends_on:
+      - db
 
   db:
     container_name: mysql_db
