@@ -1,0 +1,8 @@
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--e-width);
+  height: var(--e-height);
+  font-size: var(--e-width);
+}
