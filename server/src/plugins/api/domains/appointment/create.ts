@@ -4,6 +4,7 @@ import type { RouteOptions } from 'fastify';
 
 import { AppointmentError } from '../../utils/errors.js';
 import { isEarly, isOccupied, isWithinWorkingHours } from '../../utils/time.js';
+import { createGoogleCalendarEvent } from '../../utils/google-calendar.js';
 
 export const createAppointmentRoute: RouteOptions = {
   method: 'POST',
@@ -87,11 +88,40 @@ export const createAppointmentRoute: RouteOptions = {
       }
     });
   },
-  handler(req) {
+  async handler(req) {
     const body = req.body as Prisma.AppointmentUncheckedCreateInput;
 
-    return this.prisma.appointment.create({
+    const appointment = await this.prisma.appointment.create({
       data: body,
+      select: {
+        id: true,
+        orderId: true,
+        userId: true,
+        complaints: true,
+        complaintsStarted: true,
+        medicine: true,
+        chronicDiseases: true,
+        time: true,
+        status: true,
+        user: true,
+      },
+    });
+
+    const event = await this.googleCalendar.events.insert(
+      createGoogleCalendarEvent({
+        calendarId: this.googleCalendarId,
+        user: appointment.user,
+        appointment: appointment,
+      }),
+    );
+
+    return this.prisma.appointment.update({
+      where: {
+        id: appointment.id,
+      },
+      data: {
+        calendarEventId: event.data.id,
+      },
     });
   },
 };

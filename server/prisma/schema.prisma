@@ -72,6 +72,7 @@ model Appointment {
   chronicDiseases   String
   time              DateTime
   status            AppointmentStatus
+  calendarEventId   String?
 }
 
 model ActivationCode {

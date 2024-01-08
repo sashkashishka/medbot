@@ -5,6 +5,7 @@ import type { RouteOptions } from 'fastify';
 import { logger } from '../../../../logger.js';
 import { isEarly, isOccupied, isWithinWorkingHours } from '../../utils/time.js';
 import { AppointmentError } from '../../utils/errors.js';
+import { createGoogleCalendarEvent } from '../../utils/google-calendar.js';
 
 interface iParams {
   appointmentId: string;
@@ -88,7 +89,7 @@ export const updateAppointmentRoute: RouteOptions = {
       }
     });
   },
-  handler(request) {
+  async handler(request) {
     const params = request.params as iParams;
     const {
       status, // eslint-disable-line
@@ -97,12 +98,36 @@ export const updateAppointmentRoute: RouteOptions = {
 
     const { appointmentId } = params;
 
-    return this.prisma.appointment.update({
+    const appointment = await this.prisma.appointment.update({
       where: {
         id: Number(appointmentId),
         status: 'ACTIVE',
       },
       data: body,
+      select: {
+        id: true,
+        orderId: true,
+        userId: true,
+        complaints: true,
+        complaintsStarted: true,
+        medicine: true,
+        chronicDiseases: true,
+        time: true,
+        status: true,
+        calendarEventId: true,
+        user: true,
+      },
     });
+
+    await this.googleCalendar.events.update(
+      createGoogleCalendarEvent({
+        calendarId: this.googleCalendarId,
+        eventId: appointment.calendarEventId,
+        user: appointment.user,
+        appointment: appointment,
+      }),
+    );
+
+    return appointment;
   },
 };
