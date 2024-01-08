@@ -6,6 +6,7 @@ import { initProductProviderStore$ } from '../../../stores/initProductProvider';
 import { productId$ } from '../../../stores/product';
 import { ErrorProductsInit } from '../../ErrorStates';
 import { ActiveOrderGuard } from './ActiveOrderGuard';
+import { Loader } from '../../Loader';
 
 interface iProps {
   children: ReactNode | ReactNode[];
@@ -26,8 +27,7 @@ export function ProductsProvider({ children }: iProps) {
   }, [initQuery.fetched]);
 
   if (initQuery.loading) {
-    // TODO use loader or skeleton
-    return 'products provider loading...';
+    return <Loader />;
   }
 
   if (initQuery.error) {

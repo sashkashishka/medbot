@@ -11,7 +11,7 @@ export function ActiveOrderGuard({ children }: iProps) {
   const { data } = useStore(activeOrder$);
 
   if (data) {
-    return <ErrorActiveOrder userId={data.userId!} />;
+    return <ErrorActiveOrder />;
   }
 
   return children;

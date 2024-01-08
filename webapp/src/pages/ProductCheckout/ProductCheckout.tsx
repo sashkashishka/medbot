@@ -1,4 +1,5 @@
 import { Component, createRef, useState } from 'react';
+import { FORM_ERROR } from 'final-form';
 import { Form } from 'react-final-form';
 import { useStore } from '@nanostores/react';
 import { generatePath, useParams } from 'react-router-dom';
@@ -12,14 +13,14 @@ import { API } from '../../constants/api';
 import { TIDS } from '../../constants/testIds';
 import { createWaitingForPaymentOrder } from '../../stores/order';
 import type { iOrder, iUser } from '../../types';
+import { user$ } from '../../stores/user';
+import { Loader } from '../../components/Loader';
 
 import { SubmitButton } from './components';
 import { getPersistDecorator } from './decorators/persist';
 import type { iFormValues } from './types';
 
 import styles from './ProductCheckout.module.css';
-import { FORM_ERROR } from 'final-form';
-import { user$ } from '../../stores/user';
 
 interface iProps {
   waitingForPaymentOrder?: iOrder;
@@ -270,8 +271,7 @@ export function ProductCheckoutPage() {
   const { loading, data } = useStore(waitingForPaymentOrder$);
 
   if (loading) {
-    // TODO make skeleton
-    return 'product checkout loading...';
+    return <Loader />;
   }
 
   return <ProductCheckoutForm waitingForPaymentOrder={data} />;

@@ -1,0 +1,20 @@
+.button {
+  background-color: var(--tg-theme-button-color);
+  border-radius: 8px;
+  border: none;
+  box-shadow: none;
+  color: var(--tg-theme-button-text-color);
+  padding: 8px;
+  outline: none;
+  transition: opacity 0.2s ease-in-out;
+
+  &:hover {
+    opacity: 0.9;
+    cursor: pointer;
+  }
+
+  &:active,
+  &:focus {
+    opacity: 0.9;
+  }
+}
