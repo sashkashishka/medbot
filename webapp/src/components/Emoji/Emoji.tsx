@@ -5,12 +5,16 @@ import styles from './Emoji.module.css';
 const EMOJI = {
   thinks: '🤔',
   confused: '😕',
+  astonished: '😲',
+  monocle: '🧐',
 };
+
+export type tEmojiList = keyof typeof EMOJI;
 
 interface iProps {
   width?: number;
   height?: number;
-  emoji: keyof typeof EMOJI;
+  emoji: tEmojiList;
 }
 
 export function Emoji({ width = 60, height = 60, emoji }: iProps) {

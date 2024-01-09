@@ -9,16 +9,18 @@ export const cleanupOnSecondStartCommand: MiddlewareFn<iMedbotContext> =
       ctx.session = {};
 
       try {
-        const order = await ctx.prisma.order.findFirst({
+        const orders = await ctx.prisma.order.findMany({
           where: { status: 'ACTIVE' },
         });
 
-        if (order) {
-          await ctx.prisma.order.update({
-            where: { id: order?.id },
-            data: { status: 'DONE' },
-          });
-        }
+        await Promise.all(
+          orders.map((order) =>
+            ctx.prisma.order.update({
+              where: { id: order?.id },
+              data: { status: 'DONE' },
+            }),
+          ),
+        );
       } catch (e) {
         medbotLogger.error(e, 'cleanupOnSecondStartCommand');
       }

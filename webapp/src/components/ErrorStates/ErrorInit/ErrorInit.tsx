@@ -2,14 +2,18 @@ import { TIDS } from '../../../constants/testIds';
 import { getUserId } from '../../../utils/tg';
 import { Button } from '../../Button';
 import { CopyEmail } from '../../CopyEmail';
-import { Emoji } from '../../Emoji';
+import { Emoji, tEmojiList } from '../../Emoji';
 
-import styles from './ErrorProductsInit.module.css';
+import styles from './ErrorInit.module.css';
 
-export function ErrorProductsInit() {
+interface iProps {
+  emoji: tEmojiList;
+}
+
+export function ErrorInit({ emoji }: iProps) {
   return (
     <div data-testid={TIDS.ERR_PRODUCTS_INIT} className={styles.container}>
-      <Emoji emoji="confused" />
+      <Emoji emoji={emoji} />
       <br />
       <br />
       Сталась помилка

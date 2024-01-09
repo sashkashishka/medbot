@@ -1,10 +1,10 @@
+import { Prisma } from '@prisma/client';
 import type { RouteOptions } from 'fastify';
 
 interface iParams {
   orderId: string;
 }
 
-// TODO check why Prisma.OrderScalar sets all values to boolean
 export const updateOrderRoute: RouteOptions = {
   method: 'PATCH',
   url: '/order/update/:orderId',
@@ -19,7 +19,7 @@ export const updateOrderRoute: RouteOptions = {
   },
   handler(req) {
     const params = req.params as iParams;
-    const body = req.body;
+    const body = req.body as Prisma.OrderUncheckedCreateInput;
 
     return this.prisma.order.update({
       where: { id: Number(params.orderId) },

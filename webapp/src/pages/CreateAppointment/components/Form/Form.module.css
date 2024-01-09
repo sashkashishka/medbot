@@ -1,7 +1,6 @@
 .container {
   display: grid;
-  align-items: start;
-  gap: 16px;
+  gap: 12px;
   margin: 16px;
   padding: 16px;
   background: var(--tg-theme-secondary-bg-color);
@@ -9,10 +8,6 @@
 }
 
 .title {
-  margin: 0;
-}
-
-.price {
-  font-size: 18px;
-  font-weight: 600;
+  margin: 8px 0 16px;
+  text-align: center;
 }

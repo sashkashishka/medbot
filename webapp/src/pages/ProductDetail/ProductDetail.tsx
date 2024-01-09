@@ -23,15 +23,14 @@ export function ProductDetailPage() {
     >
       <TgBackButton />
 
-      <h2>{product?.name}</h2>
+      <h2 className={styles.title}>{product?.name}</h2>
 
       <p>{product?.description}</p>
 
-      <p>Ціна: {product?.price}</p>
+      <p className={styles.price}>Ціна: ₴{product?.price}</p>
 
       <TgMainButton
         text="Замовити"
-        // TODO test if clicking on main button navigates to checkout
         handleClick={() =>
           navigate(
             generatePath(ROUTES.PRODUCT_CHECKOUT, {

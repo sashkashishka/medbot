@@ -7,6 +7,13 @@ export type tAppointmentErrorReason =
   | 'cannot-update-not-active-appointment'
   | 'one-time-order-cannot-create-twice';
 
+export function create400Response<tData>(data: tData) {
+  return {
+    code: 400,
+    error: data,
+  };
+}
+
 export class AppointmentError {
   constructor(public reason: tAppointmentErrorReason) {}
 
@@ -16,14 +23,14 @@ export class AppointmentError {
       case 'out-of-working-hours':
       case 'has-active':
       case 'occupied': {
-        return { time: this.reason };
+        return create400Response({ time: this.reason });
       }
 
       case 'cannot-delete-not-active-appointment':
       case 'cannot-update-not-active-appointment':
       case 'one-time-order-cannot-create-twice':
       default: {
-        return { error: this.reason };
+        return create400Response({ reason: this.reason });
       }
     }
   }

@@ -4,7 +4,7 @@ import type { iMedbotContext } from '../../types.js';
 import { MESSAGES } from './messages.js';
 import { medbotLogger } from '../../../../logger.js';
 
-const webAppUrl = `${process.env.TG_BOT_WEBAPP_URL}/appointment`;
+const webAppUrl = `${process.env.TG_BOT_WEBAPP_URL}/appointment/list`;
 
 export const appointmentScene = new Scenes.BaseScene<iMedbotContext>(
   SCENES.APPOINTMENT,
@@ -14,7 +14,7 @@ appointmentScene.enter(async (ctx) => {
   await Promise.all([
     ctx.reply(MESSAGES.APPOINTMENT),
     ctx.setChatMenuButton({
-      text: 'Appointment',
+      text: 'Записатись',
       type: 'web_app',
       web_app: { url: webAppUrl },
     }),

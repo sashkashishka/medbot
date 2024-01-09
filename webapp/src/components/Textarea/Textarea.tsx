@@ -2,11 +2,12 @@ import React from 'react';
 import { UseFieldConfig, useField } from 'react-final-form';
 import cn from 'classnames';
 import { ValidationError } from '../ValidationError';
-
-import styles from './Textarea.module.css';
 import { isError } from '../../utils/final-form';
 
-interface iProps<tValue> extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
+import styles from './Textarea.module.css';
+
+interface iProps<tValue>
+  extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   labelName: string;
   fieldName: string;
   fieldConfig?: UseFieldConfig<tValue>;
@@ -40,4 +41,3 @@ export function Textarea<tValue extends string>({
     </label>
   );
 }
-

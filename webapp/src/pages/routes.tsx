@@ -1,12 +1,17 @@
-import { ProductsProvider, WebAppProvider } from '../components/Providers';
+import { Outlet } from 'react-router-dom';
+import {
+  ProductsProvider,
+  WebAppProvider,
+  AppointmentProvider,
+} from '../components/Providers';
 
 import { ROUTES } from '../constants/routes';
 import { MainPage } from './Main';
 import { ProductListPage } from './ProductList';
 import { ProductDetailPage } from './ProductDetail';
 import { ProductCheckoutPage } from './ProductCheckout';
-import { Outlet } from 'react-router-dom';
-import { AppointmentPage } from './Appointment/Appointment';
+import { AppointmentListPage } from './AppointmentList';
+import { CreateAppointmentPage } from './CreateAppointment';
 
 export const routes = [
   {
@@ -19,7 +24,21 @@ export const routes = [
     children: [
       {
         path: ROUTES.APPOINTMENT,
-        element: <AppointmentPage />,
+        element: (
+          <AppointmentProvider>
+            <Outlet />
+          </AppointmentProvider>
+        ),
+        children: [
+          {
+            path: ROUTES.APPOINTMENT_LIST,
+            element: <AppointmentListPage />,
+          },
+          {
+            path: ROUTES.APPOINTMENT_CREATE,
+            element: <CreateAppointmentPage />,
+          },
+        ]
       },
       {
         path: ROUTES.PRODUCTS,

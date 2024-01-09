@@ -1,6 +1,6 @@
 import { type ReactNode, useEffect } from 'react';
 import { getInitData, tg } from '../../../utils/tg';
-import { ErrorOpenViaTelegram } from '../../ErrorStates';
+import { ErrorOpenViaTelegram } from '../../ErrorStates/ErrorOpenViaTelegram';
 
 interface iProps {
   children: ReactNode | ReactNode[];
@@ -8,6 +8,7 @@ interface iProps {
 
 export function WebAppProvider({ children }: iProps) {
   useEffect(() => {
+    tg.expand();
     const forceHideButtons = () => {
       tg?.MainButton?.hide();
       tg?.BackButton?.hide();

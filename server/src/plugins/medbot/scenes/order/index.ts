@@ -11,7 +11,7 @@ orderHandler.start(async (ctx) => {
   await Promise.all([
     ctx.reply(MESSAGES.ORDER),
     ctx.setChatMenuButton({
-      text: 'Order',
+      text: 'Замовити',
       type: 'web_app',
       web_app: { url: webAppUrl },
     }),

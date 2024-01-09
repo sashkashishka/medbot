@@ -1,0 +1,1 @@
+export { ErrorInit } from './ErrorInit';

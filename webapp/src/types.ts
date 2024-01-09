@@ -1,3 +1,8 @@
+export interface iErrorResponse<tResp> {
+  code: number;
+  error: tResp;
+}
+
 export interface iUser {
   id: number;
   name?: string;
@@ -35,5 +40,12 @@ export interface iAppointment {
   complaintsStarted: string;
   medicine: string;
   chronicDiseases: string;
-  createdAt: string;
+  time: string;
+  status: 'ACTIVE' | 'DONE' | 'DELETED';
+}
+
+export interface iFreeSlot {
+  id: string;
+  startTime: string;
+  endTime: string;
 }

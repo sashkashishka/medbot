@@ -1,0 +1,10 @@
+.emptyContainer {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  align-content: center;
+  justify-items: center;
+  width: 100vw;
+  height: var(--tg-viewport-stable-height);
+  padding: 0 8px;
+}

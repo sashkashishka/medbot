@@ -1,4 +1,4 @@
-import type { iOrder, iProduct, iUser } from '../../types';
+import type { iOrder, iProduct, iUser } from '../../../../types';
 
 export interface iFormValues {
   name: iUser['name'];

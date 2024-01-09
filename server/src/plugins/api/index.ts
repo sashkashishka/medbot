@@ -1,8 +1,6 @@
-import fs from 'node:fs';
-import path from 'node:path';
 import type { FastifyPluginCallback } from 'fastify';
 
-import { AppointmentError } from './utils/errors.js';
+import { AppointmentError, create400Response } from './utils/errors.js';
 
 import { userRoute } from './domains/user/index.js';
 import { createUserRoute } from './domains/user/create.js';
@@ -21,6 +19,7 @@ import { proceedToChatRoute } from './domains/medbot/proceed-to-chat.js';
 
 import { freeSlotsRoute } from './domains/appointment/free-slots.js';
 import { createAppointmentRoute } from './domains/appointment/create.js';
+import { activeAppointmentRoute } from './domains/appointment/active.js';
 import { updateAppointmentRoute } from './domains/appointment/update.js';
 import { deleteAppointmentRoute } from './domains/appointment/delete.js';
 
@@ -28,7 +27,7 @@ import { preHandler } from './hooks.js';
 
 const api: FastifyPluginCallback = (fastify, _opts, done) => {
   // TODO return back
-  // fastify.addHook('preHandler', preHandler);
+  fastify.addHook('preHandler', preHandler);
 
   fastify.route(productListRoute);
   fastify.route(createProductRoute);
@@ -42,33 +41,10 @@ const api: FastifyPluginCallback = (fastify, _opts, done) => {
   fastify.route(proceedToAppointmentRoute);
   fastify.route(proceedToChatRoute);
   fastify.route(createAppointmentRoute);
+  fastify.route(activeAppointmentRoute);
   fastify.route(updateAppointmentRoute);
   fastify.route(deleteAppointmentRoute);
   fastify.route(freeSlotsRoute);
-  // fastify.route({
-  //   method: 'get',
-  //   url: '/calendar/callback',
-  //   async handler(req) {
-  //     const query = req.query;
-
-  //     const r = await fastify.oAuth.getToken(query.code);
-
-  //     fastify.oAuth.setCredentials(r.tokens);
-
-  //     console.log('$$$$$$$$$$$$$$$$$$$$$$')
-  //     console.log('$$$$$$$$$$$$$$$$$$$$$$')
-  //     console.log('$$$$$$$$$$$$$$$$$$$$$$')
-  //     console.log('$$$$$$$$$$$$$$$$$$$$$$')
-  //     console.log(r.tokens)
-
-  //     // fs.writeFileSync(
-  //     //   path.resolve(__dirname, './token.json'),
-  //     //   JSON.stringify(r.tokens),
-  //     // );
-
-  //     return r.tokens;
-  //   },
-  // });
 
   fastify.setErrorHandler(function errorHandler(error, _req, reply) {
     this.log.error(error, 'api');
@@ -77,7 +53,7 @@ const api: FastifyPluginCallback = (fastify, _opts, done) => {
       return reply.code(400).send(error.description);
     }
 
-    return reply.status(400).send(error);
+    return reply.status(400).send(create400Response({ error }));
   });
   done();
 };

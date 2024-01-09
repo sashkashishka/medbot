@@ -1,9 +1,9 @@
-import { createPersistDecorator } from '../../../utils/final-form';
-import { product$ } from '../../../stores/product';
-import { getUserId } from '../../../utils/tg';
-import { user$ } from '../../../stores/user';
+import { createPersistDecorator } from '../../../../../utils/final-form';
+import { product$ } from '../../../../../stores/product';
+import { getUserId } from '../../../../../utils/tg';
+import { user$ } from '../../../../../stores/user';
+import type { iOrder } from '../../../../../types';
 import type { iFormValues } from '../types';
-import type { iOrder } from '../../../types';
 
 const PERSIST_KEY = 'order-form';
 
