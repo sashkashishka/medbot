@@ -46,7 +46,12 @@ const medbotPlugin: FastifyPluginAsync = fp(async (server) => {
   bot.use(session({ store, getSessionKey }));
   bot.use(loggerMiddleware);
   bot.use(
-    populateContext({ prisma: server.prisma, forumId: ENV_VARS.FORUM_ID }),
+    populateContext({
+      prisma: server.prisma,
+      forumId: ENV_VARS.FORUM_ID,
+      googleCalendar: server.googleCalendar,
+      googleCalendarId: server.googleCalendarId,
+    }),
   );
 
   // clear scene and start from scratch
