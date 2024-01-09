@@ -6,7 +6,6 @@ export function getUserId() {
   if (isChrome) {
     return 12;
   }
-
   return tg.initDataUnsafe.user?.id;
 }
 
@@ -15,4 +14,8 @@ export function getInitData() {
     return '123';
   }
   return tg.initData;
+}
+
+export function getThemeParams() {
+  return tg.themeParams;
 }

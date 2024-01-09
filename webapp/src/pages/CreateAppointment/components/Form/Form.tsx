@@ -1,26 +1,30 @@
 import { Component, createRef } from 'react';
+import { FORM_ERROR } from 'final-form';
 import { Form } from 'react-final-form';
+import { generatePath } from 'react-router-dom';
 
 import { API } from '../../../../constants/api';
+import { APPOINTMENT_ERRORS } from './constants';
 
 import { Textarea } from '../../../../components/Textarea';
 import { TgBackButton } from '../../../../components/TgBackButton';
+import { ScheduleMeeting } from './ScheduleMeeting';
 import { SubmitButton } from './SubmitButton';
 
+import { activeAppointment$ } from '../../../../stores/appointment';
+
 import { createApi } from '../../../../utils/api';
+import { getUserId, tg } from '../../../../utils/tg';
 import { required } from '../../../../utils/final-form';
 
-import { iAppointment } from '../../../../types';
+import { iAppointment, iOrder } from '../../../../types';
 import type { iFormValues } from './types';
 
 import styles from './Form.module.css';
-import { FORM_ERROR } from 'final-form';
-import { activeAppointment$ } from '../../../../stores/appointment';
-import { tg } from '../../../../utils/tg';
-import { APPOINTMENT_ERRORS } from './constants';
 
 interface iProps {
   activeAppointment?: iAppointment;
+  activeOrder: iOrder;
 }
 
 export class CreateAppointmentForm extends Component<iProps> {
@@ -69,34 +73,37 @@ export class CreateAppointmentForm extends Component<iProps> {
         >
           {({ handleSubmit }) => {
             return (
-              <form onSubmit={handleSubmit} className={styles.container}>
-                <Textarea
-                  labelName="Скарги"
-                  fieldName="complaints"
-                  rows={5}
-                  fieldConfig={{ validate: required('Обовʼязкове поле') }}
-                />
+              <form onSubmit={handleSubmit}>
+                <div className={styles.container}>
+                  <Textarea
+                    labelName="Скарги"
+                    fieldName="complaints"
+                    rows={5}
+                    fieldConfig={{ validate: required('Обовʼязкове поле') }}
+                  />
 
-                <Textarea
-                  labelName="Коли почались скарги?"
-                  fieldName="complaintsStarted"
-                  rows={5}
-                  fieldConfig={{ validate: required('Обовʼязкове поле') }}
-                />
+                  <Textarea
+                    labelName="Коли почались скарги?"
+                    fieldName="complaintsStarted"
+                    rows={5}
+                    fieldConfig={{ validate: required('Обовʼязкове поле') }}
+                  />
 
-                <Textarea
-                  labelName="Які ліки приймали?"
-                  fieldName="medicine"
-                  rows={5}
-                  fieldConfig={{ validate: required('Обовʼязкове поле') }}
-                />
+                  <Textarea
+                    labelName="Які ліки приймали?"
+                    fieldName="medicine"
+                    rows={5}
+                    fieldConfig={{ validate: required('Обовʼязкове поле') }}
+                  />
 
-                <Textarea
-                  labelName="Хронічні захворювання"
-                  fieldName="chronicDiseases"
-                  rows={5}
-                  fieldConfig={{ validate: required('Обовʼязкове поле') }}
-                />
+                  <Textarea
+                    labelName="Хронічні захворювання"
+                    fieldName="chronicDiseases"
+                    rows={5}
+                    fieldConfig={{ validate: required('Обовʼязкове поле') }}
+                  />
+                </div>
+                <ScheduleMeeting />
 
                 <SubmitButton
                   ref={this.realSubmitButtonRef}
@@ -116,15 +123,24 @@ export class CreateAppointmentForm extends Component<iProps> {
   }
 
   async handleSubmit(values: iFormValues) {
-    const { activeAppointment } = this.props;
+    const { activeAppointment, activeOrder } = this.props;
 
     const endpoint = activeAppointment
-      ? API.UPDATE_APPOINTMENT
+      ? (generatePath(API.UPDATE_APPOINTMENT, {
+          appointmentId: String(activeAppointment.id),
+        }) as API.UPDATE_APPOINTMENT)
       : API.CREATE_APPOINTMENT;
 
+    const method = activeAppointment ? 'PUT' : 'POST';
+
     const api = createApi(endpoint, {
-      method: 'POST',
-      body: JSON.stringify(values),
+      method,
+      body: JSON.stringify({
+        ...values,
+        status: 'ACTIVE',
+        orderId: activeOrder.id,
+        userId: getUserId(),
+      }),
     });
 
     try {

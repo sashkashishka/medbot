@@ -1,3 +1,4 @@
+import { useRef, useState } from 'react';
 import { DatePicker } from 'react-date-picker';
 import { useField, type UseFieldConfig } from 'react-final-form';
 import cn from 'classnames';
@@ -5,7 +6,7 @@ import cn from 'classnames';
 import { ValidationError } from '../ValidationError';
 import { isError } from '../../utils/final-form';
 import { isDateValid } from '../../utils/date';
-import { TIDS } from '../../constants/testIds';
+import { lockScroll, unlockScroll } from '../../utils/lockScroll';
 
 import 'react-date-picker/dist/DatePicker.css';
 import 'react-calendar/dist/Calendar.css';
@@ -36,6 +37,8 @@ export function Datepicker<tValue extends string>({
     parse: (value: Date) => value?.toISOString?.() as tValue,
     ...fieldConfig,
   });
+  const [isOpen, setIsOpen] = useState(false);
+  const portalRef = useRef<HTMLDivElement>(null);
 
   return (
     <label className={styles.row}>
@@ -55,6 +58,23 @@ export function Datepicker<tValue extends string>({
           value={input.value}
           name={input.name}
           onChange={(date) => input.onChange(date)}
+          portalContainer={portalRef.current}
+          onCalendarOpen={() => {
+            setIsOpen(true);
+            lockScroll();
+          }}
+          onCalendarClose={() => {
+            setIsOpen(false);
+            unlockScroll();
+          }}
+        />
+        <div
+          id="datepicker-portal"
+          ref={portalRef}
+          className={cn(
+            styles.calendarPortal,
+            isOpen && styles.calendarPortalVisible,
+          )}
         />
       </div>
       <ValidationError fieldMeta={meta} />

@@ -12,5 +12,5 @@ export enum API {
   ACTIVE_APPOINTMENT = '/api/appointment/:userId',
   FREE_SLOTS = '/api/appointment/free-slots',
   CREATE_APPOINTMENT = '/api/appointment/create',
-  UPDATE_APPOINTMENT = '/api/appointment/update',
+  UPDATE_APPOINTMENT = '/api/appointment/:appointmentId',
 }

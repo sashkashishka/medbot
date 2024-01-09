@@ -2,7 +2,6 @@ import dayjs from 'dayjs';
 import { Prisma } from '@prisma/client';
 import type { RouteOptions } from 'fastify';
 
-import { logger } from '../../../../logger.js';
 import { isEarly, isOccupied, isWithinWorkingHours } from '../../utils/time.js';
 import { AppointmentError } from '../../utils/errors.js';
 import { createGoogleCalendarEvent } from '../../utils/google-calendar.js';
