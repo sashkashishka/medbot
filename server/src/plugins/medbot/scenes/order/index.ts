@@ -4,7 +4,7 @@ import type { iMedbotContext } from '../../types.js';
 import { MESSAGES } from './messages.js';
 import { medbotLogger } from '../../../../logger.js';
 
-const webAppUrl = `${process.env.TG_BOT_WEBAPP_URL}/products`;
+const webAppOrderUrl = `${process.env.TG_BOT_WEBAPP_URL}/products`;
 
 const orderHandler = new Composer<iMedbotContext>();
 
@@ -14,13 +14,13 @@ orderHandler.start(async (ctx) => {
     ctx.setChatMenuButton({
       text: 'Замовити',
       type: 'web_app',
-      web_app: { url: webAppUrl },
+      web_app: { url: webAppOrderUrl },
     }),
   ]);
 });
 
 orderHandler.command(
-  'successfull-order',
+  'successfullOrder',
   async (ctx, next) => {
     if (!ctx.update.message.via_bot) return undefined;
 
@@ -71,6 +71,8 @@ orderHandler.command(
           },
         });
       }
+
+      await ctx.deleteMessage(update.message.message_id);
 
       return scene.enter(SCENES.CHAT);
     } catch (e) {

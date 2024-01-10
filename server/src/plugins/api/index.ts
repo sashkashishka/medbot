@@ -14,7 +14,7 @@ import { createOrderRoute } from './domains/order/create.js';
 import { waitingForPaymentOrderRoute } from './domains/order/waitingForPayment.js';
 import { updateOrderRoute } from './domains/order/update.js';
 
-import { proceedToAppointmentRoute } from './domains/medbot/proceed-to-appointment.js';
+import { sendAppointmentStatusRoute } from './domains/medbot/send-appointment-status.js';
 import { proceedToChatRoute } from './domains/medbot/proceed-to-chat.js';
 
 import { freeSlotsRoute } from './domains/appointment/free-slots.js';
@@ -38,7 +38,7 @@ const api: FastifyPluginCallback = (fastify, _opts, done) => {
   fastify.route(updateOrderRoute);
   fastify.route(waitingForPaymentOrderRoute);
   fastify.route(updateUserRoute);
-  fastify.route(proceedToAppointmentRoute);
+  fastify.route(sendAppointmentStatusRoute);
   fastify.route(proceedToChatRoute);
   fastify.route(createAppointmentRoute);
   fastify.route(activeAppointmentRoute);

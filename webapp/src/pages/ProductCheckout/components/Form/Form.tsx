@@ -6,7 +6,11 @@ import { generatePath } from 'react-router-dom';
 import { TgBackButton } from '../../../../components/TgBackButton';
 import { Input } from '../../../../components/Input';
 import { Datepicker } from '../../../../components/Datepicker';
-import { composeValidators, email, required } from '../../../../utils/final-form';
+import {
+  composeValidators,
+  email,
+  required,
+} from '../../../../utils/final-form';
 import { createApi } from '../../../../utils/api';
 import { API } from '../../../../constants/api';
 import { TIDS } from '../../../../constants/testIds';
@@ -18,6 +22,7 @@ import { getPersistDecorator } from './decorators/persist';
 import type { iFormValues } from './types';
 
 import styles from './Form.module.css';
+import { tg } from '../../../../utils/tg';
 
 interface iProps {
   waitingForPaymentOrder?: iOrder;
@@ -149,7 +154,7 @@ export class ProductCheckoutForm extends Component<iProps> {
     }
     // TODO payment form logic
 
-    await this.proceedToAppointment();
+    await this.proceedToChat();
 
     return undefined;
   }
@@ -171,7 +176,7 @@ export class ProductCheckoutForm extends Component<iProps> {
     });
 
     try {
-      const data = await api.request<iUser>();
+      const data = await api.request();
       user$.setKey('data', data);
 
       return [data, null] as const;
@@ -192,7 +197,9 @@ export class ProductCheckoutForm extends Component<iProps> {
     };
 
     const api = createApi(
-      generatePath(API.UPDATE_USER, { userId: String(values.userId) }),
+      generatePath(API.UPDATE_USER, {
+        userId: String(values.userId),
+      }) as API.UPDATE_USER,
       {
         method: 'PATCH',
         body: JSON.stringify(body),
@@ -200,7 +207,7 @@ export class ProductCheckoutForm extends Component<iProps> {
     );
 
     try {
-      const data = await api.request<iUser>();
+      const data = await api.request();
       user$.setKey('data', data);
 
       return [data, null] as const;
@@ -224,7 +231,7 @@ export class ProductCheckoutForm extends Component<iProps> {
     });
 
     try {
-      return [await api.request<iOrder>(), null] as const;
+      return [await api.request(), null] as const;
     } catch (e) {
       console.error(e);
       return [null, e] as const;
@@ -233,7 +240,9 @@ export class ProductCheckoutForm extends Component<iProps> {
 
   async setOrderStatusActive(values: iFormValues) {
     const api = createApi(
-      generatePath(API.UPDATE_ORDER, { orderId: String(values.orderId) }),
+      generatePath(API.UPDATE_ORDER, {
+        orderId: String(values.orderId),
+      }) as API.UPDATE_USER,
       {
         method: 'PATCH',
         body: JSON.stringify({
@@ -244,22 +253,23 @@ export class ProductCheckoutForm extends Component<iProps> {
 
     try {
       // TODO make navigation logic to appointment scene
-      return [await api.request<iOrder>(), null] as const;
+      return [await api.request(), null] as const;
     } catch (e) {
       console.error(e);
       return [null, e] as const;
     }
   }
 
-  async proceedToAppointment() {
-    const api = createApi(API.MEDBOT_PROCEED_TO_APPOINTMENT, {
+  async proceedToChat() {
+    const api = createApi(API.MEDBOT_PROCEED_TO_CHAT, {
       method: 'GET',
     });
 
     try {
-      // TODO make navigation logic to appointment scene
-      return [await api.request(), null] as const;
+      tg.disableClosingConfirmation();
+      await api.request();
     } catch (e) {
+      tg.enableClosingConfirmation();
       console.error(e);
       return [null, e] as const;
     }

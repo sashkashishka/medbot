@@ -11,7 +11,7 @@ import { TgBackButton } from '../../../../components/TgBackButton';
 import { ScheduleMeeting } from './ScheduleMeeting';
 import { SubmitButton } from './SubmitButton';
 
-import { activeAppointment$ } from '../../../../stores/appointment';
+import { refetchFreeSlots } from '../../../../stores/appointment';
 
 import { createApi } from '../../../../utils/api';
 import { getUserId, tg } from '../../../../utils/tg';
@@ -125,13 +125,15 @@ export class CreateAppointmentForm extends Component<iProps> {
   async handleSubmit(values: iFormValues) {
     const { activeAppointment, activeOrder } = this.props;
 
-    const endpoint = activeAppointment
+    const isUpdate = Boolean(activeAppointment);
+
+    const endpoint = isUpdate
       ? (generatePath(API.UPDATE_DELETE_APPOINTMENT, {
-          appointmentId: String(activeAppointment.id),
+          appointmentId: String(activeAppointment!.id),
         }) as API.UPDATE_DELETE_APPOINTMENT)
       : API.CREATE_APPOINTMENT;
 
-    const method = activeAppointment ? 'PUT' : 'POST';
+    const method = isUpdate ? 'PUT' : 'POST';
 
     const api = createApi(endpoint, {
       method,
@@ -147,6 +149,8 @@ export class CreateAppointmentForm extends Component<iProps> {
       const data = await api.request();
 
       if ('code' in data) {
+        refetchFreeSlots();
+
         if ('time' in data.error) {
           const errorText =
             APPOINTMENT_ERRORS[data.error.time] || 'Невідома помилка';
@@ -163,9 +167,7 @@ export class CreateAppointmentForm extends Component<iProps> {
         return FORM_ERROR;
       }
 
-      activeAppointment$.setKey('data', data);
-
-      // await this.proceedToAppointment();
+      await this.sendAppointmentStatus(activeAppointment!, isUpdate);
 
       return undefined;
     } catch (e) {
@@ -174,17 +176,21 @@ export class CreateAppointmentForm extends Component<iProps> {
     }
   }
 
-  async proceedToAppointment() {
-    const api = createApi(API.MEDBOT_PROCEED_TO_CHAT, {
-      method: 'GET',
+  async sendAppointmentStatus(appointment: iAppointment, isUpdate: boolean) {
+    const api = createApi(API.SEND_APPOINTMENT_STATUS, {
+      method: 'POST',
+      body: JSON.stringify({
+        status: isUpdate ? 'updated' : 'created',
+        appointment,
+      }),
     });
 
     try {
-      // TODO make navigation logic to appointment scene
-      return [await api.request(), null] as const;
+      tg.disableClosingConfirmation();
+      await api.request();
     } catch (e) {
+      tg.enableClosingConfirmation();
       console.error(e);
-      return [null, e] as const;
     }
   }
 }

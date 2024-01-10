@@ -1,6 +1,7 @@
 import { Prisma } from '@prisma/client';
 import { addDays, setHours } from 'date-fns/fp';
 import {
+  format,
   getHours,
   isAfter,
   isEqual,
@@ -9,6 +10,7 @@ import {
   addHours,
   isBefore,
 } from 'date-fns';
+import { uk } from 'date-fns/locale';
 
 const startHour = 10;
 const lastHour = 22;
@@ -83,11 +85,16 @@ export function getFreeSlots(
 }
 
 interface iFormatDateOptions {
-  formatStr: 'day-date-month-year';
+  formatStr: 'hour-day-date-month-year';
 }
 
 const FORMAT_STR: Record<iFormatDateOptions['formatStr'], string> = {
-  'day-date-month-year': '',
+  'hour-day-date-month-year': 'HH:mm eeee, dd.LL.yyyy',
 };
 
-export function formatDate(date: string | Date, options: iFormatDateOptions) {}
+export function formatDate(
+  date: string | Date,
+  options: iFormatDateOptions,
+): string {
+  return format(new Date(date), FORMAT_STR[options.formatStr], { locale: uk });
+}

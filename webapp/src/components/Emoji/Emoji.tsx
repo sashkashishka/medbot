@@ -7,6 +7,7 @@ const EMOJI = {
   confused: '😕',
   astonished: '😲',
   monocle: '🧐',
+  sunglasses: '😎',
 };
 
 export type tEmojiList = keyof typeof EMOJI;

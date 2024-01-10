@@ -1,14 +1,11 @@
 import { useState } from 'react';
 import { useStore } from '@nanostores/react';
-import { generatePath, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import format from 'date-fns/format';
 import uk from 'date-fns/locale/uk';
 
-import {
-  activeAppointment$,
-  refetchActiveAppointment,
-  refetchFreeSlots,
-} from '../../stores/appointment';
+import { activeAppointment$ } from '../../stores/appointment';
+import { activeOrder$ } from '../../stores/order';
 
 import { ROUTES } from '../../constants/routes';
 
@@ -17,19 +14,35 @@ import { TgMainButton } from '../../components/TgMainButton';
 import { Button } from '../../components/Button';
 
 import { tg } from '../../utils/tg';
+import { createDeleteAppointment } from './utils';
 
 import styles from './AppointmentList.module.css';
-import { createApi } from '../../utils/api';
-import { API } from '../../constants/api';
 
 export function AppointmentListPage() {
   const [isDeleting, setIsDeleting] = useState(false);
-  const { data } = useStore(activeAppointment$);
+  const { data: activeAppointment } = useStore(activeAppointment$);
+  const { data: activeOrder } = useStore(activeOrder$);
   const navigate = useNavigate();
 
-  switch (Boolean(data)) {
-    case true: {
-      const { time } = data!;
+  switch (true) {
+    case Boolean(
+      activeAppointment?.status === 'DONE' && !activeOrder?.subscriptionEndsAt,
+    ): {
+      return (
+        <div className={styles.oneTimeOrderContainer}>
+          <Emoji emoji="sunglasses" />
+          <span className={styles.oneTimeOrderInfo}>
+            Дякуємо за візит! Нажаль, в рамках даної консультації ви вже не
+            можете записатись ще раз. Дочекайтесь як лікар випише Вам
+            рекомендації і замовте консультацію ще раз.
+          </span>
+        </div>
+      );
+    }
+
+    case Boolean(activeAppointment): {
+      const { time, id } = activeAppointment!;
+      const deleteAppointment = createDeleteAppointment(id);
 
       return (
         <div className={styles.listContainer}>
@@ -56,30 +69,14 @@ export function AppointmentListPage() {
                 className={styles.buttonDelete}
                 disabled={isDeleting}
                 onClick={() =>
-                  tg.showConfirm('Відмінити зустріч?', async () => {
-                    const api = createApi(
-                      generatePath(API.UPDATE_DELETE_APPOINTMENT, {
-                        appointmentId: String(data?.id),
-                      }) as API.UPDATE_DELETE_APPOINTMENT,
-                      {
-                        method: 'DELETE',
-                        body: '{}',
-                      },
-                    );
+                  tg.showConfirm('Відмінити зустріч?', async (confirm) => {
+                    if (!confirm) return;
+
                     setIsDeleting(true);
 
-                    try {
-                      await api.request();
-                      refetchActiveAppointment();
-                      refetchFreeSlots();
-                    } catch (e) {
-                      tg.showAlert(
-                        'Сталась помилка при видаленні. Спробуйте пізніше',
-                      );
-                      console.error(e);
-                    } finally {
-                      setIsDeleting(false);
-                    }
+                    await deleteAppointment();
+
+                    setIsDeleting(false);
                   })
                 }
               >
