@@ -1,4 +1,4 @@
-import dayjs from 'dayjs';
+import { addMonths } from 'date-fns';
 import type { Prisma } from '@prisma/client';
 import type { RouteOptions } from 'fastify';
 
@@ -26,9 +26,10 @@ export const createOrderRoute: RouteOptions = {
     let subscriptionEndsAt: string = null;
 
     if (product.subscriptionDuration > 1) {
-      subscriptionEndsAt = dayjs()
-        .add(product.subscriptionDuration, 'month')
-        .toISOString();
+      subscriptionEndsAt = addMonths(
+        new Date(),
+        product.subscriptionDuration,
+      ).toISOString();
     }
 
     return this.prisma.order.create({

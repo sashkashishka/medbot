@@ -1,5 +1,5 @@
 import { Prisma } from '@prisma/client';
-import dayjs from 'dayjs';
+import { addHours } from 'date-fns';
 
 interface iOptions {
   calendarId: string;
@@ -21,7 +21,7 @@ export function createGoogleCalendarEvent(options: iOptions) {
         timeZone: 'Etc/Universal',
       },
       end: {
-        dateTime: dayjs(appointment.time).add(1, 'hour').toISOString(),
+        dateTime: addHours(new Date(appointment.time), 1).toISOString(),
         timeZone: 'Etc/Universal',
       },
       description: `

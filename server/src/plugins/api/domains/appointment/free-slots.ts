@@ -1,4 +1,4 @@
-import dayjs from 'dayjs';
+import { addWeeks, startOfDay } from 'date-fns';
 import type { RouteOptions } from 'fastify';
 import { getFreeSlots } from '../../utils/time.js';
 
@@ -10,8 +10,8 @@ export const freeSlotsRoute: RouteOptions = {
       where: {
         status: 'ACTIVE',
         time: {
-          gte: dayjs().toISOString(),
-          lte: dayjs().add(2, 'weeks').startOf('day').toISOString(),
+          gte: new Date().toISOString(),
+          lte: addWeeks(startOfDay(new Date()), 2).toISOString(),
         },
       },
     });

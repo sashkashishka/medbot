@@ -8,7 +8,7 @@ import { medbotLogger } from '../../../../logger.js';
 export const chatScene = new Scenes.BaseScene<iMedbotContext>(SCENES.CHAT);
 
 chatScene.enter(async (ctx) => {
-  await Promise.all([ctx.reply(MESSAGES.CHAT)]);
+  await Promise.all([ctx.reply(MESSAGES.APPOINTMENT)]);
 });
 
 chatScene.use(setMessageThreadId);

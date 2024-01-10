@@ -4,7 +4,7 @@ import type { preHandlerAsyncHookHandler } from 'fastify';
 declare module 'fastify' {
   // eslint-disable-next-line
   export interface FastifyRequest {
-    tgQueryId?: string;
+    $tgQueryId?: string;
   }
 }
 
@@ -33,5 +33,5 @@ export const preHandler: preHandlerAsyncHookHandler = async function preHandler(
     throw new Error('Hash validation failed');
   }
 
-  req.tgQueryId = urlParams.get('query_id');
+  req.$tgQueryId = urlParams.get('query_id');
 };

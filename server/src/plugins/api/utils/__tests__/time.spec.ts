@@ -1,4 +1,11 @@
-import dayjs from 'dayjs';
+import {
+  addDays,
+  addHours,
+  addMinutes,
+  setHours,
+  startOfDay,
+  startOfHour,
+} from 'date-fns';
 import {
   getFreeSlots,
   isEarly,
@@ -26,15 +33,16 @@ describe('time utilities', () => {
 
   describe('isEarly', () => {
     it('isEarly', () => {
+      const date = new Date();
       const cases = [
-        [dayjs().toISOString(), true],
-        [dayjs().subtract(1, 'hour').toISOString(), true],
-        [dayjs().add(1, 'hour').toISOString(), true],
-        [dayjs().add(90, 'minutes').toISOString(), true],
-        [dayjs().add(119, 'minutes').toISOString(), true],
-        [dayjs().add(120, 'minutes').toISOString(), false],
-        [dayjs().add(121, 'minutes').toISOString(), false],
-        [dayjs().add(3, 'hour').toISOString(), false],
+        [date.toISOString(), true],
+        [addHours(date, -1).toISOString(), true],
+        [addHours(date, 1).toISOString(), true],
+        [addMinutes(date, 90).toISOString(), true],
+        [addMinutes(date, 119).toISOString(), true],
+        [addMinutes(date, 120).toISOString(), false],
+        [addMinutes(date, 121).toISOString(), false],
+        [addHours(date, 3).toISOString(), false],
       ] as const;
 
       cases.forEach(([time, result]) => {
@@ -45,31 +53,32 @@ describe('time utilities', () => {
 
   describe('isWithinWorkingHours', () => {
     it('isWithinWorkingHours', () => {
+      const date = new Date();
       const cases = [
-        [dayjs().set('hour', 0).toISOString(), false],
-        [dayjs().set('hour', 1).toISOString(), false],
-        [dayjs().set('hour', 2).toISOString(), false],
-        [dayjs().set('hour', 3).toISOString(), false],
-        [dayjs().set('hour', 4).toISOString(), false],
-        [dayjs().set('hour', 5).toISOString(), false],
-        [dayjs().set('hour', 6).toISOString(), false],
-        [dayjs().set('hour', 7).toISOString(), false],
-        [dayjs().set('hour', 8).toISOString(), false],
-        [dayjs().set('hour', 9).toISOString(), false],
-        [dayjs().set('hour', 10).toISOString(), true],
-        [dayjs().set('hour', 11).toISOString(), true],
-        [dayjs().set('hour', 12).toISOString(), true],
-        [dayjs().set('hour', 13).toISOString(), true],
-        [dayjs().set('hour', 14).toISOString(), true],
-        [dayjs().set('hour', 15).toISOString(), true],
-        [dayjs().set('hour', 16).toISOString(), true],
-        [dayjs().set('hour', 17).toISOString(), true],
-        [dayjs().set('hour', 18).toISOString(), true],
-        [dayjs().set('hour', 19).toISOString(), true],
-        [dayjs().set('hour', 20).toISOString(), true],
-        [dayjs().set('hour', 21).toISOString(), true],
-        [dayjs().set('hour', 22).toISOString(), false],
-        [dayjs().set('hour', 23).toISOString(), false],
+        [setHours(date, 0).toISOString(), false],
+        [setHours(date, 1).toISOString(), false],
+        [setHours(date, 2).toISOString(), false],
+        [setHours(date, 3).toISOString(), false],
+        [setHours(date, 4).toISOString(), false],
+        [setHours(date, 5).toISOString(), false],
+        [setHours(date, 6).toISOString(), false],
+        [setHours(date, 7).toISOString(), false],
+        [setHours(date, 8).toISOString(), false],
+        [setHours(date, 9).toISOString(), false],
+        [setHours(date, 10).toISOString(), true],
+        [setHours(date, 11).toISOString(), true],
+        [setHours(date, 12).toISOString(), true],
+        [setHours(date, 13).toISOString(), true],
+        [setHours(date, 14).toISOString(), true],
+        [setHours(date, 15).toISOString(), true],
+        [setHours(date, 16).toISOString(), true],
+        [setHours(date, 17).toISOString(), true],
+        [setHours(date, 18).toISOString(), true],
+        [setHours(date, 19).toISOString(), true],
+        [setHours(date, 20).toISOString(), true],
+        [setHours(date, 21).toISOString(), true],
+        [setHours(date, 22).toISOString(), false],
+        [setHours(date, 23).toISOString(), false],
       ] as const;
 
       cases.forEach(([time, result]) => {
@@ -80,36 +89,38 @@ describe('time utilities', () => {
 
   describe('isOccupied', () => {
     it('isOccupied', () => {
+      const date = new Date();
+      const startHourDate = startOfHour(date);
       const cases = [
-        [dayjs().toISOString(), dayjs().toISOString(), true],
+        [date.toISOString(), date.toISOString(), true],
         [
-          dayjs().startOf('hour').subtract(1, 'hour').toISOString(),
-          dayjs().startOf('hour').toISOString(),
+          addHours(startHourDate, -1).toISOString(),
+          startHourDate.toISOString(),
           false,
         ],
         [
-          dayjs().startOf('hour').add(30, 'minutes').toISOString(),
-          dayjs().startOf('hour').toISOString(),
+          addMinutes(startHourDate, 30).toISOString(),
+          startHourDate.toISOString(),
           true,
         ],
         [
-          dayjs().startOf('hour').subtract(1, 'minutes').toISOString(),
-          dayjs().startOf('hour').toISOString(),
+          addMinutes(startHourDate, -1).toISOString(),
+          startHourDate.toISOString(),
           false,
         ],
         [
-          dayjs().startOf('hour').add(59, 'minutes').toISOString(),
-          dayjs().startOf('hour').toISOString(),
+          addMinutes(startHourDate, 59).toISOString(),
+          startHourDate.toISOString(),
           true,
         ],
         [
-          dayjs().startOf('hour').add(60, 'minutes').toISOString(),
-          dayjs().startOf('hour').toISOString(),
+          addMinutes(startHourDate, 60).toISOString(),
+          startHourDate.toISOString(),
           false,
         ],
         [
-          dayjs().startOf('hour').add(61, 'minutes').toISOString(),
-          dayjs().startOf('hour').toISOString(),
+          addMinutes(startHourDate, 61).toISOString(),
+          startHourDate.toISOString(),
           false,
         ],
       ] as const;
@@ -134,8 +145,9 @@ describe('time utilities', () => {
       complaintsStarted: '',
     });
 
+
     it('should return right times between 10 and 22', () => {
-      jest.setSystemTime(dayjs().startOf('day').toDate());
+      jest.setSystemTime(startOfDay(new Date()));
 
       const result = getFreeSlots([], 1);
 
@@ -143,7 +155,7 @@ describe('time utilities', () => {
     });
 
     it('should return slots for next days', () => {
-      jest.setSystemTime(dayjs().startOf('day').toDate());
+      jest.setSystemTime(startOfDay(new Date()));
 
       const result = getFreeSlots([], 2);
 
@@ -151,7 +163,7 @@ describe('time utilities', () => {
     });
 
     it('should return first slot 2 hours after current time', () => {
-      jest.setSystemTime(dayjs().startOf('day').set('hour', 14).toDate());
+      jest.setSystemTime(setHours(startOfDay(new Date()), 14));
 
       const result = getFreeSlots([], 1);
 
@@ -159,25 +171,19 @@ describe('time utilities', () => {
     });
 
     it('should exclude occupied times from range', () => {
-      jest.setSystemTime(dayjs().startOf('day').set('hour', 14).toDate());
+      jest.setSystemTime(setHours(startOfDay(new Date()), 14));
+
+      const nextDay = addDays(new Date(), 1);
 
       const result = getFreeSlots(
         [
-          generateAppointment(dayjs().set('hour', 18).toISOString()),
-          generateAppointment(dayjs().set('hour', 19).toISOString()),
-          generateAppointment(dayjs().set('hour', 21).toISOString()),
-          generateAppointment(
-            dayjs().add(1, 'day').set('hour', 10).toISOString(),
-          ),
-          generateAppointment(
-            dayjs().add(1, 'day').set('hour', 12).toISOString(),
-          ),
-          generateAppointment(
-            dayjs().add(1, 'day').set('hour', 16).toISOString(),
-          ),
-          generateAppointment(
-            dayjs().add(1, 'day').set('hour', 21).toISOString(),
-          ),
+          generateAppointment(setHours(new Date(), 18).toISOString()),
+          generateAppointment(setHours(new Date(), 19).toISOString()),
+          generateAppointment(setHours(new Date(), 21).toISOString()),
+          generateAppointment(setHours(nextDay, 10).toISOString()),
+          generateAppointment(setHours(nextDay, 12).toISOString()),
+          generateAppointment(setHours(nextDay, 16).toISOString()),
+          generateAppointment(setHours(nextDay, 21).toISOString()),
         ],
         2,
       );

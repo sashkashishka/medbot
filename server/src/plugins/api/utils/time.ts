@@ -1,18 +1,24 @@
 import { Prisma } from '@prisma/client';
-import dayjs from 'dayjs';
-import isBetween from 'dayjs/plugin/isBetween.js';
-
-dayjs.extend(isBetween);
+import { addDays, setHours } from 'date-fns/fp';
+import {
+  getHours,
+  isAfter,
+  isEqual,
+  startOfHour,
+  startOfDay,
+  addHours,
+  isBefore,
+} from 'date-fns';
 
 const startHour = 10;
 const lastHour = 22;
 
 export function isEarly(time: string): boolean {
-  return dayjs(time).isBefore(dayjs().add(2, 'hours'));
+  return isBefore(time, addHours(new Date(), 2));
 }
 
 export function isWithinWorkingHours(time: string): boolean {
-  const hour = dayjs(time).hour();
+  const hour = getHours(time);
 
   return hour >= startHour && hour < lastHour;
 }
@@ -21,11 +27,13 @@ export function isOccupied(
   time: string,
   appointmentTime: string | Date,
 ): boolean {
-  return dayjs(time).isBetween(
-    dayjs(appointmentTime).startOf('hour'),
-    dayjs(appointmentTime).startOf('hour').add(1, 'hour'),
-    'hour',
-    '[)',
+  const timeDate = new Date(time);
+  const startDate = startOfHour(new Date(appointmentTime));
+  const endDate = addHours(startDate, 1);
+
+  return (
+    (isEqual(timeDate, startDate) || isAfter(timeDate, startDate)) &&
+    isBefore(timeDate, endDate)
   );
 }
 
@@ -41,7 +49,8 @@ export function getFreeSlots(
 ): iFreeSlot[] {
   const occupiedSlots = appointments.reduce<Record<string, boolean>>(
     (acc, curr) => {
-      acc[dayjs(curr.time).toISOString()] = true;
+      const isoDate = new Date(curr.time).toISOString();
+      acc[isoDate] = true;
       return acc;
     },
     {},
@@ -51,15 +60,15 @@ export function getFreeSlots(
     .reduce<iFreeSlot[]>((acc, _curr, dayIndex) => {
       const slots = Array.from({ length: lastHour - startHour }).map(
         (_v, i) => {
-          const date = dayjs()
-            .startOf('day')
-            .add(dayIndex, 'day')
-            .set('hour', startHour + i);
+          const [date] = [new Date()]
+            .map(startOfDay)
+            .map(addDays(dayIndex))
+            .map(setHours(startHour + i));
 
           return {
             id: date.toISOString(),
             startTime: date.toISOString(),
-            endTime: date.add(1, 'hour').toISOString(),
+            endTime: addHours(date, 1).toISOString(),
           };
         },
       );
@@ -72,3 +81,13 @@ export function getFreeSlots(
       return !occupiedSlots[slot.startTime];
     });
 }
+
+interface iFormatDateOptions {
+  formatStr: 'day-date-month-year';
+}
+
+const FORMAT_STR: Record<iFormatDateOptions['formatStr'], string> = {
+  'day-date-month-year': '',
+};
+
+export function formatDate(date: string | Date, options: iFormatDateOptions) {}

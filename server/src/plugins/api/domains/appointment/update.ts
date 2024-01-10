@@ -1,4 +1,4 @@
-import dayjs from 'dayjs';
+import { addWeeks, startOfDay, startOfHour } from 'date-fns';
 import { Prisma } from '@prisma/client';
 import type { RouteOptions } from 'fastify';
 
@@ -42,7 +42,7 @@ export const updateAppointmentRoute: RouteOptions = {
     const params = request.params as iParams;
     const body = request.body as Prisma.AppointmentUncheckedCreateInput;
 
-    body.time = dayjs(body.time).startOf('hour').toISOString();
+    body.time = startOfHour(new Date(body.time)).toISOString();
 
     const { appointmentId } = params;
     const { time } = body;
@@ -60,7 +60,7 @@ export const updateAppointmentRoute: RouteOptions = {
         status: 'ACTIVE',
         id: Number(appointmentId),
         time: {
-          gte: dayjs().toISOString(),
+          gte: new Date().toISOString(),
         },
       },
     });
@@ -73,8 +73,8 @@ export const updateAppointmentRoute: RouteOptions = {
       where: {
         status: 'ACTIVE',
         time: {
-          gte: dayjs().toISOString(),
-          lte: dayjs().add(2, 'weeks').startOf('day').toISOString(),
+          gte: new Date().toISOString(),
+          lte: addWeeks(startOfDay(new Date()), 2).toISOString(),
         },
       },
     });
