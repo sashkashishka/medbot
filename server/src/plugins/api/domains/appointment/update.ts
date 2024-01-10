@@ -127,6 +127,8 @@ export const updateAppointmentRoute: RouteOptions = {
       }),
     );
 
+    delete appointment.user;
+
     return appointment;
   },
 };

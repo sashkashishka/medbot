@@ -9,6 +9,8 @@ interface iProps {
 export function WebAppProvider({ children }: iProps) {
   useEffect(() => {
     tg.expand();
+    tg.enableClosingConfirmation();
+
     const forceHideButtons = () => {
       tg?.MainButton?.hide();
       tg?.BackButton?.hide();
@@ -19,7 +21,7 @@ export function WebAppProvider({ children }: iProps) {
   }, []);
 
   if (!getInitData()) {
-    return <ErrorOpenViaTelegram />
+    return <ErrorOpenViaTelegram />;
   }
 
   return children;

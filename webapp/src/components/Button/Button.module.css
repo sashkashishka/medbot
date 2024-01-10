@@ -14,7 +14,8 @@
   }
 
   &:active,
-  &:focus {
+  &:focus,
+  &:disabled {
     opacity: 0.9;
   }
 }

@@ -7,13 +7,17 @@ import type { iOrder } from '../types';
 
 const userId = String(getUserId());
 
-export const activeOrder$ = createFetcherStore<iOrder>({
-  url: generatePath(API.ACTIVE_ORDER, {
-    userId,
-  }),
-});
-
-export const createWaitingForPaymentOrder = (productId: string) => () =>
+export const { store: activeOrder$, refetch: refetchActiveOrder } =
   createFetcherStore<iOrder>({
+    url: generatePath(API.ACTIVE_ORDER, {
+      userId,
+    }),
+  });
+
+export const createWaitingForPaymentOrder = (productId: string) => () => {
+  const { store } = createFetcherStore<iOrder>({
     url: generatePath(API.WAITING_FOR_PAYMENT_ORDER, { userId, productId }),
   });
+
+  return store;
+};

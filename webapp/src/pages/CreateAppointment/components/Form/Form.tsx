@@ -126,9 +126,9 @@ export class CreateAppointmentForm extends Component<iProps> {
     const { activeAppointment, activeOrder } = this.props;
 
     const endpoint = activeAppointment
-      ? (generatePath(API.UPDATE_APPOINTMENT, {
+      ? (generatePath(API.UPDATE_DELETE_APPOINTMENT, {
           appointmentId: String(activeAppointment.id),
-        }) as API.UPDATE_APPOINTMENT)
+        }) as API.UPDATE_DELETE_APPOINTMENT)
       : API.CREATE_APPOINTMENT;
 
     const method = activeAppointment ? 'PUT' : 'POST';

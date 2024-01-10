@@ -26,7 +26,7 @@ interface iResponses {
   [API.CREATE_APPOINTMENT]:
     | iAppointment
     | iErrorResponse<{ time: string } | { error: string }>;
-  [API.UPDATE_APPOINTMENT]:
+  [API.UPDATE_DELETE_APPOINTMENT]:
     | iAppointment
     | iErrorResponse<{ time: string } | { error: string }>;
   [API.FREE_SLOTS]: iFreeSlot[];

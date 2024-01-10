@@ -3,7 +3,7 @@ import { API } from '../constants/api';
 import { createFetcherStore } from './fetcher';
 import type { iProduct } from '../types';
 
-export const productList$ = createFetcherStore<iProduct[]>({
+export const { store: productList$ } = createFetcherStore<iProduct[]>({
   url: API.PRODUCT_LIST
 });
 

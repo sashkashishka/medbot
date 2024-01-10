@@ -69,7 +69,7 @@ export declare namespace TelegramWebApps {
       eventHandler: () => void,
     );
 
-    offEvent(eventType: EventType, eventHandler: () => void);
+    offEvent(eventType: EventType, eventHandler: (...args: any[]) => void);
   }
 
   interface WebApp extends Event {

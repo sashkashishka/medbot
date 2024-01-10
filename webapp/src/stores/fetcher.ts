@@ -1,4 +1,4 @@
-import { map, onMount, task } from 'nanostores';
+import { map, onMount, task, action } from 'nanostores';
 import { createApi } from '../utils/api';
 import { API } from '../constants/api';
 
@@ -25,8 +25,12 @@ export function createFetcherStore<tData>({
     data: undefined,
   });
 
+  let abortController: AbortController;
+
   onMount(fetcherStore$, () => {
     const api = createApi(url as API, requestInit);
+
+    abortController = api.controller;
 
     fetcherStore$.setKey('loading', true);
     fetcherStore$.setKey('error', undefined);
@@ -47,9 +51,34 @@ export function createFetcherStore<tData>({
     });
 
     return () => {
-      api.controller.abort();
+      abortController.abort();
     };
   });
 
-  return fetcherStore$;
+  const refetch = action(fetcherStore$, 'refetch', async (store) => {
+    const api = createApi(url as API, requestInit);
+
+    abortController = api.controller;
+
+    store.setKey('loading', true);
+    store.setKey('error', undefined);
+
+    try {
+      const data = await api.request();
+
+      store.setKey('data', data as tData);
+    } catch (e) {
+      if (e instanceof Error) {
+        store.setKey('error', e);
+      }
+    } finally {
+      store.setKey('loading', false);
+      store.setKey('fetched', false);
+    }
+  });
+
+  return {
+    store: fetcherStore$,
+    refetch,
+  };
 }
