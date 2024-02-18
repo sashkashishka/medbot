@@ -9,11 +9,11 @@ interface iOptions {
   maxAttempts: number;
 }
 
-type tReason = 'maxAttempts' | 'frequency';
+export type tBlockUntilReason = 'maxAttempts' | 'frequency';
 
 export interface iCacheEntity {
   attempt: number;
-  reason: tReason | null;
+  reason: tBlockUntilReason | null;
   blockedUntil: Date | null;
   frequencyRate: number;
   frequencyDueDate: Date | null;
@@ -64,7 +64,7 @@ export function createProgressiveDelay(options: iOptions) {
   };
 }
 
-function canResetBlockageBy(reason: tReason) {
+function canResetBlockageBy(reason: tBlockUntilReason) {
   return function predicate(entity: iCacheEntity) {
     return (
       entity.blockedUntil instanceof Date &&

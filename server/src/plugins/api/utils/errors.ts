@@ -36,13 +36,26 @@ export class AppointmentError {
   }
 }
 
-export type tOrderErrorReason = 'has-active' | 'cannot-update-not-active-order';
+export type tOrderErrorReason =
+  | 'has-active'
+  | 'cannot-update-not-active-order'
+  | 'invalid-activation-code'
+  | 'too-many-requests';
 
-export class OrderError {
-  constructor(public reason: tOrderErrorReason) {}
+export class OrderError<tPayload = unknown> {
+  constructor(
+    public reason: tOrderErrorReason,
+    private payload: tPayload = undefined,
+  ) {}
 
   get description() {
     switch (this.reason) {
+      case 'too-many-requests': {
+        return create400Response({
+          error: { reason: this.reason, payload: this.payload },
+        });
+      }
+
       case 'has-active':
       default: {
         return create400Response({ error: this.reason });

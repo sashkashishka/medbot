@@ -15,8 +15,8 @@ export const updateOrderRoute: RouteOptions = {
     body: {
       type: 'object',
       properties: {
-        productId: { type: 'string' },
-        userId: { type: 'string' },
+        productId: { type: 'number' },
+        userId: { type: 'number' },
         status: { type: 'string' },
       },
       required: ['status', 'productId', 'userId'],
