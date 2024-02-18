@@ -14,8 +14,8 @@ declare module 'fastify' {
 
 const googleCalendarPlugin: FastifyPluginAsync = fp(async (server) => {
   const jwt = new auth.JWT({
-    email: process.env.GOOGLE_CALENDAR_SERVICE_ACCOUNT,
-    key: process.env.GOOGLE_CALENDAR_PRIVATE_KEY,
+    email: server.config.GOOGLE_CALENDAR_SERVICE_ACCOUNT,
+    key: server.config.GOOGLE_CALENDAR_PRIVATE_KEY,
     scopes: ['https://www.googleapis.com/auth/calendar'],
   });
 
@@ -25,7 +25,7 @@ const googleCalendarPlugin: FastifyPluginAsync = fp(async (server) => {
   });
 
   server.decorate('googleCalendar', googleCalendar);
-  server.decorate('googleCalendarId', process.env.GOOGLE_CALENDAR_ID);
+  server.decorate('googleCalendarId', server.config.GOOGLE_CALENDAR_ID);
 });
 
 export default googleCalendarPlugin;

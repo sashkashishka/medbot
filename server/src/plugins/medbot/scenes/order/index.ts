@@ -4,11 +4,11 @@ import type { iMedbotContext } from '../../types.js';
 import { MESSAGES } from './messages.js';
 import { medbotLogger } from '../../../../logger.js';
 
-const webAppOrderUrl = `${process.env.TG_BOT_WEBAPP_URL}/products`;
-
 const orderHandler = new Composer<iMedbotContext>();
 
 orderHandler.start(async (ctx) => {
+  const webAppOrderUrl = `${ctx.webAppUrl}/products`;
+
   await Promise.all([
     ctx.reply(MESSAGES.ORDER),
     ctx.setChatMenuButton({

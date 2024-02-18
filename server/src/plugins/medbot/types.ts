@@ -9,9 +9,10 @@ export interface iMedbotSession extends Scenes.WizardSession {
 
 export interface iMedbotContext extends Context {
   prisma: PrismaClient;
-  forumId: string;
+  forumId: number;
   googleCalendar: calendar_v3.Calendar;
   googleCalendarId: string;
+  webAppUrl: string;
 
   // declare session type
   session: iMedbotSession;

@@ -5,11 +5,11 @@ import { setMessageThreadId } from '../../middlewares/setMessageThreadId.js';
 import { MESSAGES } from './messages.js';
 import { medbotLogger } from '../../../../logger.js';
 
-const webAppAppointmentUrl = `${process.env.TG_BOT_WEBAPP_URL}/appointment/list`;
-
 export const chatScene = new Scenes.BaseScene<iMedbotContext>(SCENES.CHAT);
 
 chatScene.enter(async (ctx) => {
+  const webAppAppointmentUrl = `${ctx.webAppUrl}/appointment/list`;
+
   await Promise.all([
     ctx.reply(MESSAGES.APPOINTMENT),
     ctx.setChatMenuButton({

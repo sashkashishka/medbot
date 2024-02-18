@@ -136,7 +136,7 @@ describe('progressive delay', () => {
       expect(result.reason).toBeNull();
     });
 
-    it.only('should reset frequencyRate when check is not rapid', () => {
+    it('should reset frequencyRate when check is not rapid', () => {
       jest.useFakeTimers();
       const ip = '1.2.3.4';
       const checker = createProgressiveDelay(options);

@@ -6,11 +6,10 @@ import type { Update } from 'telegraf/types';
 import { medbotLogger } from '../../logger.js';
 
 import { medbotScenes, forumScenes } from './scenes/index.js';
-import { commands } from './commands/index.js';
-import { isForumUpdate } from './filters/isForumUpdate.js';
+// import { commands } from './commands/index.js';
+import { createIsForumUpdateFilter } from './filters/isForumUpdate.js';
 import { PrismaSessionStorage } from './services/storage/prisma.js';
 import type { iMedbotContext } from './types.js';
-import { ENV_VARS } from './constants/envVars.js';
 import { populateContext } from './middlewares/populateContext.js';
 import { cleanupOnSecondStartCommand } from './middlewares/cleanupOnSecondStartCommand.js';
 import { loggerMiddleware } from './middlewares/loggerMiddleware.js';
@@ -38,8 +37,8 @@ function getSessionKey(ctx: iMedbotContext): string {
 }
 
 const medbotPlugin: FastifyPluginAsync = fp(async (server) => {
-  const bot = new Telegraf<iMedbotContext>(ENV_VARS.TOKEN, {
-    telegram: { testEnv: ENV_VARS.TEST_ENV },
+  const bot = new Telegraf<iMedbotContext>(server.config.TG_BOT_TOKEN, {
+    telegram: { testEnv: !!server.config.TG_BOT_TEST },
   });
   const store = new PrismaSessionStorage(server.prisma);
 
@@ -48,16 +47,20 @@ const medbotPlugin: FastifyPluginAsync = fp(async (server) => {
   bot.use(
     populateContext({
       prisma: server.prisma,
-      forumId: ENV_VARS.FORUM_ID,
+      forumId: server.config.TG_BOT_FORUM_ID,
       googleCalendar: server.googleCalendar,
       googleCalendarId: server.googleCalendarId,
+      webAppUrl: server.config.TG_BOT_WEBAPP_URL,
     }),
   );
 
   // clear scene and start from scratch
   bot.command('start', cleanupOnSecondStartCommand);
 
-  bot.on(isForumUpdate, forumScenes.middleware());
+  bot.on(
+    createIsForumUpdateFilter(server.config.TG_BOT_FORUM_ID),
+    forumScenes.middleware(),
+  );
   bot.on('message', medbotScenes.middleware());
 
   bot.catch((err) => {
@@ -66,7 +69,7 @@ const medbotPlugin: FastifyPluginAsync = fp(async (server) => {
 
   // Make medbot Client available through the fastify server instance: server.medbot
   server.decorate('medbot', bot);
-  server.decorate('medbotToken', ENV_VARS.TOKEN);
+  server.decorate('medbotToken', server.config.TG_BOT_TOKEN);
 
   server.addHook('onListen', async () => {
     bot.launch();
