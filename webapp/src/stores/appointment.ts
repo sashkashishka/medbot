@@ -9,20 +9,20 @@ import { computed } from 'nanostores';
 
 const userId = String(getUserId());
 
-export const { store: activeAppointment$, refetch: refetchActiveAppointment } =
+export const { store: $activeAppointment, refetch: refetchActiveAppointment } =
   createFetcherStore<iAppointment>({
     url: generatePath(API.ACTIVE_APPOINTMENT, {
       userId,
     }),
   });
 
-export const { store: freeSlots$, refetch: refetchFreeSlots } =
+export const { store: $freeSlots, refetch: refetchFreeSlots } =
   createFetcherStore<iFreeSlot[]>({
     url: API.FREE_SLOTS,
   });
 
-export const availableTimeslots$ = computed(
-  [freeSlots$, activeAppointment$],
+export const $availableTimeslots = computed(
+  [$freeSlots, $activeAppointment],
   ({ data: freeSlots }, { data: activeAppointment }) => {
     if (!freeSlots) return [];
 

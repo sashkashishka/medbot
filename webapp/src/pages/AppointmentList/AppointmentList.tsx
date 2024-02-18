@@ -4,8 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import format from 'date-fns/format';
 import uk from 'date-fns/locale/uk';
 
-import { activeAppointment$ } from '../../stores/appointment';
-import { activeOrder$ } from '../../stores/order';
+import { $activeAppointment } from '../../stores/appointment';
+import { $activeOrder } from '../../stores/order';
 
 import { ROUTES } from '../../constants/routes';
 
@@ -20,8 +20,8 @@ import styles from './AppointmentList.module.css';
 
 export function AppointmentListPage() {
   const [isDeleting, setIsDeleting] = useState(false);
-  const { data: activeAppointment } = useStore(activeAppointment$);
-  const { data: activeOrder } = useStore(activeOrder$);
+  const { data: activeAppointment } = useStore($activeAppointment);
+  const { data: activeOrder } = useStore($activeOrder);
   const navigate = useNavigate();
 
   switch (true) {

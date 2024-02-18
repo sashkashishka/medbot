@@ -30,7 +30,22 @@ export class AppointmentError {
       case 'cannot-update-not-active-appointment':
       case 'one-time-order-cannot-create-twice':
       default: {
-        return create400Response({ reason: this.reason });
+        return create400Response({ error: this.reason });
+      }
+    }
+  }
+}
+
+export type tOrderErrorReason = 'has-active' | 'cannot-update-not-active-order';
+
+export class OrderError {
+  constructor(public reason: tOrderErrorReason) {}
+
+  get description() {
+    switch (this.reason) {
+      case 'has-active':
+      default: {
+        return create400Response({ error: this.reason });
       }
     }
   }

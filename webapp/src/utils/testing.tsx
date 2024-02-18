@@ -2,10 +2,10 @@ import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 import { cleanStores as nanostoresCleanStores } from 'nanostores';
 
 import { routes as defaultRoutes } from '../pages/routes';
-import { user$ } from '../stores/user';
-import { product$, productId$, productList$ } from '../stores/product';
-import { activeOrder$ } from '../stores/order';
-import { initProductProviderStore$ } from '../stores/initProductProvider';
+import { $user } from '../stores/user';
+import { $product, $productId, $productList } from '../stores/product';
+import { $activeOrder } from '../stores/order';
+import { $initProductProviderStore } from '../stores/initProductProvider';
 
 interface iOptions {
   routes?: Parameters<typeof createMemoryRouter>[0];
@@ -23,11 +23,11 @@ export function createWrapper({
 
 export function wipeStores() {
   nanostoresCleanStores(
-    user$,
-    productList$,
-    activeOrder$,
-    initProductProviderStore$,
-    product$,
-    productId$,
+    $user,
+    $productList,
+    $activeOrder,
+    $initProductProviderStore,
+    $product,
+    $productId,
   );
 }

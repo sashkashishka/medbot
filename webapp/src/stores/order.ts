@@ -7,7 +7,7 @@ import type { iOrder } from '../types';
 
 const userId = String(getUserId());
 
-export const { store: activeOrder$, refetch: refetchActiveOrder } =
+export const { store: $activeOrder, refetch: refetchActiveOrder } =
   createFetcherStore<iOrder>({
     url: generatePath(API.ACTIVE_ORDER, {
       userId,

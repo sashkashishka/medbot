@@ -15,7 +15,7 @@ export function createDeleteAppointment(id: iAppointment['id']) {
         body: '{}',
       },
     );
-    const sendStatusApi = createApi(API.SEND_APPOINTMENT_STATUS, {
+    const sendStatusApi = createApi(API.MEDBOT_SEND_APPOINTMENT_STATUS, {
       method: 'POST',
       body: JSON.stringify({ status: 'deleted' }),
     });

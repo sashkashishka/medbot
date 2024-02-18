@@ -1,8 +1,5 @@
-.container {
+.productList {
   display: grid;
   gap: 16px;
   margin: 16px;
-  padding: 16px;
-  background: var(--tg-theme-secondary-bg-color);
-  border-radius: 16px;
 }

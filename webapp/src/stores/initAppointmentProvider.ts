@@ -1,10 +1,10 @@
 import { computed } from 'nanostores';
-import { user$ } from './user';
-import { activeOrder$ } from './order';
-import { activeAppointment$ } from './appointment';
+import { $user } from './user';
+import { $activeOrder } from './order';
+import { $activeAppointment } from './appointment';
 
-export const initAppointmentProviderStore$ = computed(
-  [user$, activeOrder$, activeAppointment$],
+export const $initAppointmentProviderStore = computed(
+  [$user, $activeOrder, $activeAppointment],
   (userQuery, activeOrderQuery, activeAppointmentQuery) => {
     return {
       loading:

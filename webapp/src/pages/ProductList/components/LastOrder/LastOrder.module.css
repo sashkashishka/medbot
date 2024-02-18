@@ -1,0 +1,45 @@
+.container {
+  display: grid;
+  gap: 16px;
+  margin: 16px;
+  padding: 16px;
+  background: var(--tg-theme-secondary-bg-color);
+  border-radius: 16px;
+}
+
+.title {
+  margin: 0;
+}
+
+.card {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  grid-template-rows: auto auto; 
+  gap: 8px;
+  background-color: var(--tg-theme-bg-color);
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.name {
+  grid-column-start: 1;
+  grid-column-end: 3;
+  grid-row-start: 1;
+  grid-row-end: 2;
+}
+
+.price {
+  grid-column-start: 1;
+  grid-column-end: 2;
+  grid-row-start: 2;
+  grid-row-end: 3;
+}
+
+.arrow {
+  align-self: center;
+  grid-column-start: 3;
+  grid-column-end: 4;
+  grid-row-start: 1;
+  grid-row-end: 3;
+}

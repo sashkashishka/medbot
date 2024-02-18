@@ -6,6 +6,6 @@ import { createFetcherStore } from './fetcher';
 
 const userId = String(getUserId());
 
-export const { store: user$ } = createFetcherStore<iUser>({
+export const { store: $user } = createFetcherStore<iUser>({
   url: generatePath(API.USER, { userId }),
 });

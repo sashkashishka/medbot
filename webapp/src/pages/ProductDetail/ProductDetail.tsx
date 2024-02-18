@@ -1,7 +1,7 @@
 import { generatePath, useNavigate } from 'react-router-dom';
 import { useStore } from '@nanostores/react';
 
-import { product$ } from '../../stores/product';
+import { $product } from '../../stores/product';
 import { ROUTES } from '../../constants/routes';
 import { TIDS } from '../../constants/testIds';
 // import type { iProduct } from '../../types';
@@ -14,7 +14,7 @@ import styles from './ProductDetail.module.css';
 
 export function ProductDetailPage() {
   const navigate = useNavigate();
-  const product = useStore(product$);
+  const product = useStore($product);
 
   return (
     <div

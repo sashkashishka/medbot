@@ -15,7 +15,7 @@ import { createApi } from '../../../../utils/api';
 import { API } from '../../../../constants/api';
 import { TIDS } from '../../../../constants/testIds';
 import type { iOrder, iProduct, iUser } from '../../../../types';
-import { user$ } from '../../../../stores/user';
+import { $user } from '../../../../stores/user';
 
 import { SubmitButton } from './SubmitButton';
 import { getPersistDecorator } from './decorators/persist';
@@ -23,10 +23,13 @@ import type { iFormValues } from './types';
 
 import styles from './Form.module.css';
 import { tg } from '../../../../utils/tg';
+import { ORDER_ERRORS } from './constants';
+import { setLastProductId } from '../../../../stores/product';
 
 interface iProps {
   waitingForPaymentOrder?: iOrder;
   product: iProduct;
+  user?: iUser;
 }
 
 export class ProductCheckoutForm extends Component<iProps> {
@@ -43,6 +46,11 @@ export class ProductCheckoutForm extends Component<iProps> {
     const { waitingForPaymentOrder } = this.props;
 
     return [getPersistDecorator(waitingForPaymentOrder)];
+  }
+
+  componentDidMount(): void {
+    const { product } = this.props;
+    setLastProductId(product.id);
   }
 
   render() {
@@ -131,37 +139,45 @@ export class ProductCheckoutForm extends Component<iProps> {
   }
 
   async handleSubmit(values: iFormValues) {
-    if (!user$.get().data?.id) {
-      const [, userCreateErr] = await this.createUser(values);
+    try {
+      tg.disableClosingConfirmation();
+      const user = await this.getUserApi(values).request();
+      // TODO TMP solution create order
+      const order = await this.getOrderApi(values).request();
 
-      if (userCreateErr) {
+      if ('code' in order) {
+        const errorText = ORDER_ERRORS[order.error.error] || 'Невідома помилка';
+        tg.showPopup({ message: errorText, buttons: [{ type: 'close' }] });
         return FORM_ERROR;
       }
-    } else {
-      const [, userUpdateErr] = await this.updateUser(values);
 
-      if (userUpdateErr) {
-        return FORM_ERROR;
-      }
+      // TODO TMP solution update order
+      await this.getOrderApi({ ...values, orderId: order.id }).request();
+
+      $user.setKey('data', user);
+      setLastProductId(0);
+
+      // TODO payment form logic
+      await this.getProceedToChatApi().request();
+    } catch (e) {
+      tg.enableClosingConfirmation();
+      console.error(e);
+      return FORM_ERROR;
     }
-
-    if (!values.orderId) {
-      const [, orderCreateErr] = await this.createOrder(values);
-
-      if (orderCreateErr) {
-        return FORM_ERROR;
-      }
-    }
-    // TODO payment form logic
-
-    await this.proceedToChat();
-
-    return undefined;
   }
 
-  async createUser(values: iFormValues) {
+  getUserApi(values: iFormValues) {
+    const { user } = this.props;
+
+    const endpoint = user
+      ? (generatePath(API.UPDATE_USER, {
+          userId: String(user.id),
+        }) as API.UPDATE_USER)
+      : API.CREATE_USER;
+
+    const method = user ? 'PATCH' : 'POST';
+
     const body: Partial<iUser> = {
-      id: values.userId,
       name: values.name,
       surname: values.surname,
       patronymic: values.patronymic,
@@ -170,108 +186,39 @@ export class ProductCheckoutForm extends Component<iProps> {
       phone: values.phone,
     };
 
-    const api = createApi(API.CREATE_USER, {
-      method: 'POST',
+    return createApi(endpoint, {
+      method,
       body: JSON.stringify(body),
     });
-
-    try {
-      const data = await api.request();
-      user$.setKey('data', data);
-
-      return [data, null] as const;
-    } catch (e) {
-      console.error(e);
-      return [null, e] as const;
-    }
   }
 
-  async updateUser(values: iFormValues) {
-    const body: Partial<iUser> = {
-      name: values.name,
-      surname: values.surname,
-      patronymic: values.patronymic,
-      birthDate: values.birthDate,
-      email: values.email,
-      phone: values.phone,
-    };
+  getOrderApi(values: iFormValues) {
+    const { orderId } = values;
 
-    const api = createApi(
-      generatePath(API.UPDATE_USER, {
-        userId: String(values.userId),
-      }) as API.UPDATE_USER,
-      {
-        method: 'PATCH',
-        body: JSON.stringify(body),
-      },
-    );
+    const endpoint = orderId
+      ? (generatePath(API.UPDATE_ORDER, {
+          orderId: String(orderId),
+        }) as API.UPDATE_ORDER)
+      : API.CREATE_ORDER;
 
-    try {
-      const data = await api.request();
-      user$.setKey('data', data);
+    const method = orderId ? 'PATCH' : 'POST';
 
-      return [data, null] as const;
-    } catch (e) {
-      console.error(e);
-      return [null, e] as const;
-    }
-  }
-
-  async createOrder(values: iFormValues) {
     const body: Partial<iOrder> = {
       userId: values.userId,
       productId: values.productId,
       // TODO set status WAITING_FOR_PAYMENT when will connect payment
-      status: 'ACTIVE',
+      status: orderId ? 'ACTIVE' : 'WAITING_FOR_PAYMENT',
     };
 
-    const api = createApi(API.CREATE_ORDER, {
-      method: 'POST',
+    return createApi(endpoint, {
+      method,
       body: JSON.stringify(body),
     });
-
-    try {
-      return [await api.request(), null] as const;
-    } catch (e) {
-      console.error(e);
-      return [null, e] as const;
-    }
   }
 
-  async setOrderStatusActive(values: iFormValues) {
-    const api = createApi(
-      generatePath(API.UPDATE_ORDER, {
-        orderId: String(values.orderId),
-      }) as API.UPDATE_USER,
-      {
-        method: 'PATCH',
-        body: JSON.stringify({
-          status: 'ACTIVE',
-        }),
-      },
-    );
-
-    try {
-      // TODO make navigation logic to appointment scene
-      return [await api.request(), null] as const;
-    } catch (e) {
-      console.error(e);
-      return [null, e] as const;
-    }
-  }
-
-  async proceedToChat() {
-    const api = createApi(API.MEDBOT_PROCEED_TO_CHAT, {
+  getProceedToChatApi() {
+    return createApi(API.MEDBOT_PROCEED_TO_CHAT, {
       method: 'GET',
     });
-
-    try {
-      tg.disableClosingConfirmation();
-      await api.request();
-    } catch (e) {
-      tg.enableClosingConfirmation();
-      console.error(e);
-      return [null, e] as const;
-    }
   }
 }

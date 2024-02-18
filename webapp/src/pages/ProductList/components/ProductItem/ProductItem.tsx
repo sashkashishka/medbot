@@ -5,16 +5,24 @@ import { TIDS } from '../../../../constants/testIds';
 
 import styles from './ProductItem.module.css';
 
-interface iProps extends iProduct {}
+interface iProps {
+  product: iProduct;
+}
 
-export function ProductItem({ id, name }: iProps) {
+export function ProductItem({ product }: iProps) {
+  const { id, name, price } = product;
+
   return (
     <Link
       to={generatePath(ROUTES.PRODUCT_ITEM, { productId: String(id) })}
       className={styles.container}
       data-testid={TIDS.PRODUCT_ITEM_LINK}
     >
-      {name}
+      <div className={styles.content}>
+        <span className={styles.name}>{name}</span>
+
+        <span className={styles.price}>₴{price}</span>
+      </div>
 
       <svg
         xmlns="http://www.w3.org/2000/svg"

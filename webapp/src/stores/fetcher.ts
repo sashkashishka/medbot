@@ -18,7 +18,7 @@ export function createFetcherStore<tData>({
   url,
   requestInit,
 }: iFetcherStoreOptions) {
-  const fetcherStore$ = map<iFetcherStore<tData>>({
+  const $fetcherStore = map<iFetcherStore<tData>>({
     fetched: false,
     loading: false,
     error: undefined,
@@ -27,26 +27,26 @@ export function createFetcherStore<tData>({
 
   let abortController: AbortController;
 
-  onMount(fetcherStore$, () => {
+  onMount($fetcherStore, () => {
     const api = createApi(url as API, requestInit);
 
     abortController = api.controller;
 
-    fetcherStore$.setKey('loading', true);
-    fetcherStore$.setKey('error', undefined);
+    $fetcherStore.setKey('loading', true);
+    $fetcherStore.setKey('error', undefined);
 
     task(async () => {
       try {
         const data = await api.request();
 
-        fetcherStore$.setKey('data', data as tData);
+        $fetcherStore.setKey('data', data as tData);
       } catch (e) {
         if (e instanceof Error) {
-          fetcherStore$.setKey('error', e);
+          $fetcherStore.setKey('error', e);
         }
       } finally {
-        fetcherStore$.setKey('loading', false);
-        fetcherStore$.setKey('fetched', false);
+        $fetcherStore.setKey('loading', false);
+        $fetcherStore.setKey('fetched', false);
       }
     });
 
@@ -55,7 +55,7 @@ export function createFetcherStore<tData>({
     };
   });
 
-  const refetch = action(fetcherStore$, 'refetch', async (store) => {
+  const refetch = action($fetcherStore, 'refetch', async (store) => {
     const api = createApi(url as API, requestInit);
 
     abortController = api.controller;
@@ -78,7 +78,7 @@ export function createFetcherStore<tData>({
   });
 
   return {
-    store: fetcherStore$,
+    store: $fetcherStore,
     refetch,
   };
 }

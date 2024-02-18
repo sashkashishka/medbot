@@ -1,6 +1,10 @@
 import type { FastifyPluginCallback } from 'fastify';
 
-import { AppointmentError, create400Response } from './utils/errors.js';
+import {
+  AppointmentError,
+  OrderError,
+  create400Response,
+} from './utils/errors.js';
 
 import { userRoute } from './domains/user/index.js';
 import { createUserRoute } from './domains/user/create.js';
@@ -50,6 +54,10 @@ const api: FastifyPluginCallback = (fastify, _opts, done) => {
     this.log.error(error, 'api');
 
     if (error instanceof AppointmentError) {
+      return reply.code(400).send(error.description);
+    }
+
+    if (error instanceof OrderError) {
       return reply.code(400).send(error.description);
     }
 

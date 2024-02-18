@@ -177,7 +177,7 @@ export class CreateAppointmentForm extends Component<iProps> {
   }
 
   async sendAppointmentStatus(appointment: iAppointment, isUpdate: boolean) {
-    const api = createApi(API.SEND_APPOINTMENT_STATUS, {
+    const api = createApi(API.MEDBOT_SEND_APPOINTMENT_STATUS, {
       method: 'POST',
       body: JSON.stringify({
         status: isUpdate ? 'updated' : 'created',

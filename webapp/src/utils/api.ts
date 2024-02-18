@@ -34,12 +34,12 @@ interface iResponses {
   [API.USER]: iUser;
   [API.CREATE_USER]: iUser;
   [API.UPDATE_USER]: iUser;
-  [API.UPDATE_ORDER]: iOrder;
-  [API.CREATE_ORDER]: iOrder;
+  [API.UPDATE_ORDER]: iOrder | iErrorResponse<{ error: string }>;
+  [API.CREATE_ORDER]: iOrder | iErrorResponse<{ error: string }>;
   [API.WAITING_FOR_PAYMENT_ORDER]: iOrder;
   [API.PRODUCT_LIST]: iProduct[];
   [API.MEDBOT_PROCEED_TO_CHAT]: unknown;
-  [API.MEDBOT_PROCEED_TO_APPOINTMENT]: unknown;
+  [API.MEDBOT_SEND_APPOINTMENT_STATUS]: unknown;
 }
 
 export function createApi<tEndpoint extends API>(

@@ -2,10 +2,21 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px;
+  padding: 16px;
   border-radius: 8px;
-  background: var(--tg-theme-section-bg-color);
+  background: var(--tg-theme-secondary-bg-color);
   text-decoration: none;
   color: var(--tg-theme-text-color);
   cursor: pointer;
+}
+
+.content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.name {
+  grid-column-start: 1;
+  grid-column-end: 3;
 }

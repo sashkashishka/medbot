@@ -3,7 +3,7 @@ import { ScheduleMeeting as ReactScheduleMeeting } from 'react-schedule-meeting'
 import { useStore } from '@nanostores/react';
 import uk from 'date-fns/locale/uk';
 
-import { availableTimeslots$ } from '../../../../stores/appointment';
+import { $availableTimeslots } from '../../../../stores/appointment';
 import { getThemeParams } from '../../../../utils/tg';
 import { required } from '../../../../utils/final-form';
 import { ValidationError } from '../../../../components/ValidationError';
@@ -11,7 +11,7 @@ import { ValidationError } from '../../../../components/ValidationError';
 import styles from './ScheduleMeeting.module.css';
 
 export function ScheduleMeeting() {
-  const availableTimeslots = useStore(availableTimeslots$);
+  const availableTimeslots = useStore($availableTimeslots);
   const { input, meta } = useField<string>('time', {
     validateFields: [],
     validate: required('Обовʼязкове поле'),
