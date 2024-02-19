@@ -36,6 +36,13 @@ interface iResponses {
   [API.UPDATE_USER]: iUser;
   [API.UPDATE_ORDER]: iOrder | iErrorResponse<{ error: string }>;
   [API.CREATE_ORDER]: iOrder | iErrorResponse<{ error: string }>;
+  [API.CREATE_ORDER_BY_CODE]:
+    | iOrder
+    | iErrorResponse<{
+        error: string;
+        blockedUntil?: string;
+        reason?: string;
+      }>;
   [API.WAITING_FOR_PAYMENT_ORDER]: iOrder;
   [API.PRODUCT_LIST]: iProduct[];
   [API.MEDBOT_PROCEED_TO_CHAT]: unknown;

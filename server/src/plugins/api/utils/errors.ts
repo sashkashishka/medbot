@@ -52,7 +52,8 @@ export class OrderError<tPayload = unknown> {
     switch (this.reason) {
       case 'too-many-requests': {
         return create400Response({
-          error: { reason: this.reason, payload: this.payload },
+          reason: this.reason,
+          payload: this.payload,
         });
       }
 

@@ -12,6 +12,7 @@ import { ProductDetailPage } from './ProductDetail';
 import { ProductCheckoutPage } from './ProductCheckout';
 import { AppointmentListPage } from './AppointmentList';
 import { CreateAppointmentPage } from './CreateAppointment';
+import { ProductActivateCodePage } from './ProductActivateCode';
 
 export const routes = [
   {
@@ -38,7 +39,7 @@ export const routes = [
             path: ROUTES.APPOINTMENT_CREATE,
             element: <CreateAppointmentPage />,
           },
-        ]
+        ],
       },
       {
         path: ROUTES.PRODUCTS,
@@ -59,6 +60,10 @@ export const routes = [
           {
             path: ROUTES.PRODUCT_CHECKOUT,
             element: <ProductCheckoutPage />,
+          },
+          {
+            path: ROUTES.PRODUCT_ACTIVATE_CODE,
+            element: <ProductActivateCodePage />,
           },
         ],
       },

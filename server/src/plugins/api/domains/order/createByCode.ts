@@ -28,9 +28,8 @@ export const createByCode: RouteOptions = {
       type: 'object',
       properties: {
         userId: { type: 'number' },
-        productId: { type: 'number' },
       },
-      required: ['userId', 'productId'],
+      required: ['userId'],
     },
   },
   async preHandler(req) {
