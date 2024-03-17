@@ -109,7 +109,7 @@ export const createAppointmentRoute: RouteOptions = {
 
     const event = await this.googleCalendar.events.insert(
       createGoogleCalendarEvent({
-        calendarId: this.googleCalendarId,
+        calendarId: this.config.GOOGLE_CALENDAR_ID,
         user: appointment.user,
         appointment: appointment,
       }),

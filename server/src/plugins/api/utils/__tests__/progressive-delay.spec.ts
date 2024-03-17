@@ -3,10 +3,12 @@ import {
   addMilliseconds,
   addMinutes,
   differenceInDays,
-  differenceInMilliseconds,
   differenceInMinutes,
 } from 'date-fns';
-import { createProgressiveDelay, iCacheEntity } from '../progressive-delay.js';
+import {
+  createProgressiveDelay,
+  type iCacheEntity,
+} from '../progressive-delay.js';
 
 describe('progressive delay', () => {
   describe('max day limit', () => {

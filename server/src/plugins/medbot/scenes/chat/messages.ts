@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client';
+import type { Prisma } from '@prisma/client';
 import { formatDate } from '../../../api/utils/time.js';
 
 export const MESSAGES = {

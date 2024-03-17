@@ -50,7 +50,7 @@ export const deleteAppointmentRoute: RouteOptions = {
     });
 
     await this.googleCalendar.events.delete({
-      calendarId: this.googleCalendarId,
+      calendarId: this.config.GOOGLE_CALENDAR_ID,
       eventId: request.$calendarEventId,
     });
 

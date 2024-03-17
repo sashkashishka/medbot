@@ -38,7 +38,11 @@ export function createProgressiveDelay(options: iOptions) {
       tap(partial(bind(cache.put, cache), [ip])),
 
       when(
-        compose(lt(options.frequencyRate), prop('frequencyRate')),
+        compose(
+          // @ts-ignore
+          lt(options.frequencyRate),
+          prop('frequencyRate'),
+        ),
         setFrequencyBlockage,
       ),
       incFrequency,
@@ -50,13 +54,17 @@ export function createProgressiveDelay(options: iOptions) {
         partial(resetFrequency, [options]),
       ),
       when(
-        compose(lt(options.maxAttempts),prop('attempt')),
+        compose(
+          // @ts-ignore
+          lt(options.maxAttempts),
+          prop('attempt'),
+        ),
         setMaxAttemptBlockage,
       ),
       when(isNotBlocked, incAttempt),
       when(canResetBlockageBy('frequency'), resetBlockageByFrequency),
       when(canResetBlockageBy('maxAttempts'), resetBlockageByMaxAttempt),
-      when(equals(-1 as -1), createDefaultCacheEntity),
+      when(equals(-1 as const), createDefaultCacheEntity),
       bind(cache.get, cache),
     );
 

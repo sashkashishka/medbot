@@ -27,15 +27,14 @@ orderHandler.command(
     return next();
   },
   async (ctx, next) => {
-    const { prisma, message } = ctx;
+    const { message, serviceApiSdk } = ctx;
 
     try {
-      const order = await prisma.order.findFirst({
-        where: {
-          userId: message.from.id,
-          status: 'ACTIVE',
-        },
-      });
+      const [order, err] = await serviceApiSdk.activeOrder(message.from.id);
+
+      if (err) {
+        throw err;
+      }
 
       if (!order) {
         return ctx.reply(MESSAGES.ERROR.ORDER_NOT_PAID);
@@ -47,13 +46,16 @@ orderHandler.command(
     }
   },
   async (ctx) => {
-    const { update, prisma, telegram, forumId, message, scene } = ctx;
+    const { update, serviceApiSdk, telegram, forumId, message, scene } = ctx;
 
     try {
       const userId = update.message.from.id;
-      const user = await prisma.user.findUnique({
-        where: { id: userId },
-      });
+
+      const [user, err] = await serviceApiSdk.user(userId);
+
+      if (err) {
+        throw err;
+      }
 
       if (!user.messageThreadId) {
         const forumTopic = await telegram.createForumTopic(
@@ -63,13 +65,15 @@ orderHandler.command(
           }`.trim(),
         );
 
-        await prisma.user.update({
-          where: { id: userId },
-          data: {
-            messageThreadId: forumTopic.message_thread_id,
-            botChatId: message.chat.id,
-          },
+        const [_data, err] = await serviceApiSdk.updateUser(userId, {
+          ...user,
+          messageThreadId: forumTopic.message_thread_id,
+          botChatId: message.chat.id,
         });
+
+        if (err) {
+          throw err;
+        }
       }
 
       await ctx.deleteMessage(update.message.message_id);

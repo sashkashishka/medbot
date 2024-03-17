@@ -2,7 +2,7 @@ import type { RouteOptions } from 'fastify';
 
 export const proceedToChatRoute: RouteOptions = {
   method: 'GET',
-  url: '/medbot/proceed-to-chat',
+  url: '/proceed-to-chat',
   handler(req) {
     const { $tgQueryId } = req;
 

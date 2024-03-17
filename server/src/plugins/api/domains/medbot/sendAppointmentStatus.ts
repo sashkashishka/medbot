@@ -11,7 +11,7 @@ interface iBody {
 
 export const sendAppointmentStatusRoute: RouteOptions = {
   method: 'POST',
-  url: '/medbot/send-appointment-status',
+  url: '/send-appointment-status',
   schema: {
     body: {
       type: 'object',

@@ -9,43 +9,16 @@ export const cleanupOnSecondStartCommand: MiddlewareFn<
   if (ctx.session?.__scenes?.current !== SCENES.ORDER) {
     ctx.session = {};
 
-    const { update } = ctx;
+    const { update, serviceApiSdk } = ctx;
 
     try {
-      const orders = await ctx.prisma.order.findMany({
-        where: { userId: update.message.from.id, status: 'ACTIVE' },
-      });
-      const appointments = await ctx.prisma.appointment.findMany({
-        where: { userId: update.message.from.id, status: 'ACTIVE' },
-      });
+      const [_data, err] = await serviceApiSdk.teardownUserData(
+        update.message.from.id,
+      );
 
-      const pendingArr = [];
-
-      orders.forEach((order) => {
-        pendingArr.push(
-          ctx.prisma.order.update({
-            where: { id: order?.id },
-            data: { status: 'DONE' },
-          }),
-        );
-      });
-      appointments.map((appointment) => {
-        pendingArr.push(
-          ctx.prisma.appointment.update({
-            where: { id: appointment?.id },
-            data: { status: 'DELETED' },
-          }),
-        );
-
-        pendingArr.push(
-          ctx.googleCalendar.events.delete({
-            calendarId: ctx.googleCalendarId,
-            eventId: appointment.calendarEventId,
-          }),
-        );
-      });
-
-      await Promise.all(pendingArr);
+      if (err) {
+        throw err;
+      }
     } catch (e) {
       medbotLogger.error(e, 'cleanupOnSecondStartCommand');
     }

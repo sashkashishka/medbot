@@ -1,5 +1,5 @@
 import fp from 'fastify-plugin';
-import { FastifyPluginAsync } from 'fastify';
+import { type FastifyPluginAsync } from 'fastify';
 import { Telegraf, session } from 'telegraf';
 import type { Update } from 'telegraf/types';
 
@@ -18,7 +18,6 @@ declare module 'fastify' {
   // eslint-disable-next-line
   interface FastifyInstance {
     medbot: Telegraf;
-    medbotToken: string;
   }
 }
 
@@ -36,21 +35,21 @@ function getSessionKey(ctx: iMedbotContext): string {
   return `${fromId}:${chatId}`;
 }
 
-const medbotPlugin: FastifyPluginAsync = fp(async (server) => {
-  const bot = new Telegraf<iMedbotContext>(server.config.TG_BOT_TOKEN, {
-    telegram: { testEnv: !!server.config.TG_BOT_TEST },
+export const medbotPlugin: FastifyPluginAsync = fp(async (fastify) => {
+  const bot = new Telegraf<iMedbotContext>(fastify.config.TG_BOT_TOKEN, {
+    telegram: { testEnv: !!Number(fastify.config.TG_BOT_TEST) },
   });
-  const store = new PrismaSessionStorage(server.prisma);
+  const store = new PrismaSessionStorage(fastify.prisma);
 
   bot.use(session({ store, getSessionKey }));
   bot.use(loggerMiddleware);
   bot.use(
     populateContext({
-      prisma: server.prisma,
-      forumId: server.config.TG_BOT_FORUM_ID,
-      googleCalendar: server.googleCalendar,
-      googleCalendarId: server.googleCalendarId,
-      webAppUrl: server.config.TG_BOT_WEBAPP_URL,
+      forumId: fastify.config.TG_BOT_FORUM_ID,
+      googleCalendar: fastify.googleCalendar,
+      googleCalendarId: fastify.config.GOOGLE_CALENDAR_ID,
+      webAppUrl: fastify.config.TG_BOT_WEBAPP_URL,
+      serviceApiSdk: fastify.serviceApiSdk,
     }),
   );
 
@@ -58,7 +57,7 @@ const medbotPlugin: FastifyPluginAsync = fp(async (server) => {
   bot.command('start', cleanupOnSecondStartCommand);
 
   bot.on(
-    createIsForumUpdateFilter(server.config.TG_BOT_FORUM_ID),
+    createIsForumUpdateFilter(fastify.config.TG_BOT_FORUM_ID),
     forumScenes.middleware(),
   );
   bot.on('message', medbotScenes.middleware());
@@ -67,17 +66,14 @@ const medbotPlugin: FastifyPluginAsync = fp(async (server) => {
     medbotLogger.error(err);
   });
 
-  // Make medbot Client available through the fastify server instance: server.medbot
-  server.decorate('medbot', bot);
-  server.decorate('medbotToken', server.config.TG_BOT_TOKEN);
+  // Make medbot Client available through the fastify fastify instance: fastify.medbot
+  fastify.decorate('medbot', bot);
 
-  server.addHook('onListen', async () => {
+  fastify.addHook('onListen', async () => {
     bot.launch();
   });
 
-  server.addHook('onClose', async () => {
+  fastify.addHook('onClose', async () => {
     bot.stop();
   });
 });
-
-export default medbotPlugin;

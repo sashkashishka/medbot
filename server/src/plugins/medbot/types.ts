@@ -1,6 +1,6 @@
-import type { PrismaClient } from '@prisma/client';
 import type { Context, Scenes } from 'telegraf';
 import type { calendar_v3 } from '@googleapis/calendar';
+import type { ServiceApiSdk } from '../serviceApiSdk/sdk.js';
 
 export interface iMedbotSession extends Scenes.WizardSession {
   messageThreadId?: number;
@@ -8,11 +8,11 @@ export interface iMedbotSession extends Scenes.WizardSession {
 }
 
 export interface iMedbotContext extends Context {
-  prisma: PrismaClient;
   forumId: number;
   googleCalendar: calendar_v3.Calendar;
   googleCalendarId: string;
   webAppUrl: string;
+  serviceApiSdk: ServiceApiSdk;
 
   // declare session type
   session: iMedbotSession;

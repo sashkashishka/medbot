@@ -19,6 +19,8 @@ export const updateUserRoute: RouteOptions = {
         topicForumId: { type: 'number' },
         phone: { type: 'string' },
         email: { type: 'string' },
+        messageThreadId: { type: 'number' },
+        botChatId: { type: 'number' },
       },
       required: ['name', 'surname', 'birthDate', 'phone', 'email'],
     },

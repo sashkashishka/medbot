@@ -120,7 +120,7 @@ export const updateAppointmentRoute: RouteOptions = {
 
     await this.googleCalendar.events.update(
       createGoogleCalendarEvent({
-        calendarId: this.googleCalendarId,
+        calendarId: this.config.GOOGLE_CALENDAR_ID,
         eventId: appointment.calendarEventId,
         user: appointment.user,
         appointment: appointment,

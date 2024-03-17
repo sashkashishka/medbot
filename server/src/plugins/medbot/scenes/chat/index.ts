@@ -41,15 +41,14 @@ chatScene.command(
     return next();
   },
   async (ctx) => {
-    const { update, prisma } = ctx;
+    const { update, serviceApiSdk } = ctx;
 
     try {
-      const activeAppointment = await prisma.appointment.findFirst({
-        where: {
-          userId: update.message.from.id,
-          status: 'ACTIVE',
-        },
-      });
+      const [activeAppointment, err] = await serviceApiSdk.activeAppointment(update.message.from.id);
+
+      if (err) {
+        throw err;
+      }
 
       const message =
         MESSAGES.APPOINTMENT_STATUS[update.message.text](activeAppointment);

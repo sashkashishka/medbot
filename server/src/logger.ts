@@ -1,4 +1,4 @@
-import { pino, LoggerOptions } from 'pino';
+import { pino, type LoggerOptions } from 'pino';
 
 function getLogger() {
   const options: LoggerOptions = {

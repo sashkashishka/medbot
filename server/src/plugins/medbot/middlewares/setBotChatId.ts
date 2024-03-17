@@ -5,18 +5,20 @@ import { medbotLogger } from '../../../logger.js';
 
 export const setBotChatId: MiddlewareFn<iMedbotContext> =
   async function setBotChatId(ctx, next) {
-    const { session } = ctx;
+    const { session, serviceApiSdk } = ctx;
 
     if (!session.botChatId) {
       try {
         const messageThreadId = (ctx.update as Update.MessageUpdate).message
           .message_thread_id;
 
-        const user = await ctx.prisma.user.findFirst({
-          where: { messageThreadId },
-        });
+        const [data, err] = await serviceApiSdk.getBotChatId(messageThreadId);
 
-        ctx.session.botChatId = user.botChatId;
+        if (err) {
+          throw err;
+        }
+
+        ctx.session.botChatId = data.botChatId;
       } catch (e) {
         medbotLogger.error(e, 'setBotChatId');
       }
