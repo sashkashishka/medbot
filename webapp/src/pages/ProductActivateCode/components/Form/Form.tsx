@@ -57,6 +57,16 @@ export class ProductActivateCodeForm extends Component<iProps> {
             return (
               <form onSubmit={handleSubmit} className={styles.container}>
                 <Input
+                  data-testid={TIDS.INPUT_CODE}
+                  labelName="Код активації"
+                  fieldName="code"
+                  type="number"
+                  min={0}
+                  max={9999}
+                  fieldConfig={{ validate: required('Обовʼязкове поле') }}
+                />
+
+                <Input
                   data-testid={TIDS.INPUT_SURNAME}
                   labelName="Прізвище"
                   fieldName="surname"
@@ -167,6 +177,7 @@ export class ProductActivateCodeForm extends Component<iProps> {
     const method = user ? 'PATCH' : 'POST';
 
     const body: Partial<iUser> = {
+      id: values.userId,
       name: values.name,
       surname: values.surname,
       patronymic: values.patronymic,

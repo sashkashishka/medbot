@@ -1,9 +1,9 @@
 import { generatePath, useNavigate } from 'react-router-dom';
 import { useStore } from '@nanostores/react';
 import { $lastProduct } from '../../../../stores/product';
+import { ROUTES } from '../../../../constants/routes';
 
 import styles from './LastOrder.module.css';
-import { ROUTES } from '../../../../constants/routes';
 
 export function LastOrder() {
   const navigate = useNavigate();

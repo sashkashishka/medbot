@@ -178,6 +178,7 @@ export class ProductCheckoutForm extends Component<iProps> {
     const method = user ? 'PATCH' : 'POST';
 
     const body: Partial<iUser> = {
+      id: values.userId,
       name: values.name,
       surname: values.surname,
       patronymic: values.patronymic,

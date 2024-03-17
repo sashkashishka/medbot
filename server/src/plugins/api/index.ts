@@ -17,6 +17,7 @@ import { activeOrderRoute } from './domains/order/active.js';
 import { createOrderRoute } from './domains/order/create.js';
 import { waitingForPaymentOrderRoute } from './domains/order/waitingForPayment.js';
 import { updateOrderRoute } from './domains/order/update.js';
+import { createByCode } from './domains/order/createByCode.js';
 
 import { sendAppointmentStatusRoute } from './domains/medbot/sendAppointmentStatus.js';
 import { proceedToChatRoute } from './domains/medbot/proceedToChat.js';
@@ -42,6 +43,7 @@ const userApi: FastifyPluginCallback = (fastify, _opts, done) => {
   fastify.route(activeOrderRoute);
   fastify.route(createOrderRoute);
   fastify.route(updateOrderRoute);
+  fastify.route(createByCode);
   fastify.route(waitingForPaymentOrderRoute);
   fastify.route(updateUserRoute);
   fastify.route(sendAppointmentStatusRoute);
@@ -78,6 +80,12 @@ const serviceApi: FastifyPluginCallback = (fastify, _opts, done) => {
   fastify.route(activeAppointmentRoute);
   fastify.route(userRoute);
   fastify.route(updateUserRoute);
+
+  fastify.setErrorHandler(function errorHandler(error, _req, reply) {
+    this.log.error(error, 'serviceApi');
+
+    return reply.status(400).send(create400Response({ error }));
+  });
 
   done();
 };

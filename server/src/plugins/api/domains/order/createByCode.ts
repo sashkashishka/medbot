@@ -99,6 +99,7 @@ export const createByCode: RouteOptions = {
     const order = await this.prisma.order.create({
       data: {
         ...body,
+        productId: product.id,
         status: 'ACTIVE',
         subscriptionEndsAt,
         createdAt: new Date(),

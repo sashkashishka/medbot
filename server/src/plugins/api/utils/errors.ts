@@ -51,10 +51,7 @@ export class OrderError<tPayload = unknown> {
   get description() {
     switch (this.reason) {
       case 'too-many-requests': {
-        return create400Response({
-          reason: this.reason,
-          payload: this.payload,
-        });
+        return create400Response(this.payload);
       }
 
       case 'has-active':

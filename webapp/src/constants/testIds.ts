@@ -18,4 +18,5 @@ export enum TIDS {
   INPUT_BIRTHDATE = 'product-checkout-input-birthDate',
   INPUT_PHONE = 'product-checkout-input-phone',
   INPUT_EMAIL = 'product-checkout-input-email',
+  INPUT_CODE = 'product-checkout-input-code',
 }

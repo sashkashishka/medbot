@@ -41,7 +41,7 @@ export class ServiceApiSdk {
 
   public async updateUser(userId: number, data: Prisma.UserCreateInput) {
     return this.request<Prisma.UserCreateInput>(`/user/update/${userId}`, {
-      method: 'patch',
+      method: 'PATCH',
       body: JSON.stringify(data),
     });
   }
@@ -55,6 +55,7 @@ export class ServiceApiSdk {
       ...init,
       headers: {
         ...init?.headers,
+        'Content-Type': 'application/json',
         'x-token': this.tgToken,
       },
     };
