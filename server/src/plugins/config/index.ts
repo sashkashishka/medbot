@@ -40,6 +40,7 @@ const schema = {
     'RATE_LIMITER_MAX_ATTEMPTS',
     'PASSWORD_SALT',
     'JWT_SECRET',
+    'COOKIE_SECRET',
   ],
   properties: {
     PRISMA_DATABASE: { type: 'string' },
@@ -66,6 +67,7 @@ const schema = {
     RATE_LIMITER_MAX_ATTEMPTS: { type: 'number' },
     PASSWORD_SALT: { type: 'string' },
     JWT_SECRET: { type: 'string' },
+    COOKIE_SECRET: { type: 'string' },
   } as const,
 };
 

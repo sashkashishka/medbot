@@ -20,17 +20,32 @@ export const registerAdminRoute: RouteOptions = {
       throw new RegisterError('too-much-registrations');
     }
   },
-  async handler(request) {
+  async handler(request, reply) {
     const body = request.body as iBody;
 
-    return this.prisma.admin.create({
+    const admin = await this.prisma.admin.create({
       data: {
         name: body.name,
         password: encryptPassword(body.password, this.config.PASSWORD_SALT),
       },
-      select: {
-        name: true,
-      },
     });
+
+    const token = await reply.jwtSign(
+      {
+        id: admin.id,
+        name: admin.name,
+      },
+      { expiresIn: '1d' },
+    );
+
+    return reply
+      .setCookie('token', token, {
+        path: '/',
+        secure: false,
+        httpOnly: true,
+        signed: true,
+      })
+      .code(200)
+      .send({ done: true });
   },
 };

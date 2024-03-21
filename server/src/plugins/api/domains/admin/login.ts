@@ -27,13 +27,19 @@ export const loginAdminRoute: RouteOptions = {
 
     const token = await reply.jwtSign(
       {
-        name: body.name,
+        id: admin.id,
+        name: admin.name,
       },
       { expiresIn: '1d' },
     );
 
     return reply
-      .setCookie('token', token, { path: '/', secure: false, httpOnly: true })
+      .setCookie('token', token, {
+        path: '/',
+        secure: false,
+        httpOnly: true,
+        signed: true,
+      })
       .code(200)
       .send({ done: true });
   },

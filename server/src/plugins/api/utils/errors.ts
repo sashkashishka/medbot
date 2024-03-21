@@ -71,7 +71,7 @@ export class RegisterError<tRegisterErrorReason> {
     switch (this.reason) {
       case 'too-much-registrations':
       default: {
-        return create400Response({ error: this.reason });
+        return create400Response(this.reason);
       }
     }
   }

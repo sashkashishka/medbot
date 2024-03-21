@@ -18,7 +18,7 @@ const fastify = Fastify({
 });
 
 await fastify.register(fastifyEnv, envPluginConfig);
-await fastify.register(fastifyCookie);
+await fastify.register(fastifyCookie, { secret: fastify.config.COOKIE_SECRET });
 await fastify.register(fastifyJwt, {
   secret: fastify.config.JWT_SECRET,
   cookie: { cookieName: 'token', signed: true },

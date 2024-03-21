@@ -3,6 +3,7 @@ import { type FastifyPluginCallback } from 'fastify';
 import {
   AppointmentError,
   OrderError,
+  RegisterError,
   create400Response,
 } from './utils/errors.js';
 
@@ -36,6 +37,7 @@ import { deleteAppointmentRoute } from './domains/appointment/delete.js';
 import { registerAdminRoute } from './domains/admin/register.js';
 import { loginAdminRoute } from './domains/admin/login.js';
 import { logoutAdminRoute } from './domains/admin/logout.js';
+import { adminRoute } from './domains/admin/admin.js';
 
 import { tgHashValidator, verifyIsFromTg } from './hooks.js';
 
@@ -101,6 +103,16 @@ const adminAuthApi: FastifyPluginCallback = (fastify, _opts, done) => {
   fastify.route(loginAdminRoute);
   fastify.route(logoutAdminRoute);
 
+  fastify.setErrorHandler(function errorHandler(error, _req, reply) {
+    this.log.error(error, 'adminAuthApi');
+
+    if (error instanceof RegisterError) {
+      return reply.code(400).send(error.description);
+    }
+
+    return reply.code(500).send(error);
+  });
+
   done();
 };
 
@@ -110,12 +122,7 @@ const adminApi: FastifyPluginCallback = (fastify, _opts, done) => {
   fastify.route(productListRoute);
   fastify.route(userListRoute);
   fastify.route(orderListRoute);
-
-  fastify.setErrorHandler(function errorHandler(error, _req, reply) {
-    this.log.error(error, 'adminApi');
-
-    return reply.status(400).send(create400Response({ error }));
-  });
+  fastify.route(adminRoute);
 
   done();
 };
