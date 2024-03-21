@@ -1,6 +1,5 @@
 import { useStore } from '@nanostores/react';
-import { Button, Form, Input } from 'antd';
-import toast from 'react-hot-toast';
+import { Button, Form, Input, notification } from 'antd';
 import { $register } from '../../stores/auth';
 import type { iRegister } from '../../types';
 
@@ -16,13 +15,13 @@ export function RegisterPage() {
       const respData = await resp.json();
 
       if ('error' in respData && typeof respData.error === 'string') {
-        return toast.error(respData.error);
+        return notification.error({ message: respData.error });
       }
 
       throw respData;
     } catch (e) {
       console.error(e);
-      toast.error('Unexpected error');
+      notification.error({ message: 'Unexpected error' });
     }
   }
 
