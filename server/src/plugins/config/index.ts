@@ -38,6 +38,8 @@ const schema = {
     'RATE_LIMITER_FREQUENCY_RATE',
     'RATE_LIMITER_FREQUENCY_TIME',
     'RATE_LIMITER_MAX_ATTEMPTS',
+    'PASSWORD_SALT',
+    'JWT_SECRET',
   ],
   properties: {
     PRISMA_DATABASE: { type: 'string' },
@@ -62,6 +64,8 @@ const schema = {
     RATE_LIMITER_FREQUENCY_RATE: { type: 'number' },
     RATE_LIMITER_FREQUENCY_TIME: { type: 'number' },
     RATE_LIMITER_MAX_ATTEMPTS: { type: 'number' },
+    PASSWORD_SALT: { type: 'string' },
+    JWT_SECRET: { type: 'string' },
   } as const,
 };
 

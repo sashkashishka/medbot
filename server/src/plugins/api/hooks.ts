@@ -46,10 +46,3 @@ export const verifyIsFromTg: preHandlerAsyncHookHandler =
       throw new Error('Invalid token');
     }
   };
-
-export const verifyJwt: preHandlerAsyncHookHandler = async function verifyJwt(
-  req,
-) {
-  // TODO verify token via JWT or something else
-  // ...
-};

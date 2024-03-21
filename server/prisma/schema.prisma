@@ -87,3 +87,9 @@ model TelegrafSessions {
   key     String @id
   session String
 }
+
+model Admin {
+  id       Int    @id @default(autoincrement())
+  name     String
+  password String
+}

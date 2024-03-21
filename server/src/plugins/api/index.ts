@@ -9,6 +9,7 @@ import {
 import { userRoute } from './domains/user/index.js';
 import { createUserRoute } from './domains/user/create.js';
 import { updateUserRoute } from './domains/user/update.js';
+import { userListRoute } from './domains/user/list.js';
 
 import { createProductRoute } from './domains/product/create.js';
 import { productListRoute } from './domains/product/list.js';
@@ -18,6 +19,7 @@ import { createOrderRoute } from './domains/order/create.js';
 import { waitingForPaymentOrderRoute } from './domains/order/waitingForPayment.js';
 import { updateOrderRoute } from './domains/order/update.js';
 import { createByCode } from './domains/order/createByCode.js';
+import { orderListRoute } from './domains/order/list.js';
 
 import { sendAppointmentStatusRoute } from './domains/medbot/sendAppointmentStatus.js';
 import { proceedToChatRoute } from './domains/medbot/proceedToChat.js';
@@ -31,7 +33,11 @@ import { activeAppointmentRoute } from './domains/appointment/active.js';
 import { updateAppointmentRoute } from './domains/appointment/update.js';
 import { deleteAppointmentRoute } from './domains/appointment/delete.js';
 
-import { tgHashValidator, verifyIsFromTg, verifyJwt } from './hooks.js';
+import { registerAdminRoute } from './domains/admin/register.js';
+import { loginAdminRoute } from './domains/admin/login.js';
+import { logoutAdminRoute } from './domains/admin/logout.js';
+
+import { tgHashValidator, verifyIsFromTg } from './hooks.js';
 
 const userApi: FastifyPluginCallback = (fastify, _opts, done) => {
   // TODO return back
@@ -90,10 +96,20 @@ const serviceApi: FastifyPluginCallback = (fastify, _opts, done) => {
   done();
 };
 
+const adminAuthApi: FastifyPluginCallback = (fastify, _opts, done) => {
+  fastify.route(registerAdminRoute);
+  fastify.route(loginAdminRoute);
+  fastify.route(logoutAdminRoute);
+
+  done();
+};
+
 const adminApi: FastifyPluginCallback = (fastify, _opts, done) => {
-  // TODO verify token as from admin area
-  fastify.addHook('preHandler', verifyJwt);
+  fastify.addHook('onRequest', (req) => req.jwtVerify());
   fastify.route(createProductRoute);
+  fastify.route(productListRoute);
+  fastify.route(userListRoute);
+  fastify.route(orderListRoute);
 
   fastify.setErrorHandler(function errorHandler(error, _req, reply) {
     this.log.error(error, 'adminApi');
@@ -111,7 +127,8 @@ export const apiPlugin: FastifyPluginCallback = async (
 ) => {
   await fastify.register(userApi);
   await fastify.register(serviceApi, { prefix: '/service' });
-  await fastify.register(adminApi);
+  await fastify.register(adminAuthApi, { prefix: '/auth/admin' });
+  await fastify.register(adminApi, { prefix: '/admin' });
 
   done();
 };

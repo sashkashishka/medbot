@@ -1,5 +1,7 @@
 import Fastify from 'fastify';
 import fastifyEnv from '@fastify/env';
+import fastifyCookie from '@fastify/cookie';
+import fastifyJwt from '@fastify/jwt';
 import { logger } from './logger.js';
 
 import { envPluginConfig } from './plugins/config/index.js';
@@ -16,6 +18,12 @@ const fastify = Fastify({
 });
 
 await fastify.register(fastifyEnv, envPluginConfig);
+await fastify.register(fastifyCookie);
+await fastify.register(fastifyJwt, {
+  secret: fastify.config.JWT_SECRET,
+  cookie: { cookieName: 'token', signed: true },
+});
+
 await fastify.register(prismaPlugin);
 await fastify.register(googleCalendarPlugin);
 await fastify.register(apiPlugin, { prefix: '/api' });

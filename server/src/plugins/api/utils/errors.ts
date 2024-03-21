@@ -61,3 +61,18 @@ export class OrderError<tPayload = unknown> {
     }
   }
 }
+
+export type tRegisterErrorReason = 'too-much-registrations';
+
+export class RegisterError<tRegisterErrorReason> {
+  constructor(public reason: tRegisterErrorReason) {}
+
+  get description() {
+    switch (this.reason) {
+      case 'too-much-registrations':
+      default: {
+        return create400Response({ error: this.reason });
+      }
+    }
+  }
+}
