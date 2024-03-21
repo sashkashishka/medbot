@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom';
 
 import { PrivateRoute } from '../components/PrivateRoute';
 import { AuthLayout } from '../components/Layouts/Auth';
+import { DashboardLayout } from '../components/Layouts/Dashboard';
 
 import { ROUTES } from '../constants/routes';
 
@@ -46,7 +47,9 @@ export const routes = [
         path: ROUTES.DASHBOARD,
         element: (
           <PrivateRoute>
-            <Outlet />
+            <DashboardLayout>
+              <Outlet />
+            </DashboardLayout>
           </PrivateRoute>
         ),
         children: [

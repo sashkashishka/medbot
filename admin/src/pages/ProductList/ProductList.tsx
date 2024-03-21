@@ -26,5 +26,13 @@ const columns: TableProps<iProduct>['columns'] = [
 export function ProductListPage() {
   const { data, loading } = useStore($products);
 
-  return <Table loading={loading} columns={columns} dataSource={data || []} />;
+  return (
+    <Table
+      rowKey="id"
+      loading={loading}
+      columns={columns}
+      dataSource={data || []}
+      pagination={false}
+    />
+  );
 }

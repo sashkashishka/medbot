@@ -1,4 +1,5 @@
 export interface iAdmin {
+  id: number;
   name: string;
 }
 
