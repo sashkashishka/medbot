@@ -16,7 +16,7 @@ interface iProps {
 export function DashboardLayout({ children }: iProps) {
   const admin = useStore($admin);
   const { mutate: logout } = useStore($logout);
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   const {
     token: { colorBgContainer, borderRadiusLG, paddingMD, marginMD },
   } = theme.useToken();

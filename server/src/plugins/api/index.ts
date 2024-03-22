@@ -14,6 +14,8 @@ import { userListRoute } from './domains/user/list.js';
 
 import { createProductRoute } from './domains/product/create.js';
 import { productListRoute } from './domains/product/list.js';
+import { editProductRoute } from './domains/product/edit.js';
+import { deleteProductRoute } from './domains/product/delete.js';
 
 import { activeOrderRoute } from './domains/order/active.js';
 import { createOrderRoute } from './domains/order/create.js';
@@ -120,6 +122,8 @@ const adminAuthApi: FastifyPluginCallback = (fastify, _opts, done) => {
 const adminApi: FastifyPluginCallback = (fastify, _opts, done) => {
   fastify.addHook('onRequest', (req) => req.jwtVerify());
   fastify.route(createProductRoute);
+  fastify.route(editProductRoute);
+  fastify.route(deleteProductRoute);
   fastify.route(productListRoute);
   fastify.route(userListRoute);
   fastify.route(orderListRoute);

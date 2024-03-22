@@ -14,6 +14,7 @@ import { UserListPage } from './UserList';
 import { OrderListPage } from './OrderList';
 import { AppointmentListPage } from './AppointmentList';
 import { DashboardPage } from './Dashboard';
+import { ProductPage } from './Product';
 
 export const routes = [
   {
@@ -63,6 +64,15 @@ export const routes = [
             path: ROUTES.PRODUCTS,
             element: <ProductListPage />,
           },
+          {
+            path: ROUTES.CREATE_PRODUCT,
+            element: <ProductPage />,
+          },
+          {
+            path: ROUTES.EDIT_PRODUCT,
+            element: <ProductPage />,
+          },
+
           {
             path: ROUTES.USERS,
             element: <UserListPage />,
