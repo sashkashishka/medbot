@@ -30,5 +30,6 @@ export const $logout = createMutatorStore(({ invalidate }) => {
   return fetch('/api/auth/admin/logout', {
     method: 'DELETE',
     headers: { 'content-type': 'application/json' },
+    body: '{}',
   });
 });

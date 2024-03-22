@@ -1,9 +1,31 @@
 import { nanoquery } from '@nanostores/query';
 
-const buildApiRoute = (keys: (string | number | boolean)[]) => `/api/admin/${keys.join('/')}`
+const buildApiRoute = (keys: (string | number | boolean)[]) =>
+  `/api/admin/${keys.join('/')}`;
 
 export const [createFetcherStore, createMutatorStore] = nanoquery({
-  fetcher(...keys: (string | number | boolean)[]) {
-    return fetch(buildApiRoute(keys)).then((r) => r.json())
+  async fetcher(...keys: (string | number | boolean)[]) {
+    const response = await fetch(buildApiRoute(keys));
+
+    const data = await response.json();
+
+    if (response.ok) {
+      return data;
+    }
+
+    throw new FetchError(response.status, data);
   },
 });
+
+export class FetchError extends Error {
+  constructor(
+    public statusCode: number,
+    public details: any,
+    // eslint-disable-next-line
+    ...args: any[]
+  ) {
+    super(...args);
+
+    this.stack = new Error().stack;
+  }
+}

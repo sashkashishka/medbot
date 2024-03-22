@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom';
 import { PrivateRoute } from '../components/PrivateRoute';
 import { AuthLayout } from '../components/Layouts/Auth';
 import { DashboardLayout } from '../components/Layouts/Dashboard';
+import { AppProvider } from '../components/Providers/App';
 
 import { ROUTES } from '../constants/routes';
 
@@ -12,7 +13,7 @@ import { ProductListPage } from './ProductList';
 import { UserListPage } from './UserList';
 import { OrderListPage } from './OrderList';
 import { AppointmentListPage } from './AppointmentList';
-import { AppProvider } from '../components/Providers/App';
+import { DashboardPage } from './Dashboard';
 
 export const routes = [
   {
@@ -53,6 +54,11 @@ export const routes = [
           </PrivateRoute>
         ),
         children: [
+          {
+            path: ROUTES.DASHBOARD,
+            element: <DashboardPage />,
+          },
+
           {
             path: ROUTES.PRODUCTS,
             element: <ProductListPage />,
