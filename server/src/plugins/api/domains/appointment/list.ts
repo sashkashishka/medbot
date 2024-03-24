@@ -1,20 +1,43 @@
+import type { Prisma } from '@prisma/client';
 import type { RouteOptions } from 'fastify';
 
-interface iParams {
+interface iQuerystring {
   skip: number;
   take: number;
+  date_sort: 'asc' | 'desc';
+  status: Prisma.AppointmentUncheckedCreateInput['status'];
 }
 
 export const appointmentListRoute: RouteOptions = {
   method: 'GET',
-  url: '/appointment/list/:take/:skip',
+  url: '/appointment/list',
+  schema: {
+    querystring: {
+      type: 'object',
+      properties: {
+        take: { type: 'number', default: 20 },
+        skip: { type: 'number', default: 0 },
+        date_sort: { type: 'string', enum: ['asc', 'desc'], default: 'desc' },
+        status: {
+          type: 'string',
+          enum: ['ACTIVE', 'DELETED', 'DONE'],
+        },
+      },
+    },
+  },
   async handler(req) {
-    const params = req.params as iParams;
+    const query = req.query as iQuerystring;
 
     const [items, count] = await this.prisma.$transaction([
       this.prisma.appointment.findMany({
-        skip: Number(params.skip || 0),
-        take: Number(params.take || 20),
+        skip: Number(query.skip),
+        take: Number(query.take),
+        orderBy: {
+          time: query.date_sort,
+        },
+        where: {
+          status: query.status,
+        },
       }),
       this.prisma.appointment.count(),
     ]);

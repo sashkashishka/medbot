@@ -26,6 +26,16 @@ export const routes = [
     ),
     children: [
       {
+        path: ROUTES.ROOT,
+        element: (
+          <PrivateRoute predicate redirectTo={ROUTES.DASHBOARD}>
+            <AuthLayout>
+              <LoginPage />
+            </AuthLayout>
+          </PrivateRoute>
+        ),
+      },
+      {
         path: ROUTES.LOGIN,
         element: (
           <PrivateRoute predicate redirectTo={ROUTES.DASHBOARD}>

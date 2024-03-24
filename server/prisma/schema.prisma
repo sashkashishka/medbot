@@ -66,13 +66,15 @@ model Appointment {
   orderId           Int
   user              User              @relation(fields: [userId], references: [id])
   userId            Int
-  complaints        String
-  complaintsStarted String
-  medicine          String
-  chronicDiseases   String
+  complaints        String            @db.MediumText
+  complaintsStarted String            @db.MediumText
+  medicine          String            @db.MediumText
+  chronicDiseases   String            @db.MediumText
   time              DateTime
   status            AppointmentStatus
   calendarEventId   String?
+  report            String?           @db.MediumText
+  treatment         String?           @db.MediumText
 }
 
 model ActivationCode {

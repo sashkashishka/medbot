@@ -1,7 +1,7 @@
 import { nanoquery } from '@nanostores/query';
 
 const buildApiRoute = (keys: (string | number | boolean)[]) =>
-  `/api/admin/${keys.join('/')}`;
+  `/api/admin/${keys.join('')}`;
 
 export const [createFetcherStore, createMutatorStore] = nanoquery({
   async fetcher(...keys: (string | number | boolean)[]) {
