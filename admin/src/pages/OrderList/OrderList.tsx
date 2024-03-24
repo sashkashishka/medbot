@@ -2,10 +2,14 @@ import { Table } from 'antd';
 import type { TableProps } from 'antd';
 import type { iOrder } from '../../types';
 import { useStore } from '@nanostores/react';
-import { $orders, ORDER_PAGE_SIZE, setOrderListPage } from '../../stores/order';
+import {
+  $orderListFilters,
+  $orders,
+  ORDER_PAGE_SIZE,
+  setOrderListFilter,
+} from '../../stores/order';
 import { formatDate } from '../../utils/date';
-import { useSearchParams } from 'react-router-dom';
-import { useLayoutEffect } from 'react';
+import { useSyncQueryFilters } from '../../hooks/useSyncQueryFilters';
 
 const columns: TableProps<iOrder>['columns'] = [
   {
@@ -37,15 +41,11 @@ const columns: TableProps<iOrder>['columns'] = [
 ];
 
 export function OrderListPage() {
-  const [searchParams, setSearchParams] = useSearchParams({ page: '1' });
   const { data, loading } = useStore($orders);
+  const orderListFilters = useStore($orderListFilters);
+  useSyncQueryFilters($orderListFilters);
 
-  const page = Number(searchParams.get('page'));
   const totalPages = data?.count || 0;
-
-  useLayoutEffect(() => {
-    setOrderListPage(page, Infinity);
-  }, []);
 
   return (
     <Table
@@ -54,10 +54,9 @@ export function OrderListPage() {
       columns={columns}
       dataSource={data?.items || []}
       pagination={{
-        current: page,
+        current: orderListFilters.page,
         onChange: (newPage) => {
-          setSearchParams({ page: String(newPage) });
-          setOrderListPage(newPage, totalPages);
+          setOrderListFilter('page', newPage);
         },
         pageSize: ORDER_PAGE_SIZE,
         total: totalPages,

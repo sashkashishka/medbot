@@ -33,7 +33,7 @@ const columns: TableProps<iAppointment>['columns'] = [
   },
 ];
 
-export function AppointmentListPage() {
+export function UserAppointmentsPage() {
   const { data, loading } = useStore($appointments);
   const appointmentListFilters = useStore($appointmentListFilters);
   useSyncQueryFilters($appointmentListFilters);

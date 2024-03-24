@@ -1,6 +1,6 @@
-import { Flex, Tabs, Typography } from 'antd';
+import { Flex, Typography } from 'antd';
 import { useLayoutEffect } from 'react';
-import { useLocation, matchPath, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { $fullName, $tgLink, $user, setUserId } from '../../stores/user';
 import { useStore } from '@nanostores/react';
 import { UserTabs } from './Tabs';
@@ -12,7 +12,7 @@ export function UserPage() {
     setUserId(userId!);
   }, [userId]);
 
-  const { data: user, loading, error } = useStore($user);
+  const { loading, error } = useStore($user);
   const fullName = useStore($fullName);
   const tgLink = useStore($tgLink);
   // TODO: user age
@@ -36,8 +36,6 @@ export function UserPage() {
             </a>
           ) : null}
         </div>
-
-        <div></div>
       </Flex>
 
       <UserTabs userId={userId!} />

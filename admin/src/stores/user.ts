@@ -14,8 +14,7 @@ interface iUserListFilters extends iPagination {
 }
 
 const defaultUserListFilters: iUserListFilters = {
-  skip: 0,
-  take: USER_PAGE_SIZE,
+  page: 1,
   date_sort: 'desc',
 };
 
@@ -24,8 +23,7 @@ export const {
   $listFilterQuery: $userListFilterQuery,
   setListFilter: setUserListFilter,
   resetListFilter: resetUserListFilter,
-  setPage: setUserListPage,
-} = createListFilters(defaultUserListFilters);
+} = createListFilters(defaultUserListFilters, { take: USER_PAGE_SIZE });
 
 export const $userId = atom<string>('');
 
@@ -69,24 +67,27 @@ export const $userDescriptionItems = computed(
   ({ data, error, loading }) => {
     if (error || loading) return [];
 
-    return Object.keys(data || {}).reduce<DescriptionsProps['items']>((acc, val, i) => {
-      const key = val as keyof iUser;
+    return Object.keys(data || {}).reduce<DescriptionsProps['items']>(
+      (acc, val, i) => {
+        const key = val as keyof iUser;
 
-      if (key === 'id') return acc;
+        if (key === 'id') return acc;
 
-      let children = data?.[key];
+        let children = data?.[key];
 
-      if (key === 'birthDate') {
-        children = formatDate(data?.[key]!);
-      }
+        if (key === 'birthDate') {
+          children = formatDate(data?.[key]!);
+        }
 
-      acc!.push({
-        key: String(i),
-        label: key,
-        children,
-      });
+        acc!.push({
+          key: String(i),
+          label: key,
+          children,
+        });
 
-      return acc;
-    }, []);
+        return acc;
+      },
+      [],
+    );
   },
 );

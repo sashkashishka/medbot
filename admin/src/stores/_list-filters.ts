@@ -1,11 +1,17 @@
 import { computed, map } from 'nanostores';
 
 export interface iPagination {
-  skip: number;
+  page: number;
+}
+
+interface iOptions {
   take: number;
 }
 
-export function createListFilters<T extends iPagination>(defaultVal: T) {
+export function createListFilters<T extends iPagination>(
+  defaultVal: T,
+  options: iOptions,
+) {
   const $listFilters = map<T>(defaultVal);
 
   const $listFilterQuery = computed($listFilters, (listFilters) =>
@@ -13,23 +19,27 @@ export function createListFilters<T extends iPagination>(defaultVal: T) {
       const val = listFilters[key as keyof T];
       const ampersand = arr.length - 1 > i ? '&' : '';
 
-      if (val !== undefined) {
-        acc += `${key}=${val}${ampersand}`;
+      switch (true) {
+        case key === 'page': {
+          const skip = Math.max((val as number) - 1, 0) * options.take;
+
+          acc += `skip=${skip}&take=${options.take}${ampersand}`;
+
+          break;
+        }
+
+        case val !== undefined: {
+          acc += `${key}=${val}${ampersand}`;
+          break;
+        }
+
+        default:
+        // noop
       }
 
       return acc;
     }, '?'),
   );
-
-  function setPage(page: number, total: number) {
-    const skip = Math.max(page - 1, 0) * defaultVal.take;
-
-    if (skip >= total) return;
-
-    // TODO: check
-    // @ts-ignore
-    $listFilters.setKey('skip', skip);
-  }
 
   function setListFilter<K extends keyof T>(key: K, val: T[K]) {
     // TODO: check
@@ -44,7 +54,6 @@ export function createListFilters<T extends iPagination>(defaultVal: T) {
   return {
     $listFilters,
     $listFilterQuery,
-    setPage,
     setListFilter,
     resetListFilter,
   };

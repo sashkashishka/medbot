@@ -10,8 +10,7 @@ interface iAppointmentListFilters extends iPagination {
 }
 
 const defaultAppointmentListFilters: iAppointmentListFilters = {
-  skip: 0,
-  take: APPOINTMENT_PAGE_SIZE,
+  page: 1,
   date_sort: 'desc',
   status: undefined,
 };
@@ -21,8 +20,9 @@ export const {
   $listFilterQuery: $appointmentListFilterQuery,
   setListFilter: setAppointmentListFilter,
   resetListFilter: resetAppointmentListFilter,
-  setPage: setAppointmentListPage,
-} = createListFilters(defaultAppointmentListFilters);
+} = createListFilters(defaultAppointmentListFilters, {
+  take: APPOINTMENT_PAGE_SIZE,
+});
 
 export const APPOINTMENT_KEYS = {
   appointmentList: ['appointment/list', $appointmentListFilterQuery],

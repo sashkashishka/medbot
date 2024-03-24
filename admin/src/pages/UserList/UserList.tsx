@@ -1,12 +1,17 @@
-import { useLayoutEffect } from 'react';
 import { Table } from 'antd';
 import type { TableProps } from 'antd';
-import { useSearchParams, Link, generatePath } from 'react-router-dom';
+import { Link, generatePath } from 'react-router-dom';
 import { useStore } from '@nanostores/react';
 import type { iUser } from '../../types';
-import { $users, USER_PAGE_SIZE, setUserListPage } from '../../stores/user';
+import {
+  $userListFilters,
+  $users,
+  USER_PAGE_SIZE,
+  setUserListFilter,
+} from '../../stores/user';
 import { formatDate } from '../../utils/date';
 import { ROUTES } from '../../constants/routes';
+import { useSyncQueryFilters } from '../../hooks/useSyncQueryFilters';
 
 const columns: TableProps<iUser>['columns'] = [
   {
@@ -40,15 +45,11 @@ const columns: TableProps<iUser>['columns'] = [
 ];
 
 export function UserListPage() {
-  const [searchParams, setSearchParams] = useSearchParams({ page: '1' });
   const { data, loading } = useStore($users);
+  const userListFilters = useStore($userListFilters);
+  useSyncQueryFilters($userListFilters);
 
-  const page = Number(searchParams.get('page'));
   const totalPages = data?.count || 0;
-
-  useLayoutEffect(() => {
-    setUserListPage(page, Infinity);
-  }, []);
 
   return (
     <Table
@@ -57,10 +58,9 @@ export function UserListPage() {
       columns={columns}
       dataSource={data?.items || []}
       pagination={{
-        current: page,
+        current: userListFilters.page,
         onChange: (newPage) => {
-          setSearchParams({ page: String(newPage) });
-          setUserListPage(newPage, totalPages);
+          setUserListFilter('page', newPage);
         },
         pageSize: USER_PAGE_SIZE,
         total: totalPages,

@@ -1,7 +1,7 @@
 import { Table } from 'antd';
 import type { TableProps } from 'antd';
 import { useStore } from '@nanostores/react';
-import { useParams, useSearchParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useLayoutEffect } from 'react';
 import type { iOrder } from '../../types';
 import {
@@ -9,26 +9,21 @@ import {
   $orders,
   ORDER_PAGE_SIZE,
   setOrderListFilter,
-  setOrderListPage,
   type iOrderListFilters,
 } from '../../stores/order';
 import { formatDate } from '../../utils/date';
 import { ProductCell } from './components/ProductCell';
 import { StatusTag } from '../../components/StatusTag';
 import { ExpandedOrderDetails } from './components/ExpandedOrderDetails';
+import { useSyncQueryFilters } from '../../hooks/useSyncQueryFilters';
 
 export function UserOrdersPage() {
   const { userId } = useParams<{ userId: string }>();
-  const [searchParams, setSearchParams] = useSearchParams({ page: '1' });
   const { data, loading } = useStore($orders);
   const orderListFilters = useStore($orderListFilters);
+  useSyncQueryFilters($orderListFilters);
 
-  const page = Number(searchParams.get('page'));
   const totalPages = data?.count || 0;
-
-  useLayoutEffect(() => {
-    setOrderListPage(page, Infinity);
-  }, []);
 
   useLayoutEffect(() => {
     setOrderListFilter('user_id', userId);
@@ -63,6 +58,7 @@ export function UserOrdersPage() {
           text: 'Only active',
         },
       ],
+      filteredValue: [orderListFilters.status!],
     },
     {
       title: 'Subscription end',
@@ -75,6 +71,7 @@ export function UserOrdersPage() {
           text: 'Only subsciption',
         },
       ],
+      filteredValue: [orderListFilters.has_subscription!],
     },
   ];
 
@@ -85,10 +82,9 @@ export function UserOrdersPage() {
       columns={columns}
       dataSource={data?.items || []}
       pagination={{
-        current: page,
+        current: orderListFilters.page,
         onChange: (newPage) => {
-          setSearchParams({ page: String(newPage) });
-          setOrderListPage(newPage, totalPages);
+          setOrderListFilter('page', newPage);
         },
         pageSize: ORDER_PAGE_SIZE,
         total: totalPages,

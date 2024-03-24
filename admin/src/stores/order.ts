@@ -12,8 +12,7 @@ export interface iOrderListFilters extends iPagination {
 }
 
 const defaultOrderListFilters: iOrderListFilters = {
-  skip: 0,
-  take: ORDER_PAGE_SIZE,
+  page: 1,
   date_sort: 'desc',
   user_id: undefined,
   status: undefined,
@@ -25,8 +24,7 @@ export const {
   $listFilterQuery: $orderListFilterQuery,
   setListFilter: setOrderListFilter,
   resetListFilter: resetOrderListFilter,
-  setPage: setOrderListPage,
-} = createListFilters(defaultOrderListFilters);
+} = createListFilters(defaultOrderListFilters, { take: ORDER_PAGE_SIZE });
 
 export const ORDER_KEYS = {
   orderList: ['order/list', $orderListFilterQuery],
