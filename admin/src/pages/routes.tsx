@@ -52,11 +52,9 @@ export const routes = [
       {
         path: ROUTES.REGISTER,
         element: (
-          <PrivateRoute predicate redirectTo={ROUTES.DASHBOARD}>
-            <AuthLayout>
-              <RegisterPage />
-            </AuthLayout>
-          </PrivateRoute>
+          <AuthLayout>
+            <RegisterPage />
+          </AuthLayout>
         ),
       },
       {

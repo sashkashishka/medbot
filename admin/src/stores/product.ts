@@ -7,9 +7,6 @@ export const PRODUCT_KEYS = {
 
 export const $products = createFetcherStore<iProduct[]>(
   PRODUCT_KEYS.productList,
-  {
-    refetchOnFocus: true,
-  },
 );
 
 export const $createProduct = createMutatorStore<iProduct>(

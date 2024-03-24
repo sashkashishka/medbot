@@ -1,4 +1,5 @@
 import type { Prisma } from '@prisma/client';
+import { addMinutes } from 'date-fns';
 import { formatDate } from '../../../api/utils/time.js';
 
 export const MESSAGES = {
@@ -10,7 +11,12 @@ export const MESSAGES = {
     ) => {
       if (!appointment) return '';
 
-      return `Зустріч з лікарем запланована на ${formatDate(appointment.time, {
+      const timezoneDate = addMinutes(
+        new Date(appointment.time),
+        -appointment.timezoneOffset,
+      );
+
+      return `Зустріч з лікарем запланована на ${formatDate(timezoneDate, {
         formatStr: 'hour-day-date-month-year',
       })}.`;
     },
@@ -19,8 +25,13 @@ export const MESSAGES = {
     ) => {
       if (!appointment) return '';
 
+      const timezoneDate = addMinutes(
+        new Date(appointment.time),
+        -appointment.timezoneOffset,
+      );
+
       return `Зустріч з лікарем була змінена. Запланована дата ${formatDate(
-        appointment.time,
+        timezoneDate,
         {
           formatStr: 'hour-day-date-month-year',
         },

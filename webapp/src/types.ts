@@ -41,6 +41,7 @@ export interface iAppointment {
   medicine: string;
   chronicDiseases: string;
   time: string;
+  timezoneOffset: number;
   status: 'ACTIVE' | 'DONE' | 'DELETED';
 }
 

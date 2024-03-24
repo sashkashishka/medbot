@@ -9,6 +9,20 @@ interface iBody {
 export const loginAdminRoute: RouteOptions = {
   method: 'POST',
   url: '/login',
+  schema: {
+    body: {
+      type: 'object',
+      properties: {
+        name: {
+          type: 'string',
+        },
+        password: {
+          type: 'string',
+        },
+      },
+      required: ['name', 'password'],
+    },
+  },
   async handler(request, reply) {
     const body = request.body as iBody;
 
@@ -19,7 +33,7 @@ export const loginAdminRoute: RouteOptions = {
     });
 
     if (
-      admin.password !==
+      admin?.password !==
       encryptPassword(body.password, this.config.PASSWORD_SALT)
     ) {
       return reply.code(400).send({ error: 'wrong name or password' });

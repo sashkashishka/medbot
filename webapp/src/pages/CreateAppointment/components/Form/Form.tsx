@@ -139,6 +139,7 @@ export class CreateAppointmentForm extends Component<iProps> {
       method,
       body: JSON.stringify({
         ...values,
+        timezoneOffset: new Date().getTimezoneOffset(),
         status: 'ACTIVE',
         orderId: activeOrder.id,
         userId: getUserId(),
