@@ -4,6 +4,7 @@ import type { RouteOptions } from 'fastify';
 interface iQuerystring {
   skip: number;
   take: number;
+  user_id: number;
   date_sort: 'asc' | 'desc';
   status: Prisma.AppointmentUncheckedCreateInput['status'];
 }
@@ -17,6 +18,7 @@ export const appointmentListRoute: RouteOptions = {
       properties: {
         take: { type: 'number', default: 20 },
         skip: { type: 'number', default: 0 },
+        user_id: { type: 'number' },
         date_sort: { type: 'string', enum: ['asc', 'desc'], default: 'desc' },
         status: {
           type: 'string',
@@ -37,6 +39,7 @@ export const appointmentListRoute: RouteOptions = {
         },
         where: {
           status: query.status,
+          userId: query.user_id,
         },
       }),
       this.prisma.appointment.count(),

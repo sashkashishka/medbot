@@ -1,8 +1,8 @@
 import { useStore } from '@nanostores/react';
 import { Link } from 'react-router-dom';
-import { $products } from '../../../stores/product';
+import { $products } from '../../stores/product';
 import { generatePath } from 'react-router-dom';
-import { ROUTES } from '../../../constants/routes';
+import { ROUTES } from '../../constants/routes';
 
 interface iProps {
   productId: number;

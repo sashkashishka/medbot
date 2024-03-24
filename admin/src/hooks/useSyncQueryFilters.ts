@@ -31,7 +31,7 @@ export function useSyncQueryFilters<T extends iPagination>(
           },
           {},
         );
-        setSearchParams(query);
+        setSearchParams(query, { replace: true });
       }),
     [],
   );

@@ -12,7 +12,7 @@ import {
   type iOrderListFilters,
 } from '../../stores/order';
 import { formatDate } from '../../utils/date';
-import { ProductCell } from './components/ProductCell';
+import { ProductCell } from '../../components/ProductCell';
 import { StatusTag } from '../../components/StatusTag';
 import { ExpandedOrderDetails } from './components/ExpandedOrderDetails';
 import { useSyncQueryFilters } from '../../hooks/useSyncQueryFilters';

@@ -1,44 +1,20 @@
 import { Table } from 'antd';
 import type { TableProps } from 'antd';
-import type { iOrder } from '../../types';
 import { useStore } from '@nanostores/react';
+import { Link, generatePath } from 'react-router-dom';
+import type { iOrder } from '../../types';
 import {
   $orderListFilters,
   $orders,
   ORDER_PAGE_SIZE,
   setOrderListFilter,
+  type iOrderListFilters,
 } from '../../stores/order';
 import { formatDate } from '../../utils/date';
+import { ProductCell } from '../../components/ProductCell';
+import { StatusTag } from '../../components/StatusTag';
 import { useSyncQueryFilters } from '../../hooks/useSyncQueryFilters';
-
-const columns: TableProps<iOrder>['columns'] = [
-  {
-    title: 'ID',
-    dataIndex: 'id',
-  },
-  {
-    title: 'Created',
-    dataIndex: 'createdAt',
-    render: formatDate,
-  },
-  {
-    title: 'Status',
-    dataIndex: 'status',
-  },
-  {
-    title: 'User',
-    dataIndex: 'userId',
-  },
-  {
-    title: 'Product',
-    dataIndex: 'productId',
-  },
-  {
-    title: 'Subscription ends at',
-    dataIndex: 'subscriptionEndsAt',
-    render: formatDate,
-  },
-];
+import { ROUTES } from '../../constants/routes';
 
 export function OrderListPage() {
   const { data, loading } = useStore($orders);
@@ -46,6 +22,59 @@ export function OrderListPage() {
   useSyncQueryFilters($orderListFilters);
 
   const totalPages = data?.count || 0;
+
+  const columns: TableProps<iOrder>['columns'] = [
+    {
+      title: 'ID',
+      dataIndex: 'id',
+    },
+    {
+      title: 'User',
+      dataIndex: 'userId',
+      render(id: string) {
+        return <Link to={generatePath(ROUTES.USER, { userId: id })}>{id}</Link>;
+      },
+    },
+    {
+      title: 'Product',
+      dataIndex: 'productId',
+      render: (productId) => <ProductCell productId={productId} />,
+    },
+    {
+      title: 'Created',
+      dataIndex: 'createdAt',
+      render: formatDate,
+      sorter: true,
+      sortOrder: `${orderListFilters.date_sort}end`,
+      sortDirections: ['ascend', 'descend', 'ascend'],
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+      render: (status) => <StatusTag status={status} />,
+      filtered: true,
+      filters: [
+        {
+          value: 'ACTIVE',
+          text: 'Only active',
+        },
+      ],
+      filteredValue: [orderListFilters.status!],
+    },
+    {
+      title: 'Subscription end',
+      dataIndex: 'subscriptionEndsAt',
+      render: formatDate,
+      filtered: true,
+      filters: [
+        {
+          value: 1,
+          text: 'Only subsciption',
+        },
+      ],
+      filteredValue: [orderListFilters.has_subscription!],
+    },
+  ];
 
   return (
     <Table
@@ -60,6 +89,29 @@ export function OrderListPage() {
         },
         pageSize: ORDER_PAGE_SIZE,
         total: totalPages,
+      }}
+      onChange={(_pagination, filters, sorter) => {
+        setOrderListFilter(
+          'status',
+          filters?.status?.[0] as iOrderListFilters['status'],
+        );
+        setOrderListFilter(
+          'has_subscription',
+          filters
+            ?.subscriptionEndsAt?.[0] as iOrderListFilters['has_subscription'],
+        );
+
+        if (Array.isArray(sorter)) return;
+
+        if (sorter.field === 'createdAt') {
+          setOrderListFilter(
+            'date_sort',
+            sorter.order?.replace?.(
+              'end',
+              '',
+            ) as iOrderListFilters['date_sort'],
+          );
+        }
       }}
     />
   );
