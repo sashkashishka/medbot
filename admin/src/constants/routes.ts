@@ -7,6 +7,9 @@ export enum ROUTES {
   CREATE_PRODUCT = '/dashboard/product/create',
   EDIT_PRODUCT = '/dashboard/product/:id',
   USERS = '/dashboard/users',
+  USER = '/dashboard/user/:userId',
+  USER_ORDERS = '/dashboard/user/:userId/orders',
+  USER_APPOINTMENTS = '/dashboard/user/:userId/appointments',
   ORDERS = '/dashboard/orders',
   APPOINTMENTS = '/dashboard/appointments',
 }

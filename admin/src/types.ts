@@ -10,6 +10,10 @@ export interface iLogin {
 
 export interface iRegister extends iLogin {}
 
+export interface iAdminConfig {
+  forumUrlTemplate: string;
+}
+
 export interface iPaginatorResp<T> {
   items: T[];
   count: number;
@@ -22,7 +26,8 @@ export interface iUser {
   surname?: string;
   patronymic?: string;
   birthDate?: string;
-  topicForumId?: number;
+  messageThreadId?: number;
+  botChatId?: number;
   phone?: string;
   email?: string;
 }

@@ -2,7 +2,7 @@ import { createFetcherStore, createMutatorStore } from './_query';
 import type { iProduct } from '../types';
 
 export const PRODUCT_KEYS = {
-  productList: ['product', 'list'],
+  productList: ['product/list'],
 };
 
 export const $products = createFetcherStore<iProduct[]>(

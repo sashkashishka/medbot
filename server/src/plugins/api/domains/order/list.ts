@@ -4,6 +4,7 @@ import type { RouteOptions } from 'fastify';
 interface iQuerystring {
   skip: number;
   take: number;
+  user_id: number;
   date_sort: 'asc' | 'desc';
   status: Prisma.OrderUncheckedCreateInput['status'];
   has_subscription: 0 | 1;
@@ -18,6 +19,7 @@ export const orderListRoute: RouteOptions = {
       properties: {
         take: { type: 'number', default: 20 },
         skip: { type: 'number', default: 0 },
+        user_id: { type: 'number' },
         date_sort: { type: 'string', enum: ['asc', 'desc'], default: 'desc' },
         status: {
           type: 'string',
@@ -41,6 +43,7 @@ export const orderListRoute: RouteOptions = {
           createdAt: query.date_sort,
         },
         where: {
+          userId: query.user_id,
           status: query.status,
           subscriptionEndsAt: query.has_subscription
             ? { not: null }

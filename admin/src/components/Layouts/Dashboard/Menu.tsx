@@ -1,30 +1,31 @@
 import { Menu, type MenuProps } from 'antd';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 import { ROUTES } from '../../../constants/routes';
-import { useState } from 'react';
 
 const items: MenuProps['items'] = [
-  { key: ROUTES.DASHBOARD, label: 'Main page' },
-  { key: ROUTES.PRODUCTS, label: 'Product list' },
-  { key: ROUTES.USERS, label: 'User list' },
-  { key: ROUTES.ORDERS, label: 'Order list' },
-  { key: ROUTES.APPOINTMENTS, label: 'Appointment list' },
+  {
+    key: ROUTES.DASHBOARD,
+    label: <Link to={ROUTES.DASHBOARD}>Main page</Link>,
+  },
+  {
+    key: ROUTES.PRODUCTS,
+    label: <Link to={ROUTES.PRODUCTS}>Product list</Link>,
+  },
+  { key: ROUTES.USERS, label: <Link to={ROUTES.USERS}>User list</Link> },
+  {
+    key: ROUTES.ORDERS,
+    label: <Link to={ROUTES.ORDERS}>Order list</Link>,
+  },
+  {
+    key: ROUTES.APPOINTMENTS,
+    label: <Link to={ROUTES.APPOINTMENTS}>Appointment list</Link>,
+  },
 ];
 
 export function SidebarMenu() {
-  const [currItem, setCurrItem] = useState([ROUTES.DASHBOARD]);
-  const navigate = useNavigate();
+  const { pathname } = useLocation();
 
   return (
-    <Menu
-      theme="dark"
-      defaultSelectedKeys={currItem}
-      mode="inline"
-      items={items}
-      onClick={({ key }) => {
-        setCurrItem([key as ROUTES]);
-        navigate(key as ROUTES);
-      }}
-    />
+    <Menu theme="dark" selectedKeys={[pathname]} mode="inline" items={items} />
   );
 }

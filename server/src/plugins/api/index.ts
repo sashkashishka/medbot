@@ -41,6 +41,7 @@ import { registerAdminRoute } from './domains/admin/register.js';
 import { loginAdminRoute } from './domains/admin/login.js';
 import { logoutAdminRoute } from './domains/admin/logout.js';
 import { adminRoute } from './domains/admin/admin.js';
+import { adminConfigRoute } from './domains/admin/config.js';
 
 import { tgHashValidator, verifyIsFromTg } from './hooks.js';
 
@@ -129,6 +130,8 @@ const adminApi: FastifyPluginCallback = (fastify, _opts, done) => {
   fastify.route(orderListRoute);
   fastify.route(adminRoute);
   fastify.route(appointmentListRoute);
+  fastify.route(adminConfigRoute);
+  fastify.route(userRoute);
 
   done();
 };

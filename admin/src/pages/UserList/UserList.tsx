@@ -1,16 +1,20 @@
 import { useLayoutEffect } from 'react';
 import { Table } from 'antd';
 import type { TableProps } from 'antd';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, Link, generatePath } from 'react-router-dom';
 import { useStore } from '@nanostores/react';
 import type { iUser } from '../../types';
 import { $users, USER_PAGE_SIZE, setUserListPage } from '../../stores/user';
 import { formatDate } from '../../utils/date';
+import { ROUTES } from '../../constants/routes';
 
 const columns: TableProps<iUser>['columns'] = [
   {
     title: 'ID',
     dataIndex: 'id',
+    render(id: string) {
+      return <Link to={generatePath(ROUTES.USER, { userId: id })}>{id}</Link>;
+    },
   },
   {
     title: 'Name',
@@ -19,6 +23,10 @@ const columns: TableProps<iUser>['columns'] = [
   {
     title: 'Surname',
     dataIndex: 'surname',
+  },
+  {
+    title: 'Patronymic',
+    dataIndex: 'patronymic',
   },
   {
     title: 'Birth date',

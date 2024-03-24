@@ -4,8 +4,9 @@ import { createListFilters, type iPagination } from './_list-filters';
 
 export const ORDER_PAGE_SIZE = 20;
 
-interface iOrderListFilters extends iPagination {
+export interface iOrderListFilters extends iPagination {
   date_sort: 'asc' | 'desc';
+  user_id?: string;
   status?: iOrder['status'];
   has_subscription?: 0 | 1;
 }
@@ -14,6 +15,7 @@ const defaultOrderListFilters: iOrderListFilters = {
   skip: 0,
   take: ORDER_PAGE_SIZE,
   date_sort: 'desc',
+  user_id: undefined,
   status: undefined,
   has_subscription: 0,
 };

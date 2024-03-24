@@ -5,6 +5,7 @@ import {
   Form,
   Input,
   InputNumber,
+  Popconfirm,
   Typography,
   notification,
 } from 'antd';
@@ -85,12 +86,12 @@ export function ProductPage() {
         </Typography.Title>
 
         {params.id ? (
-          <Button
-            danger
-            onClick={() => onProductDelete({ id: Number(params.id) })}
+          <Popconfirm
+            title="Are you sure?"
+            onConfirm={() => onProductDelete({ id: Number(params.id) })}
           >
-            Delete
-          </Button>
+            <Button danger>Delete</Button>
+          </Popconfirm>
         ) : null}
       </Flex>
 
