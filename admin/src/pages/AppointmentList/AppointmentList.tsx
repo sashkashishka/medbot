@@ -1,37 +1,19 @@
 import { Table } from 'antd';
 import type { TableProps } from 'antd';
-import type { iAppointment } from '../../types';
 import { useStore } from '@nanostores/react';
+import { Link, generatePath } from 'react-router-dom';
+import type { iAppointment } from '../../types';
 import {
   $appointmentListFilters,
   $appointments,
   APPOINTMENT_PAGE_SIZE,
   setAppointmentListFilter,
+  type iAppointmentListFilters,
 } from '../../stores/appointment';
 import { useSyncQueryFilters } from '../../hooks/useSyncQueryFilters';
-
-const columns: TableProps<iAppointment>['columns'] = [
-  {
-    title: 'ID',
-    dataIndex: 'id',
-  },
-  {
-    title: 'Appointment ID',
-    dataIndex: 'orderId',
-  },
-  {
-    title: 'User',
-    dataIndex: 'userId',
-  },
-  {
-    title: 'Status',
-    dataIndex: 'status',
-  },
-  {
-    title: 'Complaints',
-    dataIndex: 'complaints',
-  },
-];
+import { ROUTES } from '../../constants/routes';
+import { StatusTag } from '../../components/StatusTag';
+import { formatDate } from '../../utils/date';
 
 export function AppointmentListPage() {
   const { data, loading } = useStore($appointments);
@@ -39,6 +21,38 @@ export function AppointmentListPage() {
   useSyncQueryFilters($appointmentListFilters);
 
   const totalPages = data?.count || 0;
+
+  const columns: TableProps<iAppointment>['columns'] = [
+    {
+      title: 'ID',
+      dataIndex: 'id',
+    },
+    {
+      title: 'User',
+      dataIndex: 'userId',
+      render(id: string) {
+        return <Link to={generatePath(ROUTES.USER, { userId: id })}>{id}</Link>;
+      },
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+      render: (status) => <StatusTag status={status} />,
+      filtered: true,
+      filters: [
+        {
+          value: 'ACTIVE',
+          text: 'Only active',
+        },
+      ],
+      filteredValue: [appointmentListFilters.status!],
+    },
+    {
+      title: 'Meeting time',
+      dataIndex: 'time',
+      render: formatDate,
+    },
+  ];
 
   return (
     <Table
@@ -53,6 +67,12 @@ export function AppointmentListPage() {
         },
         pageSize: APPOINTMENT_PAGE_SIZE,
         total: totalPages,
+      }}
+      onChange={(_pagination, filters) => {
+        setAppointmentListFilter(
+          'status',
+          filters?.status?.[0] as iAppointmentListFilters['status'],
+        );
       }}
     />
   );

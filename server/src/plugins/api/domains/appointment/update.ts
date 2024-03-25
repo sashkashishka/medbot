@@ -26,6 +26,8 @@ export const updateAppointmentRoute: RouteOptions = {
         status: { type: 'string' },
         orderId: { type: 'number' },
         userId: { type: 'number' },
+        report: { type: 'string' },
+        treatment: { type: 'string' },
       },
       required: [
         'complaints',

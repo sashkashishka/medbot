@@ -5,7 +5,7 @@ import { map, onMount, onSet } from 'nanostores';
 
 export const APPOINTMENT_PAGE_SIZE = 20;
 
-interface iAppointmentListFilters extends iPagination {
+export interface iAppointmentListFilters extends iPagination {
   date_sort: 'asc' | 'desc';
   user_id?: string;
   status?: iAppointment['status'];

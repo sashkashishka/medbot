@@ -16,7 +16,7 @@ export function ExpandedOrderDetails({ order }: iProps) {
   }
 
   return (
-    <Flex>
+    <Flex align="center" style={{ gap: '16px'}}>
       <Typography.Text>
         This is one time order. Close it when you end you appointment with
         customer.
