@@ -27,9 +27,12 @@ export const {
 } = createListFilters(defaultOrderListFilters, { take: ORDER_PAGE_SIZE });
 
 export const ORDER_KEYS = {
-  orderList: ['order/list', $orderListFilterQuery],
+  list: 'order/list',
+  filteredList() {
+    return [this.list, $orderListFilterQuery];
+  },
 };
 
 export const $orders = createFetcherStore<iPaginatorResp<iOrder>>(
-  ORDER_KEYS.orderList,
+  ORDER_KEYS.filteredList(),
 );

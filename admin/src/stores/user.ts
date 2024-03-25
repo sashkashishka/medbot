@@ -32,12 +32,15 @@ export function setUserId(id: string) {
 }
 
 export const USER_KEYS = {
-  userList: ['user/list', $userListFilterQuery],
+  list: 'user/list',
+  filteredList() {
+    return [this.list, $userListFilterQuery];
+  },
   user: ['user/', $userId],
 };
 
 export const $users = createFetcherStore<iPaginatorResp<iUser>>(
-  USER_KEYS.userList,
+  USER_KEYS.filteredList(),
 );
 
 export const $user = createFetcherStore<iUser>(USER_KEYS.user);

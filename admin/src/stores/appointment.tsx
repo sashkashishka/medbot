@@ -1,4 +1,4 @@
-import { createFetcherStore } from './_query';
+import { createFetcherStore, createMutatorStore } from './_query';
 import type { iPaginatorResp, iAppointment } from '../types';
 import { createListFilters, type iPagination } from './_list-filters';
 import { map, onMount, onSet } from 'nanostores';
@@ -28,11 +28,14 @@ export const {
 });
 
 export const APPOINTMENT_KEYS = {
-  appointmentList: ['appointment/list', $appointmentListFilterQuery],
+  list: 'appointment/list',
+  filteredList() {
+    return [this.list, $appointmentListFilterQuery];
+  },
 };
 
 export const $appointments = createFetcherStore<iPaginatorResp<iAppointment>>(
-  APPOINTMENT_KEYS.appointmentList,
+  APPOINTMENT_KEYS.filteredList(),
 );
 
 export function createAppointmentDetailsFormPersister(
@@ -71,3 +74,15 @@ export function createAppointmentDetailsFormPersister(
     },
   };
 }
+
+export const $editAppointment = createMutatorStore<iAppointment>(
+  ({ data, invalidate }) => {
+    invalidate((k) => Boolean(k.match(APPOINTMENT_KEYS.list)));
+
+    return fetch(`/api/admin/appointment/${data.id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+      headers: { 'content-type': 'application/json' },
+    });
+  },
+);

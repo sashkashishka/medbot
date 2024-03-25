@@ -1,9 +1,19 @@
-import { Button, Descriptions, Flex, Form, type DescriptionsProps } from 'antd';
+import {
+  Button,
+  Descriptions,
+  Flex,
+  Form,
+  notification,
+  type DescriptionsProps,
+} from 'antd';
 import type { iAppointment } from '../../../../types';
 import { EditableCell } from './EditableCell';
 import { useState } from 'react';
 import { useStore } from '@nanostores/react';
-import { createAppointmentDetailsFormPersister } from '../../../../stores/appointment';
+import {
+  $editAppointment,
+  createAppointmentDetailsFormPersister,
+} from '../../../../stores/appointment';
 
 interface iProps {
   appointment: iAppointment;
@@ -15,6 +25,7 @@ export function ExpandableAppointmentDetails({ appointment }: iProps) {
     createAppointmentDetailsFormPersister(appointment),
   );
   const persistedAppointment = useStore($persistedAppointment);
+  const { mutate } = useStore($editAppointment);
 
   const items: DescriptionsProps['items'] = [
     {
@@ -61,10 +72,34 @@ export function ExpandableAppointmentDetails({ appointment }: iProps) {
     },
   ];
 
+  async function onFinish(data: iAppointment) {
+    try {
+      const resp = (await mutate({
+        ...appointment,
+        ...data,
+      })) as Response;
+      const respData = await resp.json();
+
+      if (resp.ok) {
+        return setEditing(false);
+      }
+
+      if ('error' in respData && typeof respData.error === 'string') {
+        return notification.error({ message: respData.error });
+      }
+
+      throw respData;
+    } catch (e) {
+      console.error(e);
+      notification.error({ message: 'Unexpected error' });
+    }
+  }
+
   return (
     <Form
       initialValues={persistedAppointment}
       onValuesChange={(_changed, values) => persistValues(values)}
+      onFinish={onFinish}
     >
       <Descriptions
         items={items}

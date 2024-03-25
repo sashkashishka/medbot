@@ -2,16 +2,19 @@ import { createFetcherStore, createMutatorStore } from './_query';
 import type { iProduct } from '../types';
 
 export const PRODUCT_KEYS = {
-  productList: ['product/list'],
+  list: 'product/list',
+  filteredList() {
+    return [this.list];
+  },
 };
 
 export const $products = createFetcherStore<iProduct[]>(
-  PRODUCT_KEYS.productList,
+  PRODUCT_KEYS.filteredList(),
 );
 
 export const $createProduct = createMutatorStore<iProduct>(
   ({ data, invalidate }) => {
-    invalidate(PRODUCT_KEYS.productList);
+    invalidate(PRODUCT_KEYS.list);
 
     return fetch('/api/admin/product/create', {
       method: 'PUT',
@@ -23,7 +26,7 @@ export const $createProduct = createMutatorStore<iProduct>(
 
 export const $editProduct = createMutatorStore<iProduct>(
   ({ data, invalidate }) => {
-    invalidate(PRODUCT_KEYS.productList);
+    invalidate(PRODUCT_KEYS.list);
 
     return fetch(`/api/admin/product/${data.id}`, {
       method: 'PATCH',
@@ -35,7 +38,7 @@ export const $editProduct = createMutatorStore<iProduct>(
 
 export const $deleteProduct = createMutatorStore<Partial<iProduct>>(
   ({ data, invalidate }) => {
-    invalidate(PRODUCT_KEYS.productList);
+    invalidate(PRODUCT_KEYS.list);
 
     return fetch(`/api/admin/product/${data.id}`, {
       method: 'DELETE',

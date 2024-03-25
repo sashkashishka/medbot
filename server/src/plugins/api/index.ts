@@ -132,6 +132,7 @@ const adminApi: FastifyPluginCallback = (fastify, _opts, done) => {
   fastify.route(appointmentListRoute);
   fastify.route(adminConfigRoute);
   fastify.route(userRoute);
+  fastify.route(updateAppointmentRoute);
 
   done();
 };
