@@ -1,0 +1,1 @@
+export { ExpandableAppointmentDetails } from './ExpandableAppointmentDetails';

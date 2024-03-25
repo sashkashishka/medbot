@@ -146,7 +146,7 @@ export function ProductPage() {
           <InputNumber />
         </Form.Item>
 
-        <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+        <Form.Item>
           <Button type="primary" htmlType="submit" size="large">
             {params.id ? 'Save' : 'Create'}
           </Button>

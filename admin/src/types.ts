@@ -59,7 +59,10 @@ export interface iAppointment {
   medicine: string;
   chronicDiseases: string;
   time: string;
+  timezoneOffset: string;
   status: 'ACTIVE' | 'DONE' | 'DELETED';
+  report: string;
+  treatment: string;
 }
 
 export interface iFreeSlot {
