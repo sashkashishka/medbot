@@ -84,8 +84,10 @@ export function ExpandableAppointmentDetails({ appointment }: iProps) {
         return setEditing(false);
       }
 
-      if ('error' in respData && typeof respData.error === 'string') {
-        return notification.error({ message: respData.error });
+      if ('error' in respData || 'reason' in respData) {
+        return notification.error({
+          message: respData.error || respData.reason,
+        });
       }
 
       throw respData;

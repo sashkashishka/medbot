@@ -94,10 +94,7 @@ export const updateAppointmentRoute: RouteOptions = {
   },
   async handler(request) {
     const params = request.params as iParams;
-    const {
-      status, // eslint-disable-line
-      ...body
-    } = request.body as Prisma.AppointmentUncheckedCreateInput;
+    const body = request.body as Prisma.AppointmentUncheckedCreateInput;
 
     const { appointmentId } = params;
 

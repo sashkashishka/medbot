@@ -29,6 +29,7 @@ import { proceedToChatRoute } from './domains/medbot/proceedToChat.js';
 import { botChatIdRoute } from './domains/medbot/botChatId.js';
 import { messageThreadIdRoute } from './domains/medbot/messageThreadId.js';
 import { teardownUserDataRoute } from './domains/medbot/teardownUserData.js';
+import { sendMessageRoute } from './domains/medbot/sendMessage.js';
 
 import { freeSlotsRoute } from './domains/appointment/freeSlots.js';
 import { createAppointmentRoute } from './domains/appointment/create.js';
@@ -133,6 +134,11 @@ const adminApi: FastifyPluginCallback = (fastify, _opts, done) => {
   fastify.route(adminConfigRoute);
   fastify.route(userRoute);
   fastify.route(updateAppointmentRoute);
+  fastify.route(activeOrderRoute);
+  fastify.route(updateOrderRoute);
+  fastify.route(sendMessageRoute);
+  fastify.route(freeSlotsRoute);
+  fastify.route(deleteAppointmentRoute);
 
   done();
 };

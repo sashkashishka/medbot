@@ -70,3 +70,8 @@ export interface iFreeSlot {
   startTime: string;
   endTime: string;
 }
+
+export interface iSendMessageBody {
+  botChatId: iUser['botChatId'];
+  text: string;
+}

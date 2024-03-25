@@ -14,6 +14,7 @@ import { useSyncQueryFilters } from '../../hooks/useSyncQueryFilters';
 import { StatusTag } from '../../components/StatusTag';
 import { formatDate } from '../../utils/date';
 import { ExpandableAppointmentDetails } from './components/ExpandableAppointmentDetails';
+import { AppointmentActions } from './components/Actions';
 
 export function UserAppointmentsPage() {
   const { userId } = useParams<{ userId: string }>();
@@ -53,6 +54,9 @@ export function UserAppointmentsPage() {
     {
       title: 'Action',
       dataIndex: 'time',
+      render: (_, record) => (
+        <AppointmentActions userId={userId!} appointment={record} />
+      ),
     },
   ];
 

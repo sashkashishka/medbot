@@ -1,7 +1,19 @@
-import { createFetcherStore, createMutatorStore } from './_query';
-import type { iPaginatorResp, iAppointment } from '../types';
-import { createListFilters, type iPagination } from './_list-filters';
+import { notification } from 'antd';
 import { map, onMount, onSet } from 'nanostores';
+import { createFetcherStore, createMutatorStore } from './_query';
+import {
+  type iPaginatorResp,
+  type iAppointment,
+  type iUser,
+  type iOrder,
+  iFreeSlot,
+} from '../types';
+import { createListFilters, type iPagination } from './_list-filters';
+import { $sendMessage } from './bot';
+import {
+  getAppointmentCompleteMessage,
+  getAppointmentDeleteMessage,
+} from '../utils/tg-messages';
 
 export const APPOINTMENT_PAGE_SIZE = 20;
 
@@ -32,10 +44,15 @@ export const APPOINTMENT_KEYS = {
   filteredList() {
     return [this.list, $appointmentListFilterQuery];
   },
+  freeSlots: ['appointment/free-slots'],
 };
 
 export const $appointments = createFetcherStore<iPaginatorResp<iAppointment>>(
   APPOINTMENT_KEYS.filteredList(),
+);
+
+export const $appointmentFreeSlots = createFetcherStore<iFreeSlot[]>(
+  APPOINTMENT_KEYS.freeSlots,
 );
 
 export function createAppointmentDetailsFormPersister(
@@ -86,3 +103,142 @@ export const $editAppointment = createMutatorStore<iAppointment>(
     });
   },
 );
+
+export const $deleteAppointment = createMutatorStore<iAppointment>(
+  ({ data, invalidate }) => {
+    invalidate((k) => Boolean(k.match(APPOINTMENT_KEYS.list)));
+
+    return fetch(`/api/admin/appointment/${data.id}`, {
+      method: 'DELETE',
+      body: '{}',
+      headers: { 'content-type': 'application/json' },
+    });
+  },
+);
+
+// =====================
+// =====================
+// ACTIONS
+// =====================
+// =====================
+
+export async function completeAppointment({
+  appointment,
+  user,
+  activeOrder,
+}: {
+  appointment: iAppointment;
+  user: iUser;
+  activeOrder: iOrder;
+}): Promise<boolean> {
+  try {
+    const resp = (await $editAppointment.mutate({
+      ...appointment,
+      status: 'DONE',
+    })) as Response;
+
+    if (resp.ok) {
+      await $sendMessage.mutate({
+        botChatId: user?.botChatId,
+        text: getAppointmentCompleteMessage({ activeOrder }),
+      });
+      notification.success({ message: 'Appointment completed!' });
+      return true;
+    }
+
+    const respData = await resp.json();
+
+    if ('error' in respData && typeof respData.error === 'string') {
+      notification.error({ message: respData.error });
+      return false;
+    }
+
+    throw respData;
+  } catch (e) {
+    console.error(e);
+    notification.error({
+      message: 'Unexpected error completing appointment',
+    });
+
+    return false;
+  }
+}
+
+// TODO: think how to put all logic tied to telegram in medbot instance
+// here just trigger specific api
+// Confusing a messages that lie here but not in medbot plugin
+export async function changeAppointmentTime({
+  appointment,
+  user,
+  activeOrder,
+}: {
+  appointment: iAppointment;
+  user: iUser;
+  activeOrder: iOrder;
+}) {
+  try {
+    const resp = (await $editAppointment.mutate(appointment)) as Response;
+
+    if (resp.ok) {
+      await $sendMessage.mutate({
+        botChatId: user?.botChatId,
+        text: getAppointmentCompleteMessage({ activeOrder }),
+      });
+      notification.success({ message: 'Appointment time changed!' });
+      return true;
+    }
+
+    const respData = await resp.json();
+
+    if ('error' in respData && typeof respData.error === 'string') {
+      notification.error({ message: respData.error });
+      return false;
+    }
+
+    throw respData;
+  } catch (e) {
+    console.error(e);
+    notification.error({
+      message: 'Unexpected error changing appointment time',
+    });
+
+    return false;
+  }
+}
+
+export async function deleteAppointment({
+  appointment,
+  user,
+}: {
+  appointment: iAppointment;
+  user: iUser;
+}) {
+  try {
+    const resp = (await $deleteAppointment.mutate(appointment)) as Response;
+
+    if (resp.ok) {
+      await $sendMessage.mutate({
+        botChatId: user?.botChatId,
+        text: getAppointmentDeleteMessage(),
+      });
+      notification.success({ message: 'Appointment deleted' });
+      return true;
+    }
+
+    const respData = await resp.json();
+
+    if ('error' in respData && typeof respData.error === 'string') {
+      notification.error({ message: respData.error });
+      return false;
+    }
+
+    throw respData;
+  } catch (e) {
+    console.error(e);
+    notification.error({
+      message: 'Unexpected error deleting appointment',
+    });
+
+    return false;
+  }
+}
