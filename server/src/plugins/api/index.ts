@@ -23,6 +23,7 @@ import { waitingForPaymentOrderRoute } from './domains/order/waitingForPayment.j
 import { updateOrderRoute } from './domains/order/update.js';
 import { createByCode } from './domains/order/createByCode.js';
 import { orderListRoute } from './domains/order/list.js';
+import { completeOrderRoute } from './domains/order/complete.js';
 
 import { sendAppointmentStatusRoute } from './domains/medbot/sendAppointmentStatus.js';
 import { proceedToChatRoute } from './domains/medbot/proceedToChat.js';
@@ -139,6 +140,17 @@ const adminApi: FastifyPluginCallback = (fastify, _opts, done) => {
   fastify.route(sendMessageRoute);
   fastify.route(freeSlotsRoute);
   fastify.route(deleteAppointmentRoute);
+  fastify.route(completeOrderRoute);
+
+  fastify.setErrorHandler(function errorHandler(error, _req, reply) {
+    this.log.error(error, 'adminApi');
+
+    if (error instanceof OrderError) {
+      return reply.code(400).send(error.description);
+    }
+
+    return reply.code(error.statusCode || 500).send(error);
+  });
 
   done();
 };

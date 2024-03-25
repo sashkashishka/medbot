@@ -17,7 +17,7 @@ export const updateOrderRoute: RouteOptions = {
       properties: {
         productId: { type: 'number' },
         userId: { type: 'number' },
-        status: { type: 'string' },
+        status: { type: 'string', enum: ['ACTIVE', 'WAITING_FOR_PAYMENT'] },
       },
       required: ['status', 'productId', 'userId'],
     },

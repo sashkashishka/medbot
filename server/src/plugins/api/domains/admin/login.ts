@@ -52,7 +52,7 @@ export const loginAdminRoute: RouteOptions = {
         path: '/',
         secure: false,
         httpOnly: true,
-        signed: true,
+        signed: false,
       })
       .code(200)
       .send({ done: true });

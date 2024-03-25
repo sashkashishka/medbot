@@ -39,6 +39,8 @@ export class AppointmentError {
 export type tOrderErrorReason =
   | 'has-active'
   | 'cannot-update-not-active-order'
+  | 'cannot-complete-non-expired-subscription'
+  | 'complete-appointment-before-closing-order'
   | 'invalid-activation-code'
   | 'too-many-requests';
 
@@ -52,6 +54,11 @@ export class OrderError<tPayload = unknown> {
     switch (this.reason) {
       case 'too-many-requests': {
         return create400Response(this.payload);
+      }
+
+      case 'cannot-complete-non-expired-subscription':
+      case 'complete-appointment-before-closing-order': {
+        return create400Response(this.reason);
       }
 
       case 'has-active':

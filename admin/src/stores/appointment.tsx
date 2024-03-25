@@ -6,7 +6,7 @@ import {
   type iAppointment,
   type iUser,
   type iOrder,
-  iFreeSlot,
+  type iFreeSlot,
 } from '../types';
 import { createListFilters, type iPagination } from './_list-filters';
 import { $sendMessage } from './bot';

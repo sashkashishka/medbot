@@ -1,11 +1,16 @@
 import { Button, Flex, Typography, Popconfirm } from 'antd';
 import type { iOrder } from '../../../types';
+import { completeOrder } from '../../../stores/order';
+import { useStore } from '@nanostores/react';
+import { $user } from '../../../stores/user';
 
 interface iProps {
   order: iOrder;
 }
 
 export function ExpandedOrderDetails({ order }: iProps) {
+  const { data: user } = useStore($user);
+
   if (order.subscriptionEndsAt) {
     return (
       <Typography.Text>
@@ -16,7 +21,7 @@ export function ExpandedOrderDetails({ order }: iProps) {
   }
 
   return (
-    <Flex align="center" style={{ gap: '16px'}}>
+    <Flex align="center" style={{ gap: '16px' }}>
       <Typography.Text>
         This is one time order. Close it when you end you appointment with
         customer.
@@ -24,7 +29,7 @@ export function ExpandedOrderDetails({ order }: iProps) {
 
       <Popconfirm
         title="Sure to close?"
-        onConfirm={() => console.log('delete')}
+        onConfirm={() => completeOrder({ activeOrder: order, user: user! })}
       >
         <Button danger>Close order</Button>
       </Popconfirm>

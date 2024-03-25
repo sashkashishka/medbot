@@ -54,6 +54,24 @@ export const $editOrder = createMutatorStore<iOrder>(({ data, invalidate }) => {
   });
 });
 
+export const $completeOrder = createMutatorStore<iOrder>(
+  ({ data, invalidate }) => {
+    invalidate((k) => Boolean(k.match(ORDER_KEYS.list)));
+
+    return fetch(`/api/admin/order/complete/${data.id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+      headers: { 'content-type': 'application/json' },
+    });
+  },
+);
+
+// ====================
+// ====================
+// ACTIONS
+// ====================
+// ====================
+
 export async function completeOrder({
   user,
   activeOrder,
@@ -62,13 +80,13 @@ export async function completeOrder({
   activeOrder: iOrder;
 }): Promise<boolean> {
   try {
-    const resp = (await $editOrder.mutate({
-      ...activeOrder!,
-      status: 'DONE',
-    })) as Response;
+    const resp = (await $completeOrder.mutate(activeOrder)) as Response;
 
     if (resp.ok) {
-      await $sendMessage.mutate({ botChatId: user?.botChatId, text: getOrderCompleteMessage() });
+      await $sendMessage.mutate({
+        botChatId: user?.botChatId,
+        text: getOrderCompleteMessage(),
+      });
       notification.success({ message: 'Order completed!' });
       return true;
     }
