@@ -15,10 +15,13 @@ import { StatusTag } from '../../components/StatusTag';
 import { formatDate } from '../../utils/date';
 import { ExpandableAppointmentDetails } from './components/ExpandableAppointmentDetails';
 import { AppointmentActions } from './components/Actions';
+import { googleCalendarEventLink } from '../../utils/googleCalendarEventLink';
+import { $adminConfig } from '../../stores/admin';
 
 export function UserAppointmentsPage() {
   const { userId } = useParams<{ userId: string }>();
   const { data, loading } = useStore($appointments);
+  const { data: adminConfig } = useStore($adminConfig);
   const appointmentListFilters = useStore($appointmentListFilters);
   useSyncQueryFilters($appointmentListFilters);
 
@@ -49,14 +52,22 @@ export function UserAppointmentsPage() {
     },
     {
       title: 'Calendar event',
-      dataIndex: 'calendarId',
+      dataIndex: 'calendarEventId',
+      render: (calendarId) => (
+        <a
+          href={googleCalendarEventLink({
+            id: calendarId,
+            email: adminConfig?.googleEmail!,
+          })}
+        >
+          go to calendar
+        </a>
+      ),
     },
     {
       title: 'Action',
       dataIndex: 'time',
-      render: (_, record) => (
-        <AppointmentActions userId={userId!} appointment={record} />
-      ),
+      render: (_, record) => <AppointmentActions appointment={record} />,
     },
   ];
 

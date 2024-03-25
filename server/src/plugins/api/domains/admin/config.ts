@@ -6,6 +6,7 @@ export const adminConfigRoute: RouteOptions = {
   handler() {
     return {
       forumUrlTemplate: this.config.TG_BOT_FORUM_URL_TEMPLATE,
+      googleEmail: this.config.GOOGLE_EMAIL,
     };
   },
 };

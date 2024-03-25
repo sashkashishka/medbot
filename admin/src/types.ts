@@ -12,6 +12,7 @@ export interface iRegister extends iLogin {}
 
 export interface iAdminConfig {
   forumUrlTemplate: string;
+  googleEmail: string;
 }
 
 export interface iPaginatorResp<T> {
@@ -61,6 +62,7 @@ export interface iAppointment {
   time: string;
   timezoneOffset: string;
   status: 'ACTIVE' | 'DONE' | 'DELETED';
+  calendarEventId: string;
   report: string;
   treatment: string;
 }
