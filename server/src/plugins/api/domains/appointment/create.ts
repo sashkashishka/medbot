@@ -1,10 +1,12 @@
-import { addWeeks, startOfDay, startOfHour } from 'date-fns';
 import type { Prisma } from '@prisma/client';
 import type { RouteOptions } from 'fastify';
 
-import { AppointmentError } from '../../utils/errors.js';
-import { isEarly, isOccupied, isWithinWorkingHours } from '../../utils/time.js';
 import { createGoogleCalendarEvent } from '../../utils/google-calendar.js';
+import { setAppointmentTimeToStartOfHour } from '../../hooks/preHandler/setAppointmentTimeToStartOfHour.js';
+import { isAppointmentOutOfWorkingHours } from '../../hooks/preHandler/isAppointmentOutOfWorkingHours.js';
+import { isAppointmentTooEarly } from '../../hooks/preHandler/isAppointmentTooEarly.js';
+import { canCreateAppointment } from '../../hooks/preHandler/canCreateAppointment.js';
+import { createDecorateWithOrder } from '../../hooks/preHandler/decorateWithOrder.js';
 
 export const createAppointmentRoute: RouteOptions = {
   method: 'POST',
@@ -38,60 +40,13 @@ export const createAppointmentRoute: RouteOptions = {
       ],
     },
   },
-  async preHandler(request) {
-    const body = request.body as Prisma.AppointmentUncheckedCreateInput;
-
-    body.time = startOfHour(new Date(body.time)).toISOString();
-
-    const { time, orderId } = body;
-
-    if (!isWithinWorkingHours(time)) {
-      throw new AppointmentError('out-of-working-hours');
-    }
-
-    if (isEarly(time)) {
-      throw new AppointmentError('too-early');
-    }
-
-    const order = await this.prisma.order.findFirst({
-      where: {
-        id: Number(orderId),
-      },
-    });
-
-    const appointments = await this.prisma.appointment.findMany({
-      where: {
-        orderId: Number(orderId),
-      },
-    });
-
-    if (appointments.some((item) => item.status === 'ACTIVE')) {
-      throw new AppointmentError('has-active');
-    }
-
-    if (
-      !order.subscriptionEndsAt &&
-      appointments.some((item) => item.status === 'DONE')
-    ) {
-      throw new AppointmentError('one-time-order-cannot-create-twice');
-    }
-
-    const data = await this.prisma.appointment.findMany({
-      where: {
-        status: 'ACTIVE',
-        time: {
-          gte: new Date().toISOString(),
-          lte: addWeeks(startOfDay(new Date()), 2).toISOString(),
-        },
-      },
-    });
-
-    data.forEach((appointment) => {
-      if (isOccupied(time, appointment.time)) {
-        throw new AppointmentError('occupied');
-      }
-    });
-  },
+  preHandler: [
+    setAppointmentTimeToStartOfHour,
+    isAppointmentOutOfWorkingHours,
+    isAppointmentTooEarly,
+    createDecorateWithOrder('body'),
+    canCreateAppointment,
+  ],
   async handler(req) {
     const body = req.body as Prisma.AppointmentUncheckedCreateInput;
 

@@ -1,10 +1,11 @@
-import { addWeeks, startOfDay, startOfHour } from 'date-fns';
 import { Prisma } from '@prisma/client';
 import type { RouteOptions } from 'fastify';
 
-import { isEarly, isOccupied, isWithinWorkingHours } from '../../utils/time.js';
-import { AppointmentError } from '../../utils/errors.js';
 import { createGoogleCalendarEvent } from '../../utils/google-calendar.js';
+import { setAppointmentTimeToStartOfHour } from '../../hooks/preHandler/setAppointmentTimeToStartOfHour.js';
+import { isAppointmentOutOfWorkingHours } from '../../hooks/preHandler/isAppointmentOutOfWorkingHours.js';
+import { isAppointmentTooEarly } from '../../hooks/preHandler/isAppointmentTooEarly.js';
+import { canUpdateAppointment } from '../../hooks/preHandler/canUpdateAppointment.js';
 
 interface iParams {
   appointmentId: string;
@@ -42,56 +43,12 @@ export const updateAppointmentRoute: RouteOptions = {
       ],
     },
   },
-  async preHandler(request) {
-    const params = request.params as iParams;
-    const body = request.body as Prisma.AppointmentUncheckedCreateInput;
-
-    body.time = startOfHour(new Date(body.time)).toISOString();
-
-    const { appointmentId } = params;
-    const { time } = body;
-
-    if (!isWithinWorkingHours(time)) {
-      throw new AppointmentError('out-of-working-hours');
-    }
-
-    if (isEarly(time)) {
-      throw new AppointmentError('too-early');
-    }
-
-    const activeAppointment = await this.prisma.appointment.findFirst({
-      where: {
-        status: 'ACTIVE',
-        id: Number(appointmentId),
-        time: {
-          gte: new Date().toISOString(),
-        },
-      },
-    });
-
-    if (!activeAppointment) {
-      throw new AppointmentError('cannot-update-not-active-appointment');
-    }
-
-    const data = await this.prisma.appointment.findMany({
-      where: {
-        status: 'ACTIVE',
-        time: {
-          gte: new Date().toISOString(),
-          lte: addWeeks(startOfDay(new Date()), 2).toISOString(),
-        },
-      },
-    });
-
-    data.forEach((appointment) => {
-      if (
-        isOccupied(time, appointment.time) &&
-        appointment.id !== Number(appointmentId)
-      ) {
-        throw new AppointmentError('occupied');
-      }
-    });
-  },
+  preHandler: [
+    setAppointmentTimeToStartOfHour,
+    isAppointmentOutOfWorkingHours,
+    isAppointmentTooEarly,
+    canUpdateAppointment,
+  ],
   async handler(request) {
     const params = request.params as iParams;
     const body = request.body as Prisma.AppointmentUncheckedCreateInput;

@@ -15,18 +15,18 @@ import { uk } from 'date-fns/locale';
 const startHour = 10;
 const lastHour = 22;
 
-export function isEarly(time: string): boolean {
+export function isEarly(time: string | Date): boolean {
   return isBefore(time, addHours(new Date(), 2));
 }
 
-export function isWithinWorkingHours(time: string): boolean {
+export function isWithinWorkingHours(time: string | Date): boolean {
   const hour = getHours(time);
 
   return hour >= startHour && hour < lastHour;
 }
 
 export function isOccupied(
-  time: string,
+  time: string | Date,
   appointmentTime: string | Date,
 ): boolean {
   const timeDate = new Date(time);

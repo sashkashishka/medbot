@@ -1,8 +1,10 @@
 import { Prisma } from '@prisma/client';
 import { addMonths } from 'date-fns';
 import type { RouteOptions } from 'fastify';
-import { OrderError } from '../../utils/errors.js';
+
 import { generateActivationCodes } from '../../utils/activation-code.js';
+import { createDecorateWithOrder } from '../../hooks/preHandler/decorateWithOrder.js';
+import { cannotUpdateNotActiveOrder } from '../../hooks/preHandler/cannotUpdateNotActiveOrder.js';
 
 interface iParams {
   orderId: string;
@@ -22,19 +24,7 @@ export const updateOrderRoute: RouteOptions = {
       required: ['status', 'productId', 'userId'],
     },
   },
-  async preHandler(req) {
-    const params = req.params as iParams;
-
-    const order = await this.prisma.order.findFirst({
-      where: {
-        id: Number(params.orderId),
-      },
-    });
-
-    if (order?.status === 'DONE') {
-      throw new OrderError('cannot-update-not-active-order');
-    }
-  },
+  preHandler: [createDecorateWithOrder('params'), cannotUpdateNotActiveOrder],
   async handler(req) {
     const params = req.params as iParams;
     const body = req.body as Prisma.OrderUncheckedCreateInput;

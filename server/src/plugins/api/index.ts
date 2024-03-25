@@ -6,6 +6,7 @@ import {
   RegisterError,
   create400Response,
 } from './utils/errors.js';
+import { createProgressiveDelay } from './utils/progressive-delay.js';
 
 import { userRoute } from './domains/user/index.js';
 import { createUserRoute } from './domains/user/create.js';
@@ -45,10 +46,17 @@ import { logoutAdminRoute } from './domains/admin/logout.js';
 import { adminRoute } from './domains/admin/admin.js';
 import { adminConfigRoute } from './domains/admin/config.js';
 
-import { tgHashValidator, verifyIsFromTg } from './hooks.js';
+import { verifyIsFromTg } from './hooks/preHandler/verifyIsFromTg.js';
+import { tgHashValidator } from './hooks/preHandler/tgHashValidator.js';
+
+declare module 'fastify' {
+  // eslint-disable-next-line
+  interface FastifyInstance {
+    rateLimiter: ReturnType<typeof createProgressiveDelay>;
+  }
+}
 
 const userApi: FastifyPluginCallback = (fastify, _opts, done) => {
-  // TODO return back
   fastify.addHook('preHandler', tgHashValidator);
 
   fastify.route(productListRoute);
@@ -79,7 +87,7 @@ const userApi: FastifyPluginCallback = (fastify, _opts, done) => {
       return reply.code(400).send(error.description);
     }
 
-    return reply.status(400).send(create400Response({ error }));
+    return reply.status(error?.statusCode || 500).send(error);
   });
 
   done();
@@ -98,7 +106,9 @@ const serviceApi: FastifyPluginCallback = (fastify, _opts, done) => {
   fastify.setErrorHandler(function errorHandler(error, _req, reply) {
     this.log.error(error, 'serviceApi');
 
-    return reply.status(400).send(create400Response({ error }));
+    return reply
+      .status(error?.statusCode || 500)
+      .send(create400Response({ error }));
   });
 
   done();
@@ -116,7 +126,7 @@ const adminAuthApi: FastifyPluginCallback = (fastify, _opts, done) => {
       return reply.code(400).send(error.description);
     }
 
-    return reply.code(500).send(error);
+    return reply.code(error?.statusCode || 500).send(error);
   });
 
   done();
@@ -160,6 +170,16 @@ export const apiPlugin: FastifyPluginCallback = async (
   _opts,
   done,
 ) => {
+  fastify.decorate(
+    'rateLimiter',
+    createProgressiveDelay({
+      // TODO: move this to .env variables
+      cacheCapacity: 100,
+      frequencyRate: 3,
+      frequencyTime: 8000,
+      maxAttempts: 20,
+    }),
+  );
   await fastify.register(userApi);
   await fastify.register(serviceApi, { prefix: '/service' });
   await fastify.register(adminAuthApi, { prefix: '/auth/admin' });

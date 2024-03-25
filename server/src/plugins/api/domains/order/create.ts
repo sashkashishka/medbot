@@ -1,7 +1,7 @@
 import { addMonths } from 'date-fns';
 import type { Prisma } from '@prisma/client';
 import type { RouteOptions } from 'fastify';
-import { OrderError } from '../../utils/errors.js';
+import { canCreateOneOrder } from '../../hooks/preHandler/canCreateOneOrder.js';
 
 export const createOrderRoute: RouteOptions = {
   method: 'POST',
@@ -17,20 +17,7 @@ export const createOrderRoute: RouteOptions = {
       required: ['userId', 'productId', 'status'],
     },
   },
-  async preHandler(req) {
-    const body = req.body as Prisma.OrderUncheckedCreateInput;
-
-    const orders = await this.prisma.order.findMany({
-      where: {
-        userId: body.userId,
-        status: 'ACTIVE',
-      },
-    });
-
-    if (orders.length) {
-      throw new OrderError('has-active');
-    }
-  },
+  preHandler: [canCreateOneOrder],
   async handler(req) {
     const body = req.body as Prisma.OrderUncheckedCreateInput;
 

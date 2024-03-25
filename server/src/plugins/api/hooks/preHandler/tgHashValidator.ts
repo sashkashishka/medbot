@@ -36,13 +36,3 @@ export const tgHashValidator: preHandlerAsyncHookHandler =
 
     req.$tgQueryId = urlParams.get('query_id');
   };
-
-export const verifyIsFromTg: preHandlerAsyncHookHandler =
-  async function verifyIsFromTg(req) {
-    const headers = req.headers;
-    const token = headers['x-token'];
-
-    if (this.config.TG_BOT_TOKEN !== token) {
-      throw new Error('Invalid token');
-    }
-  };

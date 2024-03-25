@@ -1,24 +1,10 @@
 import { Prisma } from '@prisma/client';
 import { addMonths } from 'date-fns';
 import type { RouteOptions } from 'fastify';
-import { OrderError } from '../../utils/errors.js';
-import {
-  createProgressiveDelay,
-  type iCacheEntity,
-} from '../../utils/progressive-delay.js';
 
-declare module 'fastify' {
-  // eslint-disable-next-line
-  export interface FastifyRequest {
-    $activationCode?: Prisma.ActivationCodeUncheckedCreateInput;
-  }
-}
-
-interface iParams {
-  code: string;
-}
-
-let limiter: ReturnType<typeof createProgressiveDelay>;
+import { canCreateOneOrder } from '../../hooks/preHandler/canCreateOneOrder.js';
+import { checkIfBlockedByRateLimiter } from '../../hooks/preHandler/checkIfBlockedByRateLimiter.js';
+import { checkIfActivationCodeValid } from '../../hooks/preHandler/checkIfActivationCodeValid.js';
 
 export const createByCode: RouteOptions = {
   method: 'POST',
@@ -32,53 +18,11 @@ export const createByCode: RouteOptions = {
       required: ['userId'],
     },
   },
-  async preHandler(req) {
-    if (!limiter) {
-      limiter = createProgressiveDelay({
-        cacheCapacity: 100,
-        frequencyRate: 3,
-        frequencyTime: 8000,
-        maxAttempts: 20,
-      });
-    }
-
-    // TODO check that proper ip is passed. not proxy ip
-    const checkResult = limiter(req.ip);
-
-    if (checkResult.blockedUntil) {
-      throw new OrderError<Pick<iCacheEntity, 'blockedUntil' | 'reason'>>(
-        'too-many-requests',
-        { blockedUntil: checkResult.blockedUntil, reason: checkResult.reason },
-      );
-    }
-
-    const body = req.body as Prisma.OrderUncheckedCreateInput;
-
-    const orders = await this.prisma.order.findMany({
-      where: {
-        userId: body.userId,
-        status: 'ACTIVE',
-      },
-    });
-
-    if (orders.length) {
-      throw new OrderError('has-active');
-    }
-
-    const params = req.params as iParams;
-
-    const code = await this.prisma.activationCode.findFirst({
-      where: {
-        code: Number(params.code),
-      },
-    });
-
-    if (!code) {
-      throw new OrderError('invalid-activation-code');
-    }
-
-    req.$activationCode = code;
-  },
+  preHandler: [
+    checkIfBlockedByRateLimiter,
+    canCreateOneOrder,
+    checkIfActivationCodeValid,
+  ],
   async handler(req) {
     const body = req.body as Prisma.OrderUncheckedCreateInput;
     const code = req.$activationCode;

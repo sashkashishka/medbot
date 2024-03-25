@@ -1,6 +1,6 @@
 import type { RouteOptions } from 'fastify';
-import { RegisterError } from '../../utils/errors.js';
 import { encryptPassword } from '../../utils/password.js';
+import { isOneRegistration } from '../../hooks/onRequest/isOneRegistration.js';
 
 interface iBody {
   name: string;
@@ -10,16 +10,7 @@ interface iBody {
 export const registerAdminRoute: RouteOptions = {
   method: 'POST',
   url: '/register',
-  async onRequest() {
-    const admin = await this.prisma.admin.findMany({
-      take: 1,
-      skip: 0,
-    });
-
-    if (admin?.length) {
-      throw new RegisterError('too-much-registrations');
-    }
-  },
+  onRequest: [isOneRegistration],
   async handler(request, reply) {
     const body = request.body as iBody;
 
