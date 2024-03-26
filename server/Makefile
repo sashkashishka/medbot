@@ -17,3 +17,7 @@ migration_name = init
 
 migrate_dev:
 	docker compose -f docker-compose.dev.yaml exec app npm run prisma migrate dev --name $(migration_name) 
+
+
+start_test_db:
+	docker compose -f docker-compose.testing.yaml up

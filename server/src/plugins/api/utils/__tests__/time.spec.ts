@@ -1,3 +1,4 @@
+import t from 'tap';
 import {
   addDays,
   addHours,
@@ -6,132 +7,138 @@ import {
   startOfDay,
   startOfHour,
 } from 'date-fns';
+import { type Prisma } from '@prisma/client';
+import fakeTimer from '@sinonjs/fake-timers';
 import {
   getFreeSlots,
   isEarly,
   isOccupied,
   isWithinWorkingHours,
 } from '../time.js';
-import { Prisma } from '@prisma/client';
 
-describe('time utilities', () => {
-  beforeAll(() => {
-    jest.useFakeTimers();
+const test = t.test;
+const before = t.before;
+const after = t.after;
+const beforeEach = t.beforeEach;
+const afterEach = t.afterEach;
+
+test('time utilities', (t) => {
+  let clock: fakeTimer.InstalledClock;
+
+  before(() => {
+    clock = fakeTimer.install({ shouldClearNativeTimers: true });
   });
 
   beforeEach(() => {
-    jest.setSystemTime(new Date('2024-01-07T12:00:00.000Z'));
+    clock.setSystemTime(new Date('2024-01-07T12:00:00.000Z'));
   });
 
   afterEach(() => {
-    jest.setSystemTime(new Date());
+    clock.setSystemTime(new Date());
   });
 
-  afterAll(() => {
-    jest.useRealTimers();
+  after(() => {
+    clock.uninstall();
   });
 
-  describe('isEarly', () => {
-    it('isEarly', () => {
-      const date = new Date();
-      const cases = [
-        [date.toISOString(), true],
-        [addHours(date, -1).toISOString(), true],
-        [addHours(date, 1).toISOString(), true],
-        [addMinutes(date, 90).toISOString(), true],
-        [addMinutes(date, 119).toISOString(), true],
-        [addMinutes(date, 120).toISOString(), false],
-        [addMinutes(date, 121).toISOString(), false],
-        [addHours(date, 3).toISOString(), false],
-      ] as const;
+  test('isEarly', (t) => {
+    const date = new Date();
+    const cases = [
+      [date.toISOString(), true],
+      [addHours(date, -1).toISOString(), true],
+      [addHours(date, 1).toISOString(), true],
+      [addMinutes(date, 90).toISOString(), true],
+      [addMinutes(date, 119).toISOString(), true],
+      [addMinutes(date, 120).toISOString(), false],
+      [addMinutes(date, 121).toISOString(), false],
+      [addHours(date, 3).toISOString(), false],
+    ] as const;
 
-      cases.forEach(([time, result]) => {
-        expect(isEarly(time)).toBe(result);
-      });
+    cases.forEach(([time, result]) => {
+      t.equal(isEarly(time), result);
     });
+    t.end();
   });
 
-  describe('isWithinWorkingHours', () => {
-    it('isWithinWorkingHours', () => {
-      const date = new Date();
-      const cases = [
-        [setHours(date, 0).toISOString(), false],
-        [setHours(date, 1).toISOString(), false],
-        [setHours(date, 2).toISOString(), false],
-        [setHours(date, 3).toISOString(), false],
-        [setHours(date, 4).toISOString(), false],
-        [setHours(date, 5).toISOString(), false],
-        [setHours(date, 6).toISOString(), false],
-        [setHours(date, 7).toISOString(), false],
-        [setHours(date, 8).toISOString(), false],
-        [setHours(date, 9).toISOString(), false],
-        [setHours(date, 10).toISOString(), true],
-        [setHours(date, 11).toISOString(), true],
-        [setHours(date, 12).toISOString(), true],
-        [setHours(date, 13).toISOString(), true],
-        [setHours(date, 14).toISOString(), true],
-        [setHours(date, 15).toISOString(), true],
-        [setHours(date, 16).toISOString(), true],
-        [setHours(date, 17).toISOString(), true],
-        [setHours(date, 18).toISOString(), true],
-        [setHours(date, 19).toISOString(), true],
-        [setHours(date, 20).toISOString(), true],
-        [setHours(date, 21).toISOString(), true],
-        [setHours(date, 22).toISOString(), false],
-        [setHours(date, 23).toISOString(), false],
-      ] as const;
+  test('isWithinWorkingHours', (t) => {
+    const date = new Date();
+    const cases = [
+      [setHours(date, 0).toISOString(), false],
+      [setHours(date, 1).toISOString(), false],
+      [setHours(date, 2).toISOString(), false],
+      [setHours(date, 3).toISOString(), false],
+      [setHours(date, 4).toISOString(), false],
+      [setHours(date, 5).toISOString(), false],
+      [setHours(date, 6).toISOString(), false],
+      [setHours(date, 7).toISOString(), false],
+      [setHours(date, 8).toISOString(), false],
+      [setHours(date, 9).toISOString(), false],
+      [setHours(date, 10).toISOString(), true],
+      [setHours(date, 11).toISOString(), true],
+      [setHours(date, 12).toISOString(), true],
+      [setHours(date, 13).toISOString(), true],
+      [setHours(date, 14).toISOString(), true],
+      [setHours(date, 15).toISOString(), true],
+      [setHours(date, 16).toISOString(), true],
+      [setHours(date, 17).toISOString(), true],
+      [setHours(date, 18).toISOString(), true],
+      [setHours(date, 19).toISOString(), true],
+      [setHours(date, 20).toISOString(), true],
+      [setHours(date, 21).toISOString(), true],
+      [setHours(date, 22).toISOString(), false],
+      [setHours(date, 23).toISOString(), false],
+    ] as const;
 
-      cases.forEach(([time, result]) => {
-        expect(isWithinWorkingHours(time)).toBe(result);
-      });
+    cases.forEach(([time, result]) => {
+      t.equal(isWithinWorkingHours(time), result);
     });
+    t.end();
   });
 
-  describe('isOccupied', () => {
-    it('isOccupied', () => {
-      const date = new Date();
-      const startHourDate = startOfHour(date);
-      const cases = [
-        [date.toISOString(), date.toISOString(), true],
-        [
-          addHours(startHourDate, -1).toISOString(),
-          startHourDate.toISOString(),
-          false,
-        ],
-        [
-          addMinutes(startHourDate, 30).toISOString(),
-          startHourDate.toISOString(),
-          true,
-        ],
-        [
-          addMinutes(startHourDate, -1).toISOString(),
-          startHourDate.toISOString(),
-          false,
-        ],
-        [
-          addMinutes(startHourDate, 59).toISOString(),
-          startHourDate.toISOString(),
-          true,
-        ],
-        [
-          addMinutes(startHourDate, 60).toISOString(),
-          startHourDate.toISOString(),
-          false,
-        ],
-        [
-          addMinutes(startHourDate, 61).toISOString(),
-          startHourDate.toISOString(),
-          false,
-        ],
-      ] as const;
+  test('isOccupied', (t) => {
+    const date = new Date();
+    const startHourDate = startOfHour(date);
+    const cases = [
+      [date.toISOString(), date.toISOString(), true],
+      [
+        addHours(startHourDate, -1).toISOString(),
+        startHourDate.toISOString(),
+        false,
+      ],
+      [
+        addMinutes(startHourDate, 30).toISOString(),
+        startHourDate.toISOString(),
+        true,
+      ],
+      [
+        addMinutes(startHourDate, -1).toISOString(),
+        startHourDate.toISOString(),
+        false,
+      ],
+      [
+        addMinutes(startHourDate, 59).toISOString(),
+        startHourDate.toISOString(),
+        true,
+      ],
+      [
+        addMinutes(startHourDate, 60).toISOString(),
+        startHourDate.toISOString(),
+        false,
+      ],
+      [
+        addMinutes(startHourDate, 61).toISOString(),
+        startHourDate.toISOString(),
+        false,
+      ],
+    ] as const;
 
-      cases.forEach(([time, appointmentTime, result]) => {
-        expect(isOccupied(time, appointmentTime)).toBe(result);
-      });
+    cases.forEach(([time, appointmentTime, result]) => {
+      t.equal(isOccupied(time, appointmentTime), result);
     });
+    t.end();
   });
 
-  describe('getFreeSlots', () => {
+  test('getFreeSlots', (t) => {
     const generateAppointment = (
       time: string,
     ): Prisma.AppointmentUncheckedCreateInput => ({
@@ -145,33 +152,32 @@ describe('time utilities', () => {
       complaintsStarted: '',
     });
 
-
-    it('should return right times between 10 and 22', () => {
-      jest.setSystemTime(startOfDay(new Date()));
+    test('should return right times between 10 and 22', async (t) => {
+      clock.setSystemTime(startOfDay(new Date()));
 
       const result = getFreeSlots([], 1);
 
-      expect(result).toMatchSnapshot();
+      t.matchSnapshot(result);
     });
 
-    it('should return slots for next days', () => {
-      jest.setSystemTime(startOfDay(new Date()));
+    test('should return slots for next days', async (t) => {
+      clock.setSystemTime(startOfDay(new Date()));
 
       const result = getFreeSlots([], 2);
 
-      expect(result).toMatchSnapshot();
+      t.matchSnapshot(result);
     });
 
-    it('should return first slot 2 hours after current time', () => {
-      jest.setSystemTime(setHours(startOfDay(new Date()), 14));
+    test('should return first slot 2 hours after current time', async (t) => {
+      clock.setSystemTime(setHours(startOfDay(new Date()), 14));
 
       const result = getFreeSlots([], 1);
 
-      expect(result).toMatchSnapshot();
+      t.matchSnapshot(result);
     });
 
-    it('should exclude occupied times from range', () => {
-      jest.setSystemTime(setHours(startOfDay(new Date()), 14));
+    test('should exclude occupied times from range', async (t) => {
+      clock.setSystemTime(setHours(startOfDay(new Date()), 14));
 
       const nextDay = addDays(new Date(), 1);
 
@@ -188,7 +194,11 @@ describe('time utilities', () => {
         2,
       );
 
-      expect(result).toMatchSnapshot();
+      t.matchSnapshot(result);
     });
+
+    t.end();
   });
+
+  t.end();
 });

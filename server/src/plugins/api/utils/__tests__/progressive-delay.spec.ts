@@ -1,180 +1,209 @@
+import t from 'tap';
 import {
+  isEqual,
   addHours,
   addMilliseconds,
   addMinutes,
   differenceInDays,
   differenceInMinutes,
 } from 'date-fns';
+import fakeTimer from '@sinonjs/fake-timers';
 import {
   createProgressiveDelay,
   type iCacheEntity,
 } from '../progressive-delay.js';
 
-describe('progressive delay', () => {
-  describe('max day limit', () => {
-    const options = {
-      cacheCapacity: 5,
-      maxAttempts: 5,
-      frequencyRate: 10,
-      frequencyTime: 5000,
-    };
+const test = t.test;
 
-    it('should return blockedUntil when exceeded maxAttempts', () => {
-      jest.useFakeTimers();
-      const ip = '1.2.3.4';
-      const checker = createProgressiveDelay(options);
-      const date = new Date();
+test('max day limit', (t) => {
+  const options = {
+    cacheCapacity: 5,
+    maxAttempts: 5,
+    frequencyRate: 10,
+    frequencyTime: 5000,
+  };
 
-      let result: iCacheEntity;
+  test('should return blockedUntil when exceeded maxAttempts', (t) => {
+    const clock = fakeTimer.install({ shouldClearNativeTimers: true });
 
-      // go to threschold limit but not exceed
-      Array.from({ length: options.maxAttempts }).forEach(() => {
-        result = checker(ip);
-      });
+    const ip = '1.2.3.4';
+    const checker = createProgressiveDelay(options);
+    const date = new Date();
 
-      expect(result.blockedUntil).toBeNull();
-      expect(result.reason).toBeNull();
-      expect(result.attempt).toBe(options.maxAttempts);
+    let result: iCacheEntity;
 
-      // exceed frequency limit
+    // go to threschold limit but not exceed
+    Array.from({ length: options.maxAttempts }).forEach(() => {
       result = checker(ip);
-
-      expect(result.attempt).toBe(options.maxAttempts + 1);
-      expect(result.blockedUntil).toBeInstanceOf(Date);
-      expect(differenceInDays(result.blockedUntil, date)).toBe(1);
-      expect(result.reason).toBe('maxAttempts');
-
-      // subsequent call after blocking
-      result = checker(ip);
-
-      expect(result.attempt).toBe(options.maxAttempts + 1);
-      expect(result.blockedUntil).toBeInstanceOf(Date);
-      expect(differenceInDays(result.blockedUntil, date)).toBe(1);
-      expect(result.reason).toBe('maxAttempts');
-
-      // wait
-      jest.setSystemTime(addHours(date, 25));
-
-      // call day later
-      result = checker(ip);
-
-      expect(result.blockedUntil).toBeNull();
-      expect(result.reason).toBeNull();
-      expect(result.attempt).toBe(1);
     });
+
+    t.equal(result.blockedUntil, null);
+    t.equal(result.reason, null);
+    t.equal(result.attempt, options.maxAttempts);
+
+    // exceed frequency limit
+    result = checker(ip);
+
+    t.equal(result.attempt, options.maxAttempts + 1);
+    t.type(result.blockedUntil, Date);
+    t.equal(differenceInDays(result.blockedUntil, date), 1);
+    t.equal(result.reason, 'maxAttempts');
+
+    // subsequent call after blocking
+    result = checker(ip);
+
+    t.equal(result.attempt, options.maxAttempts + 1);
+    t.type(result.blockedUntil, Date);
+    t.equal(differenceInDays(result.blockedUntil, date), 1);
+    t.equal(result.reason, 'maxAttempts');
+
+    // wait
+    clock.setSystemTime(addHours(date, 25));
+
+    // call day later
+    result = checker(ip);
+
+    t.equal(result.blockedUntil, null);
+    t.equal(result.reason, null);
+    t.equal(result.attempt, 1);
+
+    t.teardown(clock.uninstall);
+    t.end();
   });
 
-  describe('frequency limit', () => {
-    const options = {
-      cacheCapacity: 5,
-      maxAttempts: 20,
-      frequencyRate: 5,
-      frequencyTime: 5000,
-    };
+  t.end();
+});
 
-    it('should return blockedUntil when exceeded frequencyRate', () => {
-      jest.useFakeTimers();
-      const ip = '1.2.3.4';
-      const checker = createProgressiveDelay(options);
-      const date = new Date();
+test('frequency limit', (t) => {
+  const options = {
+    cacheCapacity: 5,
+    maxAttempts: 20,
+    frequencyRate: 5,
+    frequencyTime: 5000,
+  };
 
-      let result: iCacheEntity;
+  test('should return blockedUntil when exceeded frequencyRate', (t) => {
+    const clock = fakeTimer.install({ shouldClearNativeTimers: true });
+    const ip = '1.2.3.4';
+    const checker = createProgressiveDelay(options);
+    const date = new Date();
 
-      // go to threschold limit but not exceed
-      Array.from({ length: options.frequencyRate }).forEach((_, i) => {
-        result = checker(ip);
-        expect(result.frequencyRate).toBe(i + 1);
-      });
+    let result: iCacheEntity;
 
-      expect(result.blockedUntil).toBeNull();
-      expect(result.attempt).toBe(options.frequencyRate);
-      expect(result.frequencyRate).toBe(options.frequencyRate);
-      expect(result.frequencyDueDate).toStrictEqual(date);
-      expect(result.reason).toBeNull();
-
-      // exceed frequency limit
+    // go to threschold limit but not exceed
+    Array.from({ length: options.frequencyRate }).forEach((_, i) => {
       result = checker(ip);
-
-      expect(result.blockedUntil).toBeInstanceOf(Date);
-      expect(differenceInMinutes(result.blockedUntil, date)).toBe(15);
-      expect(result.attempt).toBe(options.frequencyRate + 1);
-      expect(result.frequencyRate).toBe(0);
-      expect(result.frequencyDueDate).toStrictEqual(date);
-      expect(result.reason).toBe('frequency');
-
-      // subsequent call after blocking
-      result = checker(ip);
-
-      expect(result.blockedUntil).toBeInstanceOf(Date);
-      expect(differenceInMinutes(result.blockedUntil, date)).toBe(15);
-      expect(result.attempt).toBe(options.frequencyRate + 1);
-      expect(result.frequencyRate).toBe(1);
-      expect(result.frequencyDueDate).toStrictEqual(date);
-      expect(result.reason).toBe('frequency');
-
-      // wait
-      jest.setSystemTime(addMinutes(new Date(), 16));
-      const newDate = new Date();
-
-      // // call 15 min later
-      result = checker(ip);
-
-      expect(result.blockedUntil).toBeNull();
-      expect(result.attempt).toBe(options.frequencyRate + 2);
-      expect(result.frequencyRate).toBe(1);
-      expect(result.frequencyDueDate).toStrictEqual(
-        addMilliseconds(newDate, options.frequencyTime),
-      );
-      expect(result.reason).toBeNull();
-
-      // subsequent call
-      result = checker(ip);
-      expect(result.blockedUntil).toBeNull();
-      expect(result.attempt).toBe(options.frequencyRate + 3);
-      expect(result.frequencyRate).toBe(2);
-      expect(result.frequencyDueDate).toStrictEqual(
-        addMilliseconds(newDate, options.frequencyTime),
-      );
-      expect(result.reason).toBeNull();
+      t.equal(result.frequencyRate, i + 1);
     });
 
-    it('should reset frequencyRate when check is not rapid', () => {
-      jest.useFakeTimers();
-      const ip = '1.2.3.4';
-      const checker = createProgressiveDelay(options);
-      const date = new Date();
+    t.equal(result.blockedUntil, null);
+    t.equal(result.attempt, options.frequencyRate);
+    t.equal(result.frequencyRate, options.frequencyRate);
+    t.equal(isEqual(result.frequencyDueDate, date), true);
+    t.equal(result.reason, null);
 
-      let result: iCacheEntity;
+    // exceed frequency limit
+    result = checker(ip);
 
-      // go to threschold limit but not exceed
-      Array.from({ length: options.frequencyRate }).forEach((_, i) => {
-        result = checker(ip);
-        expect(result.frequencyRate).toBe(i + 1);
-      });
+    t.type(result.blockedUntil, Date);
+    t.equal(differenceInMinutes(result.blockedUntil, date), 15);
+    t.equal(result.attempt, options.frequencyRate + 1);
+    t.equal(result.frequencyRate, 0);
+    t.equal(isEqual(result.frequencyDueDate, date), true);
+    t.equal(result.reason, 'frequency');
 
-      expect(result.blockedUntil).toBeNull();
-      expect(result.attempt).toBe(options.frequencyRate);
-      expect(result.frequencyRate).toBe(options.frequencyRate);
-      expect(result.frequencyDueDate).toStrictEqual(date);
-      expect(result.reason).toBeNull();
+    // subsequent call after blocking
+    result = checker(ip);
 
-      // wait options.frequencyTime
-      const newDate = addMilliseconds(date, options.frequencyTime + 1);
-      jest.setSystemTime(newDate);
+    t.type(result.blockedUntil, Date);
+    t.equal(differenceInMinutes(result.blockedUntil, date), 15);
+    t.equal(result.attempt, options.frequencyRate + 1);
+    t.equal(result.frequencyRate, 1);
+    t.equal(isEqual(result.frequencyDueDate, date), true);
+    t.equal(result.reason, 'frequency');
 
-      // go to threschold limit but not exceed
-      Array.from({ length: options.frequencyRate }).forEach((_, i) => {
-        result = checker(ip);
-        expect(result.frequencyRate).toBe(i + 1);
-      });
+    // wait
+    clock.setSystemTime(addMinutes(new Date(), 16));
+    const newDate = new Date();
 
-      expect(result.blockedUntil).toBeNull();
-      expect(result.attempt).toBe(options.frequencyRate * 2);
-      expect(result.frequencyRate).toBe(options.frequencyRate);
-      expect(result.frequencyDueDate).toStrictEqual(
+    // // call 15 min later
+    result = checker(ip);
+
+    t.equal(result.blockedUntil, null);
+    t.equal(result.attempt, options.frequencyRate + 2);
+    t.equal(result.frequencyRate, 1);
+    t.equal(
+      isEqual(
+        result.frequencyDueDate,
         addMilliseconds(newDate, options.frequencyTime),
-      );
-      expect(result.reason).toBeNull();
-    });
+      ),
+      true,
+    );
+    t.equal(result.reason, null);
+
+    // subsequent call
+    result = checker(ip);
+    t.equal(result.blockedUntil, null);
+    t.equal(result.attempt, options.frequencyRate + 3);
+    t.equal(result.frequencyRate, 2);
+    t.equal(
+      isEqual(
+        result.frequencyDueDate,
+        addMilliseconds(newDate, options.frequencyTime),
+      ),
+      true,
+    );
+    t.equal(result.reason, null);
+
+    t.teardown(clock.uninstall);
+    t.end();
   });
+
+  test('should reset frequencyRate when check is not rapid', (t) => {
+    const clock = fakeTimer.install({ shouldClearNativeTimers: true });
+    const ip = '1.2.3.4';
+    const checker = createProgressiveDelay(options);
+    const date = new Date();
+
+    let result: iCacheEntity;
+
+    // go to threschold limit but not exceed
+    Array.from({ length: options.frequencyRate }).forEach((_, i) => {
+      result = checker(ip);
+      t.equal(result.frequencyRate, i + 1);
+    });
+
+    t.equal(result.blockedUntil, null);
+    t.equal(result.attempt, options.frequencyRate);
+    t.equal(result.frequencyRate, options.frequencyRate);
+    t.equal(isEqual(result.frequencyDueDate, date), true);
+    t.equal(result.reason, null);
+
+    // wait options.frequencyTime
+    const newDate = addMilliseconds(date, options.frequencyTime + 1);
+    clock.setSystemTime(newDate);
+
+    // go to threschold limit but not exceed
+    Array.from({ length: options.frequencyRate }).forEach((_, i) => {
+      result = checker(ip);
+      t.equal(result.frequencyRate, i + 1);
+    });
+
+    t.equal(result.blockedUntil, null);
+    t.equal(result.attempt, options.frequencyRate * 2);
+    t.equal(result.frequencyRate, options.frequencyRate);
+    t.equal(
+      isEqual(
+        result.frequencyDueDate,
+        addMilliseconds(newDate, options.frequencyTime),
+      ),
+      true,
+    );
+    t.equal(result.reason, null);
+
+    t.teardown(clock.uninstall);
+    t.end();
+  });
+
+  t.end();
 });

@@ -13,6 +13,7 @@ build
 tmp
 *.local
 .env
+.env.test
 
 # Editor directories and files
 .vscode/*
@@ -24,4 +25,4 @@ tmp
 *.njsproj
 *.sln
 *.sw?
-
+.tap
