@@ -44,14 +44,15 @@ export async function getServer({ t, scenarios }: iOptions) {
     fastify,
     request,
     async cleanup() {
+      await fastify.prisma.appointment.deleteMany();
+      await fastify.prisma.activationCode.deleteMany();
+      await fastify.prisma.order.deleteMany();
+      await fastify.prisma.product.deleteMany();
+      await fastify.prisma.user.deleteMany();
+
       await fastify.prisma.$transaction([
-        fastify.prisma.product.deleteMany(),
-        fastify.prisma.user.deleteMany(),
-        fastify.prisma.order.deleteMany(),
-        fastify.prisma.appointment.deleteMany(),
         fastify.prisma.admin.deleteMany(),
         fastify.prisma.telegrafSessions.deleteMany(),
-        fastify.prisma.activationCode.deleteMany(),
       ]);
 
       await fastify.close();

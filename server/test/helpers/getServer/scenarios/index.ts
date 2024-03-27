@@ -1,10 +1,16 @@
 import { type FastifyInstance } from 'fastify';
 import { product } from './product.js';
 import { existingAdmin } from './existingAdmin.js';
+import { oneTimeOrderActive } from './oneTimeOrder-active.js';
+import { subscriptionOrderActive } from './subscriptionOrder-active.js';
+import { user } from './user.js';
 
 const SCENARIOS = {
   product,
   existingAdmin,
+  oneTimeOrderActive,
+  subscriptionOrderActive,
+  user,
 };
 
 export type tScenario = keyof typeof SCENARIOS;

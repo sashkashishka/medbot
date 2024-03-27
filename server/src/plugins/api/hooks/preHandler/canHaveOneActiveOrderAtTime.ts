@@ -2,8 +2,8 @@ import type { Prisma } from '@prisma/client';
 import type { preHandlerAsyncHookHandler } from 'fastify';
 import { OrderError } from '../../utils/errors.js';
 
-export const canCreateOneOrder: preHandlerAsyncHookHandler =
-  async function canCreateOneOrder(request) {
+export const canHaveOneActiveOrderAtTime: preHandlerAsyncHookHandler =
+  async function canHaveOneActiveOrderAtTime(request) {
     const body = request.body as Prisma.OrderUncheckedCreateInput;
 
     const orders = await this.prisma.order.findMany({

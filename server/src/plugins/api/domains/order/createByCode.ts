@@ -2,7 +2,7 @@ import { Prisma } from '@prisma/client';
 import { addMonths } from 'date-fns';
 import type { RouteOptions } from 'fastify';
 
-import { canCreateOneOrder } from '../../hooks/preHandler/canCreateOneOrder.js';
+import { canHaveOneActiveOrderAtTime } from '../../hooks/preHandler/canHaveOneActiveOrderAtTime.js';
 import { checkIfBlockedByRateLimiter } from '../../hooks/preHandler/checkIfBlockedByRateLimiter.js';
 import { checkIfActivationCodeValid } from '../../hooks/preHandler/checkIfActivationCodeValid.js';
 
@@ -20,7 +20,7 @@ export const createByCode: RouteOptions = {
   },
   preHandler: [
     checkIfBlockedByRateLimiter,
-    canCreateOneOrder,
+    canHaveOneActiveOrderAtTime,
     checkIfActivationCodeValid,
   ],
   async handler(req) {

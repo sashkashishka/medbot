@@ -19,7 +19,7 @@ const user = {
 const webAppHeader = { 'x-webapp-info': process.env.X_WEBAPP_INFO! };
 
 test('user', async (t) => {
-  const { fastify, cleanup, request } = await getServer({
+  const { cleanup, request } = await getServer({
     t,
     scenarios: ['product', 'existingAdmin'],
   });

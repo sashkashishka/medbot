@@ -141,12 +141,12 @@ export class ProductActivateCodeForm extends Component<iProps> {
       if ('code' in order) {
         let errorText = '';
 
-        if (order.error?.reason && order.error?.blockedUntil) {
+        if (typeof order.error === 'object') {
           errorText = BLOCK_REASON?.[order.error.reason]?.(
             new Date(order.error.blockedUntil),
           );
         } else {
-          errorText = ORDER_ERRORS[order.error.error];
+          errorText = ORDER_ERRORS[order.error];
         }
 
         errorText ||= 'Невідома помилка';

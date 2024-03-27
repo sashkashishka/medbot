@@ -25,24 +25,26 @@ class NetworkError extends Error {
 interface iResponses {
   [API.CREATE_APPOINTMENT]:
     | iAppointment
-    | iErrorResponse<{ time: string } | { error: string }>;
+    | iErrorResponse<{ time: string } | string>;
   [API.UPDATE_DELETE_APPOINTMENT]:
     | iAppointment
-    | iErrorResponse<{ time: string } | { error: string }>;
+    | iErrorResponse<{ time: string } | string>;
   [API.FREE_SLOTS]: iFreeSlot[];
   [API.ACTIVE_APPOINTMENT]: iAppointment;
   [API.USER]: iUser;
   [API.CREATE_USER]: iUser;
   [API.UPDATE_USER]: iUser;
-  [API.UPDATE_ORDER]: iOrder | iErrorResponse<{ error: string }>;
-  [API.CREATE_ORDER]: iOrder | iErrorResponse<{ error: string }>;
+  [API.UPDATE_ORDER]: iOrder | iErrorResponse<string>;
+  [API.CREATE_ORDER]: iOrder | iErrorResponse<string>;
   [API.CREATE_ORDER_BY_CODE]:
     | iOrder
-    | iErrorResponse<{
-        error: string;
-        blockedUntil?: string;
-        reason?: string;
-      }>;
+    | iErrorResponse<
+        | string
+        | {
+            blockedUntil: string;
+            reason: string;
+          }
+      >;
   [API.WAITING_FOR_PAYMENT_ORDER]: iOrder;
   [API.PRODUCT_LIST]: iProduct[];
   [API.MEDBOT_PROCEED_TO_CHAT]: unknown;

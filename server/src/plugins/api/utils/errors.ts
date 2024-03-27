@@ -30,7 +30,7 @@ export class AppointmentError {
       case 'cannot-update-not-active-appointment':
       case 'one-time-order-cannot-create-twice':
       default: {
-        return create400Response({ error: this.reason });
+        return create400Response(this.reason);
       }
     }
   }
@@ -42,6 +42,7 @@ export type tOrderErrorReason =
   | 'cannot-complete-non-expired-subscription'
   | 'complete-appointment-before-closing-order'
   | 'invalid-activation-code'
+  | 'duplicate-waiting-for-payment-order-with-same-product'
   | 'too-many-requests';
 
 export class OrderError<tPayload = unknown> {
@@ -57,13 +58,11 @@ export class OrderError<tPayload = unknown> {
       }
 
       case 'cannot-complete-non-expired-subscription':
-      case 'complete-appointment-before-closing-order': {
-        return create400Response(this.reason);
-      }
-
       case 'has-active':
+      case 'duplicate-waiting-for-payment-order-with-same-product':
+      case 'complete-appointment-before-closing-order':
       default: {
-        return create400Response({ error: this.reason });
+        return create400Response(this.reason);
       }
     }
   }

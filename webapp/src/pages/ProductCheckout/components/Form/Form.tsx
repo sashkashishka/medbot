@@ -146,7 +146,7 @@ export class ProductCheckoutForm extends Component<iProps> {
       const order = await this.getOrderApi(values).request();
 
       if ('code' in order) {
-        const errorText = ORDER_ERRORS[order.error.error] || 'Невідома помилка';
+        const errorText = ORDER_ERRORS[order.error] || 'Невідома помилка';
         tg.showPopup({ message: errorText, buttons: [{ type: 'close' }] });
         return FORM_ERROR;
       }

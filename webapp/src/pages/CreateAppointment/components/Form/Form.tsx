@@ -152,7 +152,7 @@ export class CreateAppointmentForm extends Component<iProps> {
       if ('code' in data) {
         refetchFreeSlots();
 
-        if ('time' in data.error) {
+        if (typeof data.error === 'object') {
           const errorText =
             APPOINTMENT_ERRORS[data.error.time] || 'Невідома помилка';
           tg.showPopup({ message: errorText, buttons: [{ type: 'close' }] });
@@ -162,8 +162,7 @@ export class CreateAppointmentForm extends Component<iProps> {
           };
         }
 
-        const errorText =
-          APPOINTMENT_ERRORS[data.error.error] || 'Невідома помилка';
+        const errorText = APPOINTMENT_ERRORS[data.error] || 'Невідома помилка';
         tg.showPopup({ message: errorText, buttons: [{ type: 'close' }] });
         return FORM_ERROR;
       }
