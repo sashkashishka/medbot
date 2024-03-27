@@ -1,0 +1,16 @@
+version: "3.8"
+services:
+  db:
+    container_name: mysql_db
+    platform: linux/amd64
+    image: mysql:8.2.0
+    ports:
+      - "3306:3306"
+    expose:
+      - 3306
+    volumes:
+      - "./prisma/tmp/test:/var/lib/mysql"
+      - "./prisma/mysql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d"
+    env_file:
+      - ".env"
+

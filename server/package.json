@@ -8,7 +8,10 @@
     "start": "nodemon ./src/index.ts | npx pino-pretty",
     "build": "tsc --build ./tsconfig.json",
     "tsc": "tsc",
-    "test": "tap",
+    "test:unit": "tap run ./src/**/*.spec.ts",
+    "migrate:test": "npx dotenv-cli -e .env.test -- prisma migrate dev",
+    "test:integration": "npx dotenv-cli -e .env.test -- tap run ./test/**/*.test.ts",
+    "test:integration:repl": "npx dotenv-cli -e .env.test -- tap repl",
     "prisma": "prisma"
   },
   "author": "",

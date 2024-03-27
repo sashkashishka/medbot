@@ -1,6 +1,6 @@
 import fp from 'fastify-plugin';
 import { type FastifyPluginAsync } from 'fastify';
-import { calendar, auth, calendar_v3 } from '@googleapis/calendar';
+import { calendar, auth, type calendar_v3 } from '@googleapis/calendar';
 
 declare module 'fastify' {
   // eslint-disable-next-line
