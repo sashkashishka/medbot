@@ -4,6 +4,7 @@ import {
   AppointmentError,
   OrderError,
   RegisterError,
+  UserError,
   create400Response,
 } from './utils/errors.js';
 import { createProgressiveDelay } from './utils/progressive-delay.js';
@@ -78,6 +79,10 @@ const userApi: FastifyPluginCallback = (fastify, _opts, done) => {
 
   fastify.setErrorHandler(function errorHandler(error, _req, reply) {
     this.log.error(error, 'userApi');
+
+    if (error instanceof UserError) {
+      return reply.code(400).send(error.description);
+    }
 
     if (error instanceof AppointmentError) {
       return reply.code(400).send(error.description);

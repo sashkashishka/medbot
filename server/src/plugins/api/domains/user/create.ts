@@ -1,5 +1,6 @@
 import type { Prisma } from '@prisma/client';
 import type { RouteOptions } from 'fastify';
+import { checkDuplicateUser } from '../../hooks/preHandler/checkDuplicateUser.js';
 
 export const createUserRoute: RouteOptions = {
   method: 'POST',
@@ -20,6 +21,7 @@ export const createUserRoute: RouteOptions = {
       required: ['id', 'name', 'surname', 'birthDate', 'phone', 'email'],
     },
   },
+  preHandler: [checkDuplicateUser],
   handler(req) {
     const body = req.body as Prisma.UserCreateInput;
 

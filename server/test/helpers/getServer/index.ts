@@ -9,6 +9,11 @@ interface iOptions {
   scenarios?: Array<tScenario>;
 }
 
+interface iRequestOptions extends Omit<RequestInit, 'body'> {
+  body?: Record<string, unknown>;
+  cookie?: string;
+}
+
 export async function getServer({ t, scenarios }: iOptions) {
   const fastify = await main({
     plugins: {
@@ -17,13 +22,27 @@ export async function getServer({ t, scenarios }: iOptions) {
     },
   });
 
-  applyScenario(fastify.prisma, scenarios);
+  const port = fastify.config.PORT;
+
+  function request(endpoint: string, options: iRequestOptions = {}) {
+    const { headers, body, cookie } = options;
+
+    return fetch(`http://127.0.0.1:${port}${endpoint}`, {
+      ...options,
+      headers: {
+        'content-type': 'application/json',
+        cookie: cookie ? cookie : '',
+        ...headers,
+      },
+      body: body ? JSON.stringify(body) : undefined,
+    });
+  }
+
+  await applyScenario({ fastify, scenarios, request });
 
   return {
     fastify,
-    generateEndpoint(end: string) {
-      return `http://127.0.0.1:${fastify.server.address()!.port}${end}`;
-    },
+    request,
     async cleanup() {
       await fastify.prisma.$transaction([
         fastify.prisma.product.deleteMany(),

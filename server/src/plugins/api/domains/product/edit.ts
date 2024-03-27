@@ -10,29 +10,26 @@ export const editProductRoute: RouteOptions = {
   url: '/product/:productId',
   schema: {
     body: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          name: { type: 'string' },
-          description: { type: 'string' },
-          price: { type: 'number' },
-          memberQty: { type: 'number' },
-          subscriptionDuration: { type: 'number' },
-        },
-        required: [
-          'name',
-          'description',
-          'price',
-          'memberQty',
-          'subscriptionDuration',
-        ],
+      type: 'object',
+      properties: {
+        name: { type: 'string' },
+        description: { type: 'string' },
+        price: { type: 'number' },
+        memberQty: { type: 'number' },
+        subscriptionDuration: { type: 'number' },
       },
+      required: [
+        'name',
+        'description',
+        'price',
+        'memberQty',
+        'subscriptionDuration',
+      ],
     },
   },
   handler(req) {
     const params = req.params as iParams;
-    const body = req.body as Prisma.ProductCreateManyInput[];
+    const body = req.body as Prisma.ProductCreateManyInput;
 
     return this.prisma.product.update({
       where: {

@@ -83,3 +83,19 @@ export class RegisterError<tRegisterErrorReason> {
     }
   }
 }
+
+export type tUserErrorReason = 'duplicate-user' | 'user-not-exists';
+
+export class UserError<tUserErrorReason> {
+  constructor(public reason: tUserErrorReason) {}
+
+  get description() {
+    switch (this.reason) {
+      case 'duplicate-user':
+      case 'user-not-exists':
+      default: {
+        return create400Response(this.reason);
+      }
+    }
+  }
+}

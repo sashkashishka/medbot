@@ -1,5 +1,6 @@
 import type { Prisma } from '@prisma/client';
 import type { RouteOptions } from 'fastify';
+import { checkUserExists } from '../../hooks/preHandler/checkUserExists.js';
 
 interface iParams {
   userId: string;
@@ -25,6 +26,7 @@ export const updateUserRoute: RouteOptions = {
       required: ['name', 'surname', 'birthDate', 'phone', 'email'],
     },
   },
+  preHandler: [checkUserExists],
   handler(req) {
     const params = req.params as iParams;
     const body = req.body as Prisma.UserUncheckedUpdateInput;
