@@ -3,6 +3,7 @@ import { createDecorateWithOrder } from '../../hooks/decorateWithOrder.js';
 import { checkHasOrderActiveAppointments } from '../../hooks/checkHasOrderActiveAppointments.js';
 import { checkIsDoneOrder } from '../../hooks/checkIsDoneOrder.js';
 import { checkIfSubscriptionOrderExpired } from '../../hooks/checkIfSubscriptionOrderExpired.js';
+import { checkIfSubscriptionOrderAlive } from '../../hooks/checkIfSubscriptionOrderAlive.js';
 
 interface iParams {
   orderId: string;
@@ -15,6 +16,7 @@ export const completeOrderRoute: RouteOptions = {
     createDecorateWithOrder('params'),
     checkIsDoneOrder,
     checkIfSubscriptionOrderExpired,
+    checkIfSubscriptionOrderAlive,
     checkHasOrderActiveAppointments,
   ],
   async handler(req) {

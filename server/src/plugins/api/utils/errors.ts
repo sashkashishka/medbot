@@ -1,3 +1,5 @@
+import type { Prisma } from '@prisma/client';
+
 export type tAppointmentErrorReason =
   | 'too-early'
   | 'occupied'
@@ -41,7 +43,6 @@ export type tOrderErrorReason =
   | 'cannot-update-not-active-order'
   | 'cannot-complete-non-expired-subscription'
   | 'complete-appointment-before-closing-order'
-  | 'subscription-expired'
   | 'invalid-activation-code'
   | 'code-expired'
   | 'duplicate-waiting-for-payment-order-with-same-product'
@@ -50,7 +51,7 @@ export type tOrderErrorReason =
 export class OrderError<tPayload = unknown> {
   constructor(
     public reason: tOrderErrorReason,
-    private payload: tPayload = undefined,
+    public payload: tPayload = undefined,
   ) {}
 
   get description() {
@@ -64,7 +65,6 @@ export class OrderError<tPayload = unknown> {
       case 'duplicate-waiting-for-payment-order-with-same-product':
       case 'complete-appointment-before-closing-order':
       case 'code-expired':
-      case 'subscription-expired':
       default: {
         return create400Response(this.reason);
       }
@@ -101,4 +101,8 @@ export class UserError<tUserErrorReason> {
       }
     }
   }
+}
+
+export class SubscriptionOrderExpired {
+  constructor(public order: Prisma.OrderUncheckedCreateInput) {}
 }

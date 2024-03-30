@@ -11,31 +11,24 @@ export const teardownUserDataRoute: RouteOptions = {
     const params = req.params as iParams;
     const { userId } = params;
 
-    const orders = await this.prisma.order.findMany({
-      where: { userId: Number(userId), status: 'ACTIVE' },
-    });
     const appointments = await this.prisma.appointment.findMany({
       where: { userId: Number(userId), status: 'ACTIVE' },
     });
 
-    const pendingArr = [];
-
-    orders.forEach((order) => {
-      pendingArr.push(
-        this.prisma.order.update({
-          where: { id: order?.id },
+    const pendingArr: Promise<any>[] = [
+      this.prisma.$transaction([
+        this.prisma.order.updateMany({
+          where: { userId: Number(userId), status: 'ACTIVE' },
           data: { status: 'DONE' },
         }),
-      );
-    });
-    appointments.map((appointment) => {
-      pendingArr.push(
-        this.prisma.appointment.update({
-          where: { id: appointment?.id },
+        this.prisma.appointment.updateMany({
+          where: { userId: Number(userId), status: 'ACTIVE' },
           data: { status: 'DELETED' },
         }),
-      );
+      ]),
+    ];
 
+    appointments.map((appointment) => {
       pendingArr.push(
         this.googleCalendar.events.delete({
           calendarId: this.config.GOOGLE_CALENDAR_ID,

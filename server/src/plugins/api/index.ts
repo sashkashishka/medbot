@@ -1,12 +1,5 @@
 import { type FastifyPluginCallback } from 'fastify';
 
-import {
-  AppointmentError,
-  OrderError,
-  RegisterError,
-  UserError,
-  create400Response,
-} from './utils/errors.js';
 import { createProgressiveDelay } from './utils/progressive-delay.js';
 
 import { userRoute } from './domains/user/index.js';
@@ -49,6 +42,7 @@ import { adminConfigRoute } from './domains/admin/config.js';
 
 import { validateIsMedbot } from './hooks/validateIsMedbot.js';
 import { validateIsWebapp } from './hooks/validateIsWebapp.js';
+import { errorHandler } from './hooks/errorHandler.js';
 
 declare module 'fastify' {
   // eslint-disable-next-line
@@ -77,24 +71,7 @@ const userApi: FastifyPluginCallback = (fastify, _opts, done) => {
   fastify.route(deleteAppointmentRoute);
   fastify.route(freeSlotsRoute);
 
-  fastify.setErrorHandler(function errorHandler(error, _req, reply) {
-    this.log.error(error, 'userApi');
-
-    if (error instanceof UserError) {
-      return reply.code(400).send(error.description);
-    }
-
-    if (error instanceof AppointmentError) {
-      return reply.code(400).send(error.description);
-    }
-
-    if (error instanceof OrderError) {
-      return reply.code(400).send(error.description);
-    }
-
-    return reply.status(error?.statusCode || 500).send(error);
-  });
-
+  fastify.setErrorHandler(errorHandler);
   done();
 };
 
@@ -108,14 +85,7 @@ const serviceApi: FastifyPluginCallback = (fastify, _opts, done) => {
   fastify.route(userRoute);
   fastify.route(updateUserRoute);
 
-  fastify.setErrorHandler(function errorHandler(error, _req, reply) {
-    this.log.error(error, 'serviceApi');
-
-    return reply
-      .status(error?.statusCode || 500)
-      .send(create400Response({ error }));
-  });
-
+  fastify.setErrorHandler(errorHandler);
   done();
 };
 
@@ -124,16 +94,7 @@ const adminAuthApi: FastifyPluginCallback = (fastify, _opts, done) => {
   fastify.route(loginAdminRoute);
   fastify.route(logoutAdminRoute);
 
-  fastify.setErrorHandler(function errorHandler(error, _req, reply) {
-    this.log.error(error, 'adminAuthApi');
-
-    if (error instanceof RegisterError) {
-      return reply.code(400).send(error.description);
-    }
-
-    return reply.code(error?.statusCode || 500).send(error);
-  });
-
+  fastify.setErrorHandler(errorHandler);
   done();
 };
 
@@ -157,24 +118,12 @@ const adminApi: FastifyPluginCallback = (fastify, _opts, done) => {
   fastify.route(deleteAppointmentRoute);
   fastify.route(completeOrderRoute);
 
-  fastify.setErrorHandler(function errorHandler(error, _req, reply) {
-    this.log.error(error, 'adminApi');
-
-    if (error instanceof OrderError) {
-      return reply.code(400).send(error.description);
-    }
-
-    return reply.code(error.statusCode || 500).send(error);
-  });
+  fastify.setErrorHandler(errorHandler);
 
   done();
 };
 
-export const apiPlugin: FastifyPluginCallback = async (
-  fastify,
-  _opts,
-  done,
-) => {
+export const apiPlugin: FastifyPluginCallback = async (fastify) => {
   fastify.decorate(
     'rateLimiter',
     createProgressiveDelay({
@@ -189,6 +138,4 @@ export const apiPlugin: FastifyPluginCallback = async (
   await fastify.register(serviceApi, { prefix: '/service' });
   await fastify.register(adminAuthApi, { prefix: '/auth/admin' });
   await fastify.register(adminApi, { prefix: '/admin' });
-
-  done();
 };

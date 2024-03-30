@@ -476,6 +476,33 @@ test('complete subscription order', async (t) => {
       });
     });
 
+    t.test('order ACTIVE with appointments', async (t) => {
+      const { cleanup, request, adminCookie, findOrder } = await getServer({
+        t,
+        scenarios: [
+          'product',
+          'admin',
+          'user',
+          'subscriptionOrderActiveWithAppointments',
+        ],
+      });
+      t.teardown(cleanup);
+
+      const cookieHeader: string | null = await adminCookie();
+      const order = await findOrder((o) => o.status === 'ACTIVE');
+
+      const resp = await request(`/api/admin/order/complete/${order.id}`, {
+        method: 'PATCH',
+        cookie: cookieHeader,
+        body: {},
+      });
+
+      t.match(resp, { status: 400 });
+      t.match(await resp.json(), {
+        error: 'cannot-complete-non-expired-subscription',
+      });
+    });
+
     t.test('order WATINING_FOR_PAYMENT', async (t) => {
       const { cleanup, request, adminCookie, findOrder } = await getServer({
         t,
@@ -504,34 +531,6 @@ test('complete subscription order', async (t) => {
     });
   });
 
-  // TODO: close appointments if sub order is expired and is completing
-  // t.test('has active appointments', async (t) => {
-  //   const { cleanup, request, adminCookie, findOrder } = await getServer({
-  //     t,
-  //     scenarios: [
-  //       'product',
-  //       'admin',
-  //       'user',
-  //       'subscriptionOrderActiveWithAppointments',
-  //     ],
-  //   });
-  //   t.teardown(cleanup);
-
-  //   const cookieHeader: string | null = await adminCookie();
-  //   const order = await findOrder((o) => o.status === 'ACTIVE');
-
-  //   const resp = await request(`/api/admin/order/complete/${order.id}`, {
-  //     method: 'PATCH',
-  //     cookie: cookieHeader,
-  //     body: {},
-  //   });
-
-  //   t.match(resp, { status: 400 }, 'should return 400 status');
-  //   t.match(await resp.json(), {
-  //     error: 'complete-appointment-before-closing-order',
-  //   });
-  // });
-
   t.test('should complete order ACTIVE', async (t) => {
     const { cleanup, request, adminCookie, findOrder } = await getServer({
       t,
@@ -554,7 +553,44 @@ test('complete subscription order', async (t) => {
     const data = await resp.json();
 
     t.match(resp, { status: 200 }, 'should return 200 status');
-    t.match(data, { status: 'DONE' });
+    t.match(data, { message: 'subscription-order-completed' });
+    t.teardown(clock.uninstall);
+  });
+
+  t.test('should complete order ACTIVE with appointments', async (t) => {
+    const { fastify, cleanup, request, adminCookie, findOrder } = await getServer({
+      t,
+      scenarios: [
+        'product',
+        'admin',
+        'user',
+        'subscriptionOrderActiveWithAppointments',
+      ],
+    });
+    t.teardown(cleanup);
+
+    const gcDeletions = t.capture(fastify.googleCalendar.events, 'delete');
+
+    const clock = fakeTimer.install({ shouldClearNativeTimers: true });
+    clock.setSystemTime(addYears(new Date(), 100));
+
+    const cookieHeader: string | null = await adminCookie();
+    const order = await findOrder((o) => o.status === 'ACTIVE');
+
+    const resp = await request(`/api/admin/order/complete/${order.id}`, {
+      method: 'PATCH',
+      cookie: cookieHeader,
+      body: {},
+    });
+
+    const data = await resp.json();
+
+    t.match(resp, { status: 200 }, 'should return 200 status');
+    t.match(data, { message: 'subscription-order-completed' });
+
+    const results = gcDeletions();
+    t.equal(results.length, 1);
+
     t.teardown(clock.uninstall);
   });
 
@@ -585,7 +621,7 @@ test('complete subscription order', async (t) => {
     const data = await resp.json();
 
     t.match(resp, { status: 200 }, 'should return 200 status');
-    t.match(data, { status: 'DONE' });
+    t.match(data, { message: 'subscription-order-completed' });
     t.teardown(clock.uninstall);
   });
 });
