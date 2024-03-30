@@ -41,6 +41,7 @@ export type tOrderErrorReason =
   | 'cannot-update-not-active-order'
   | 'cannot-complete-non-expired-subscription'
   | 'complete-appointment-before-closing-order'
+  | 'subscription-expired'
   | 'invalid-activation-code'
   | 'code-expired'
   | 'duplicate-waiting-for-payment-order-with-same-product'
@@ -63,6 +64,7 @@ export class OrderError<tPayload = unknown> {
       case 'duplicate-waiting-for-payment-order-with-same-product':
       case 'complete-appointment-before-closing-order':
       case 'code-expired':
+      case 'subscription-expired':
       default: {
         return create400Response(this.reason);
       }

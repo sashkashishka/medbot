@@ -2,11 +2,11 @@ import { Prisma } from '@prisma/client';
 import { addMonths } from 'date-fns';
 import type { RouteOptions } from 'fastify';
 
-import { canHaveOneActiveOrderAtTime } from '../../hooks/preHandler/canHaveOneActiveOrderAtTime.js';
-import { checkIfBlockedByRateLimiter } from '../../hooks/preHandler/checkIfBlockedByRateLimiter.js';
-import { checkIfActivationCodeValid } from '../../hooks/preHandler/checkIfActivationCodeValid.js';
-import { decorateWithActivationCode } from '../../hooks/preHandler/decorateWithActivationCode.js';
-import { checkIfActivationCodeExpired } from '../../hooks/preHandler/checkIfActivationCodeExpired.js';
+import { checkIfUserHasActiveOrder } from '../../hooks/checkIfUserHasActiveOrder.js';
+import { checkIfBlockedByRateLimiter } from '../../hooks/checkIfBlockedByRateLimiter.js';
+import { checkIfActivationCodeValid } from '../../hooks/checkIfActivationCodeValid.js';
+import { decorateWithActivationCode } from '../../hooks/decorateWithActivationCode.js';
+import { checkIfActivationCodeExpired } from '../../hooks/checkIfActivationCodeExpired.js';
 
 export const createByCode: RouteOptions = {
   method: 'POST',
@@ -22,7 +22,7 @@ export const createByCode: RouteOptions = {
   },
   preHandler: [
     checkIfBlockedByRateLimiter,
-    canHaveOneActiveOrderAtTime,
+    checkIfUserHasActiveOrder,
     decorateWithActivationCode,
     checkIfActivationCodeValid,
     checkIfActivationCodeExpired,

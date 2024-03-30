@@ -1,8 +1,8 @@
 import type { onRequestHookHandler } from 'fastify';
-import { RegisterError } from '../../utils/errors.js';
+import { RegisterError } from '../utils/errors.js';
 
-export const isOneRegistration: onRequestHookHandler =
-  async function isOneRegistration() {
+export const checkIsAdminExists: onRequestHookHandler =
+  async function checkIsAdminExists() {
     const admin = await this.prisma.admin.findMany({
       take: 1,
       skip: 0,
@@ -12,3 +12,4 @@ export const isOneRegistration: onRequestHookHandler =
       throw new RegisterError('too-much-registrations');
     }
   };
+

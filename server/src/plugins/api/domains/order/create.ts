@@ -1,8 +1,8 @@
 import { addMonths } from 'date-fns';
 import type { Prisma } from '@prisma/client';
 import type { RouteOptions } from 'fastify';
-import { canHaveOneActiveOrderAtTime } from '../../hooks/preHandler/canHaveOneActiveOrderAtTime.js';
-import { checkDuplicateOrderWithSameProduct } from '../../hooks/preHandler/checkDuplicateOrderWithSameProduct.js';
+import { checkIfUserHasActiveOrder } from '../../hooks/checkIfUserHasActiveOrder.js';
+import { checkDuplicateOrderWithSameProduct } from '../../hooks/checkDuplicateOrderWithSameProduct.js';
 
 export const createOrderRoute: RouteOptions = {
   method: 'POST',
@@ -19,7 +19,7 @@ export const createOrderRoute: RouteOptions = {
       required: ['userId', 'productId', 'status'],
     },
   },
-  preHandler: [canHaveOneActiveOrderAtTime, checkDuplicateOrderWithSameProduct],
+  preHandler: [checkIfUserHasActiveOrder, checkDuplicateOrderWithSameProduct],
   async handler(req) {
     const body = req.body as Prisma.OrderUncheckedCreateInput;
 

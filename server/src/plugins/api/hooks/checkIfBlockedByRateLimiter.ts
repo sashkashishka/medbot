@@ -1,6 +1,6 @@
 import type { preHandlerAsyncHookHandler } from 'fastify';
-import { OrderError } from '../../utils/errors.js';
-import type { iCacheEntity } from '../../utils/progressive-delay.js';
+import { OrderError } from '../utils/errors.js';
+import type { iCacheEntity } from '../utils/progressive-delay.js';
 
 export const checkIfBlockedByRateLimiter: preHandlerAsyncHookHandler =
   async function checkIfBlockedByRateLimiter(request) {

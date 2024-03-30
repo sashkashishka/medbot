@@ -1,8 +1,8 @@
 import type { preHandlerAsyncHookHandler } from 'fastify';
-import { UserError } from '../../utils/errors.js';
+import { UserError } from '../utils/errors.js';
 
-export const checkUserExists: preHandlerAsyncHookHandler =
-  async function checkUserExists(request) {
+export const checkIsUserExists: preHandlerAsyncHookHandler =
+  async function checkIsUserExists(request) {
     const params = request.params as { userId: string };
 
     const user = await this.prisma.user.findFirst({

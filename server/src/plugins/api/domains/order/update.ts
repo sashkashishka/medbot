@@ -3,8 +3,8 @@ import { addMonths } from 'date-fns';
 import type { RouteOptions } from 'fastify';
 
 import { generateActivationCodes } from '../../utils/activation-code.js';
-import { createDecorateWithOrder } from '../../hooks/preHandler/decorateWithOrder.js';
-import { cannotUpdateDoneOrder } from '../../hooks/preHandler/cannotUpdateDoneOrder.js';
+import { createDecorateWithOrder } from '../../hooks/decorateWithOrder.js';
+import { checkIsDoneOrder } from '../../hooks/checkIsDoneOrder.js';
 
 interface iParams {
   orderId: string;
@@ -24,7 +24,7 @@ export const updateOrderRoute: RouteOptions = {
       required: ['status', 'productId', 'userId'],
     },
   },
-  preHandler: [createDecorateWithOrder('params'), cannotUpdateDoneOrder],
+  preHandler: [createDecorateWithOrder('params'), checkIsDoneOrder],
   async handler(req) {
     const params = req.params as iParams;
     const body = req.body as Prisma.OrderUncheckedCreateInput;

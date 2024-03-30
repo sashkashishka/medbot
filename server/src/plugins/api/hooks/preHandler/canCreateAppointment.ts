@@ -4,6 +4,8 @@ import { isOccupied } from '../../utils/time.js';
 import { AppointmentError } from '../../utils/errors.js';
 import { addWeeks, startOfDay } from 'date-fns';
 
+// TODO: refactor
+// split into smaller guards and name them properly
 export const canCreateAppointment: preHandlerAsyncHookHandler =
   async function canCreateAppointment(request) {
     const body = request.body as Prisma.AppointmentUncheckedCreateInput;

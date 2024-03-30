@@ -8,8 +8,8 @@ declare module 'fastify' {
   }
 }
 
-export const tgHashValidator: preHandlerAsyncHookHandler =
-  async function tgHashValidator(req) {
+export const validateIsWebapp: preHandlerAsyncHookHandler =
+  async function validateIsWebapp(req) {
     const headers = req.headers;
     const urlParams = new URLSearchParams(headers['x-webapp-info'] as string);
 

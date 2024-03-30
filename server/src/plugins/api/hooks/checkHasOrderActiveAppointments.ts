@@ -1,8 +1,8 @@
 import type { preHandlerAsyncHookHandler } from 'fastify';
-import { OrderError } from '../../utils/errors.js';
+import { OrderError } from '../utils/errors.js';
 
-export const hasOrderActiveAppointments: preHandlerAsyncHookHandler =
-  async function hasOrderActiveAppointments(request) {
+export const checkHasOrderActiveAppointments: preHandlerAsyncHookHandler =
+  async function checkHasOrderActiveAppointments(request) {
     const params = request.params as { orderId: string };
 
     const appointments = await this.prisma.appointment.findMany({

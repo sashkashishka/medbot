@@ -1,6 +1,6 @@
 import type { Prisma } from '@prisma/client';
 import type { preHandlerAsyncHookHandler } from 'fastify';
-import { UserError } from '../../utils/errors.js';
+import { UserError } from '../utils/errors.js';
 
 export const checkDuplicateUser: preHandlerAsyncHookHandler =
   async function checkDuplicateUser(request) {

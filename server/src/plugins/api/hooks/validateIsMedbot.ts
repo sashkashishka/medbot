@@ -1,7 +1,7 @@
 import type { preHandlerAsyncHookHandler } from 'fastify';
 
-export const verifyIsFromTg: preHandlerAsyncHookHandler =
-  async function verifyIsFromTg(req) {
+export const validateIsMedbot: preHandlerAsyncHookHandler =
+  async function validateIsMedbot(req) {
     const headers = req.headers;
     const token = headers['x-token'];
 

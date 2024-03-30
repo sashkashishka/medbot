@@ -20,7 +20,7 @@ export const activeOrderRoute: RouteOptions = {
         subscriptionEndsAt: true,
         createdAt: true,
         activationCode: true,
-      }
+      },
     });
   },
 };

@@ -2,11 +2,11 @@ import type { Prisma } from '@prisma/client';
 import type { RouteOptions } from 'fastify';
 
 import { createGoogleCalendarEvent } from '../../utils/google-calendar.js';
-import { setAppointmentTimeToStartOfHour } from '../../hooks/preHandler/setAppointmentTimeToStartOfHour.js';
-import { isAppointmentOutOfWorkingHours } from '../../hooks/preHandler/isAppointmentOutOfWorkingHours.js';
-import { isAppointmentTooEarly } from '../../hooks/preHandler/isAppointmentTooEarly.js';
+import { transformAppointmentTimeToStartOfHour } from '../../hooks/transformAppointmentTimeToStartOfHour.js';
+import { checkIsAppointmentOutOfWorkingHours } from '../../hooks/checkIsAppointmentOutOfWorkingHours.js';
+import { checkIsAppointmentTooEarly } from '../../hooks/checkIsAppointmentTooEarly.js';
 import { canCreateAppointment } from '../../hooks/preHandler/canCreateAppointment.js';
-import { createDecorateWithOrder } from '../../hooks/preHandler/decorateWithOrder.js';
+import { createDecorateWithOrder } from '../../hooks/decorateWithOrder.js';
 
 export const createAppointmentRoute: RouteOptions = {
   method: 'POST',
@@ -41,9 +41,9 @@ export const createAppointmentRoute: RouteOptions = {
     },
   },
   preHandler: [
-    setAppointmentTimeToStartOfHour,
-    isAppointmentOutOfWorkingHours,
-    isAppointmentTooEarly,
+    transformAppointmentTimeToStartOfHour,
+    checkIsAppointmentOutOfWorkingHours,
+    checkIsAppointmentTooEarly,
     createDecorateWithOrder('body'),
     canCreateAppointment,
   ],

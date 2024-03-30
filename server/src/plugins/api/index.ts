@@ -47,8 +47,8 @@ import { logoutAdminRoute } from './domains/admin/logout.js';
 import { adminRoute } from './domains/admin/admin.js';
 import { adminConfigRoute } from './domains/admin/config.js';
 
-import { verifyIsFromTg } from './hooks/preHandler/verifyIsFromTg.js';
-import { tgHashValidator } from './hooks/preHandler/tgHashValidator.js';
+import { validateIsMedbot } from './hooks/validateIsMedbot.js';
+import { validateIsWebapp } from './hooks/validateIsWebapp.js';
 
 declare module 'fastify' {
   // eslint-disable-next-line
@@ -58,7 +58,7 @@ declare module 'fastify' {
 }
 
 const userApi: FastifyPluginCallback = (fastify, _opts, done) => {
-  fastify.addHook('preHandler', tgHashValidator);
+  fastify.addHook('onRequest', validateIsWebapp);
 
   fastify.route(productListRoute);
   fastify.route(userRoute);
@@ -99,7 +99,7 @@ const userApi: FastifyPluginCallback = (fastify, _opts, done) => {
 };
 
 const serviceApi: FastifyPluginCallback = (fastify, _opts, done) => {
-  fastify.addHook('preHandler', verifyIsFromTg);
+  fastify.addHook('onRequest', validateIsMedbot);
   fastify.route(teardownUserDataRoute);
   fastify.route(botChatIdRoute);
   fastify.route(messageThreadIdRoute);

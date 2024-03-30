@@ -1,6 +1,6 @@
 import type { Prisma } from '@prisma/client';
 import type { preHandlerAsyncHookHandler } from 'fastify';
-import { OrderError } from '../../utils/errors.js';
+import { OrderError } from '../utils/errors.js';
 
 export const checkDuplicateOrderWithSameProduct: preHandlerAsyncHookHandler =
   async function checkDuplicateOrderWithSameProduct(request) {

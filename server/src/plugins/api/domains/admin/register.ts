@@ -1,6 +1,6 @@
 import type { RouteOptions } from 'fastify';
 import { encryptPassword } from '../../utils/password.js';
-import { isOneRegistration } from '../../hooks/onRequest/isOneRegistration.js';
+import { checkIsAdminExists } from '../../hooks/checkIsAdminExist.js';
 
 interface iBody {
   name: string;
@@ -10,7 +10,7 @@ interface iBody {
 export const registerAdminRoute: RouteOptions = {
   method: 'POST',
   url: '/register',
-  onRequest: [isOneRegistration],
+  onRequest: [checkIsAdminExists],
   async handler(request, reply) {
     const body = request.body as iBody;
 

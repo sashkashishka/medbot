@@ -1,8 +1,8 @@
 import type { RouteOptions } from 'fastify';
-import { createDecorateWithOrder } from '../../hooks/preHandler/decorateWithOrder.js';
-import { hasOrderActiveAppointments } from '../../hooks/preHandler/hasOrderActiveAppointments.js';
-import { cannotCompleteNonExpiredSubscription } from '../../hooks/preHandler/cannotCompleteNonExpiredSubscription.js';
-import { cannotUpdateDoneOrder } from '../../hooks/preHandler/cannotUpdateDoneOrder.js';
+import { createDecorateWithOrder } from '../../hooks/decorateWithOrder.js';
+import { checkHasOrderActiveAppointments } from '../../hooks/checkHasOrderActiveAppointments.js';
+import { checkIsDoneOrder } from '../../hooks/checkIsDoneOrder.js';
+import { checkIfSubscriptionOrderExpired } from '../../hooks/checkIfSubscriptionOrderExpired.js';
 
 interface iParams {
   orderId: string;
@@ -13,9 +13,9 @@ export const completeOrderRoute: RouteOptions = {
   url: '/order/complete/:orderId',
   preHandler: [
     createDecorateWithOrder('params'),
-    cannotUpdateDoneOrder,
-    cannotCompleteNonExpiredSubscription,
-    hasOrderActiveAppointments,
+    checkIsDoneOrder,
+    checkIfSubscriptionOrderExpired,
+    checkHasOrderActiveAppointments,
   ],
   async handler(req) {
     const params = req.params as iParams;
