@@ -49,6 +49,7 @@ export const updateOrderRoute: RouteOptions = {
         await this.prisma.activationCode.createMany({
           data: codes.map((code) => ({
             code,
+            orderId: Number(params.orderId),
             productId: product.id,
             invalidAt: addMonths(
               new Date(),
@@ -62,6 +63,15 @@ export const updateOrderRoute: RouteOptions = {
     return this.prisma.order.update({
       where: { id: Number(params.orderId) },
       data: body,
+      select: {
+        id: true,
+        userId: true,
+        productId: true,
+        status: true,
+        createdAt: true,
+        subscriptionEndsAt: true,
+        activationCode: true,
+      },
     });
   },
 };

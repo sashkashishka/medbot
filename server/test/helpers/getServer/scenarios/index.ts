@@ -1,16 +1,18 @@
 import { type FastifyInstance } from 'fastify';
 import { product } from './product.js';
 import { existingAdmin } from './existingAdmin.js';
-import { oneTimeOrderActive } from './oneTimeOrder-active.js';
+import { ONE_TIME_ORDER } from './oneTimeOrder.js';
 import { subscriptionOrderActive } from './subscriptionOrder-active.js';
-import { user } from './user.js';
+import { user, user2 } from './user.js';
 
 const SCENARIOS = {
   product,
   existingAdmin,
-  oneTimeOrderActive,
+  oneTimeOrderActive: ONE_TIME_ORDER.active,
+  oneTimeOrderWaitingForPayment: ONE_TIME_ORDER.waitingForPayment,
   subscriptionOrderActive,
   user,
+  user2,
 };
 
 export type tScenario = keyof typeof SCENARIOS;
@@ -26,5 +28,8 @@ export async function applyScenario<T extends FastifyInstance>({
   scenarios = ['product'],
   request,
 }: iOptions<T>) {
-  return Promise.all(scenarios.map((v) => SCENARIOS[v](fastify, request)));
+  return scenarios.reduce(
+    (acc, scene) => acc.then(() => SCENARIOS[scene](fastify, request)),
+    Promise.resolve(),
+  );
 }

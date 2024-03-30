@@ -6,5 +6,14 @@ export const user: Prisma.UserUncheckedCreateInput = {
   surname: 'Smith',
   birthDate: '1990-01-01T19:40:27.326Z',
   phone: '+1234567890',
-  email: 'test@test.com',
+  email: 'kate@test.com',
+};
+
+export const user2: Prisma.UserUncheckedCreateInput = {
+  id: 2,
+  name: 'David',
+  surname: 'Owen',
+  birthDate: '1992-01-01T19:40:27.326Z',
+  phone: '+1234567890',
+  email: 'david@test.com',
 };

@@ -5,6 +5,8 @@ import type { RouteOptions } from 'fastify';
 import { canHaveOneActiveOrderAtTime } from '../../hooks/preHandler/canHaveOneActiveOrderAtTime.js';
 import { checkIfBlockedByRateLimiter } from '../../hooks/preHandler/checkIfBlockedByRateLimiter.js';
 import { checkIfActivationCodeValid } from '../../hooks/preHandler/checkIfActivationCodeValid.js';
+import { decorateWithActivationCode } from '../../hooks/preHandler/decorateWithActivationCode.js';
+import { checkIfActivationCodeExpired } from '../../hooks/preHandler/checkIfActivationCodeExpired.js';
 
 export const createByCode: RouteOptions = {
   method: 'POST',
@@ -21,7 +23,9 @@ export const createByCode: RouteOptions = {
   preHandler: [
     checkIfBlockedByRateLimiter,
     canHaveOneActiveOrderAtTime,
+    decorateWithActivationCode,
     checkIfActivationCodeValid,
+    checkIfActivationCodeExpired,
   ],
   async handler(req) {
     const body = req.body as Prisma.OrderUncheckedCreateInput;

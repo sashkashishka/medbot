@@ -12,6 +12,15 @@ export const activeOrderRoute: RouteOptions = {
 
     return this.prisma.order.findFirst({
       where: { status: 'ACTIVE', userId: Number(userId) },
+      select: {
+        id: true,
+        userId: true,
+        productId: true,
+        status: true,
+        subscriptionEndsAt: true,
+        createdAt: true,
+        activationCode: true,
+      }
     });
   },
 };
