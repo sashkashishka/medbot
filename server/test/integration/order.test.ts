@@ -4,27 +4,22 @@ import fakeTimer from '@sinonjs/fake-timers';
 import { addYears, isValid } from 'date-fns';
 import { getServer } from '../helpers/getServer/index.js';
 import { user, user2 } from '../helpers/getServer/fixtures/user.js';
-import { admin } from '../helpers/getServer/fixtures/admin.js';
 
 const test = t.test;
-const webAppHeader = { 'x-webapp-info': process.env.X_WEBAPP_INFO! };
 
 const order = {
   userId: 1,
 };
 
 test('order creation', async (t) => {
-  const { cleanup, request } = await getServer({
+  const { cleanup, request, webAppHeader, getProducts } = await getServer({
     t,
     scenarios: ['product', 'user'],
   });
   t.teardown(cleanup);
 
-  const productsResponse = await request('/api/product/list', {
-    headers: webAppHeader,
-  });
-  const [p1, p2, p3, p4, p5] =
-    (await productsResponse.json()) as Prisma.ProductUncheckedCreateInput[];
+  const products = await getProducts();
+  const [p1, p2, p3, p4, p5] = products;
 
   t.test('can create multiple WAITING_FOR_PAYMENT orders', async (t) => {
     const resp = await request('/api/order/create', {
@@ -125,17 +120,14 @@ test('order creation', async (t) => {
 });
 
 test('waiting-for-payment order', async (t) => {
-  const { cleanup, request } = await getServer({
+  const { cleanup, request, getProducts, webAppHeader } = await getServer({
     t,
     scenarios: ['product', 'user', 'oneTimeOrderWaitingForPayment'],
   });
   t.teardown(cleanup);
 
-  const productsResponse = await request('/api/product/list', {
-    headers: webAppHeader,
-  });
-  const [p1, p2] =
-    (await productsResponse.json()) as Prisma.ProductUncheckedCreateInput[];
+  const products = await getProducts();
+  const [p1, p2] = products;
 
   t.test('no waiting-for-payment order with p2', async (t) => {
     const resp = await request(
@@ -163,25 +155,13 @@ test('waiting-for-payment order', async (t) => {
 });
 
 test('order list', async (t) => {
-  const { cleanup, request } = await getServer({
+  const { cleanup, request, adminCookie } = await getServer({
     t,
-    scenarios: [
-      'product',
-      'user',
-      'existingAdmin',
-      'oneTimeOrderWaitingForPayment',
-    ],
+    scenarios: ['product', 'user', 'admin', 'oneTimeOrderWaitingForPayment'],
   });
   t.teardown(cleanup);
 
-  let cookieHeader: string | null = null;
-
-  const { headers } = await request('/api/auth/admin/login', {
-    method: 'POST',
-    body: admin,
-  });
-
-  cookieHeader = headers.get('set-cookie')!;
+  const cookieHeader: string = await adminCookie();
 
   t.test('list orders', async (t) => {
     const resp = await request('/api/admin/order/list', {
@@ -201,17 +181,13 @@ test('order list', async (t) => {
 });
 
 test('create subscription order for multiple members and create next one via activation code', async (t) => {
-  const { cleanup, request } = await getServer({
+  const { cleanup, request, webAppHeader, getProducts } = await getServer({
     t,
     scenarios: ['product', 'user', 'user2'],
   });
   t.teardown(cleanup);
 
-  const productsResponse = await request('/api/product/list', {
-    headers: webAppHeader,
-  });
-  const products =
-    (await productsResponse.json()) as Prisma.ProductUncheckedCreateInput[];
+  const products = await getProducts();
 
   const { id: productId } = products.find(
     (p) => p.subscriptionDuration > 0 && p.memberQty > 1,
@@ -331,7 +307,7 @@ test('create subscription order for multiple members and create next one via act
 });
 
 test('active order', async (t) => {
-  const { cleanup, request } = await getServer({
+  const { cleanup, request, webAppHeader } = await getServer({
     t,
     scenarios: ['product', 'user', 'user2', 'oneTimeOrderActive'],
   });
@@ -363,11 +339,253 @@ test('active order', async (t) => {
   });
 });
 
-// test('create order by activation code', async (t) => {
-//   const { cleanup, request } = await getServer({
-//     t,
-//     scenarios: ['product', 'user'],
-//   });
-//   t.teardown(cleanup);
+test('complete one time order', async (t) => {
+  t.test('cannot update DONE order', async (t) => {
+    const { cleanup, request, adminCookie, findOrder } = await getServer({
+      t,
+      scenarios: ['product', 'admin', 'user', 'oneTimeOrderDone'],
+    });
+    t.teardown(cleanup);
 
-//   t.test('')
+    const cookieHeader: string | null = await adminCookie();
+    const order = await findOrder((o) => o.status === 'DONE');
+
+    const resp = await request(`/api/admin/order/complete/${order.id}`, {
+      method: 'PATCH',
+      cookie: cookieHeader,
+      body: {},
+    });
+
+    const data = await resp.json();
+
+    t.match(resp, { status: 400 }, 'should return 400 status');
+    t.match(data, { error: 'not-active' });
+  });
+
+  t.test('has active appointments', async (t) => {
+    const { cleanup, request, adminCookie, findOrder } = await getServer({
+      t,
+      scenarios: [
+        'product',
+        'admin',
+        'user',
+        'oneTimeOrderActiveWithAppointments',
+      ],
+    });
+    t.teardown(cleanup);
+
+    const cookieHeader: string | null = await adminCookie();
+    const order = await findOrder((o) => o.status === 'ACTIVE');
+
+    const resp = await request(`/api/admin/order/complete/${order.id}`, {
+      method: 'PATCH',
+      cookie: cookieHeader,
+      body: {},
+    });
+
+    t.match(resp, { status: 400 }, 'should return 400 status');
+    t.match(await resp.json(), {
+      error: 'complete-appointment-before-closing-order',
+    });
+  });
+
+  t.test('should complete order ACTIVE', async (t) => {
+    const { cleanup, request, adminCookie, findOrder } = await getServer({
+      t,
+      scenarios: ['product', 'admin', 'user', 'oneTimeOrderActive'],
+    });
+    t.teardown(cleanup);
+
+    const cookieHeader: string | null = await adminCookie();
+    const order = await findOrder((o) => o.status === 'ACTIVE');
+
+    const resp = await request(`/api/admin/order/complete/${order.id}`, {
+      method: 'PATCH',
+      cookie: cookieHeader,
+      body: {},
+    });
+
+    t.match(resp, { status: 200 }, 'should return 200 status');
+    t.match(await resp.json(), { status: 'DONE' });
+  });
+
+  t.test('should complete order WATINING_FOR_PAYMENT', async (t) => {
+    const { cleanup, request, adminCookie, findOrder } = await getServer({
+      t,
+      scenarios: ['product', 'admin', 'user', 'oneTimeOrderWaitingForPayment'],
+    });
+    t.teardown(cleanup);
+
+    const cookieHeader: string | null = await adminCookie();
+    const order = await findOrder((o) => o.status === 'WAITING_FOR_PAYMENT');
+
+    const resp = await request(`/api/admin/order/complete/${order.id}`, {
+      method: 'PATCH',
+      cookie: cookieHeader,
+      body: {},
+    });
+
+    t.match(resp, { status: 200 }, 'should return 200 status');
+    t.match(await resp.json(), { status: 'DONE' });
+  });
+});
+
+test('complete subscription order', async (t) => {
+  t.test('cannot update DONE order', async (t) => {
+    const { cleanup, request, adminCookie, findOrder } = await getServer({
+      t,
+      scenarios: ['product', 'admin', 'user', 'subscriptionOrderDone'],
+    });
+    t.teardown(cleanup);
+
+    const cookieHeader: string | null = await adminCookie();
+    const order = await findOrder((o) => o.status === 'DONE');
+
+    const resp = await request(`/api/admin/order/complete/${order.id}`, {
+      method: 'PATCH',
+      cookie: cookieHeader,
+      body: {},
+    });
+
+    const data = await resp.json();
+
+    t.match(resp, { status: 400 }, 'should return 400 status');
+    t.match(data, { error: 'not-active' });
+  });
+
+  t.test('not expired subscription order', async (t) => {
+    t.test('order ACTIVE', async (t) => {
+      const { cleanup, request, adminCookie, findOrder } = await getServer({
+        t,
+        scenarios: ['product', 'admin', 'user', 'subscriptionOrderActive'],
+      });
+      t.teardown(cleanup);
+
+      const cookieHeader: string | null = await adminCookie();
+      const order = await findOrder((o) => o.status === 'ACTIVE');
+
+      const resp = await request(`/api/admin/order/complete/${order.id}`, {
+        method: 'PATCH',
+        cookie: cookieHeader,
+        body: {},
+      });
+
+      t.match(resp, { status: 400 });
+      t.match(await resp.json(), {
+        error: 'cannot-complete-non-expired-subscription',
+      });
+    });
+
+    t.test('order WATINING_FOR_PAYMENT', async (t) => {
+      const { cleanup, request, adminCookie, findOrder } = await getServer({
+        t,
+        scenarios: [
+          'product',
+          'admin',
+          'user',
+          'subscriptionOrderWaitingForPayment',
+        ],
+      });
+      t.teardown(cleanup);
+
+      const cookieHeader: string | null = await adminCookie();
+      const order = await findOrder((o) => o.status === 'WAITING_FOR_PAYMENT');
+
+      const resp = await request(`/api/admin/order/complete/${order.id}`, {
+        method: 'PATCH',
+        cookie: cookieHeader,
+        body: {},
+      });
+
+      t.match(resp, { status: 400 });
+      t.match(await resp.json(), {
+        error: 'cannot-complete-non-expired-subscription',
+      });
+    });
+  });
+
+  // TODO: close appointments if sub order is expired and is completing
+  // t.test('has active appointments', async (t) => {
+  //   const { cleanup, request, adminCookie, findOrder } = await getServer({
+  //     t,
+  //     scenarios: [
+  //       'product',
+  //       'admin',
+  //       'user',
+  //       'subscriptionOrderActiveWithAppointments',
+  //     ],
+  //   });
+  //   t.teardown(cleanup);
+
+  //   const cookieHeader: string | null = await adminCookie();
+  //   const order = await findOrder((o) => o.status === 'ACTIVE');
+
+  //   const resp = await request(`/api/admin/order/complete/${order.id}`, {
+  //     method: 'PATCH',
+  //     cookie: cookieHeader,
+  //     body: {},
+  //   });
+
+  //   t.match(resp, { status: 400 }, 'should return 400 status');
+  //   t.match(await resp.json(), {
+  //     error: 'complete-appointment-before-closing-order',
+  //   });
+  // });
+
+  t.test('should complete order ACTIVE', async (t) => {
+    const { cleanup, request, adminCookie, findOrder } = await getServer({
+      t,
+      scenarios: ['product', 'admin', 'user', 'subscriptionOrderActive'],
+    });
+    t.teardown(cleanup);
+
+    const clock = fakeTimer.install({ shouldClearNativeTimers: true });
+    clock.setSystemTime(addYears(new Date(), 100));
+
+    const cookieHeader: string | null = await adminCookie();
+    const order = await findOrder((o) => o.status === 'ACTIVE');
+
+    const resp = await request(`/api/admin/order/complete/${order.id}`, {
+      method: 'PATCH',
+      cookie: cookieHeader,
+      body: {},
+    });
+
+    const data = await resp.json();
+
+    t.match(resp, { status: 200 }, 'should return 200 status');
+    t.match(data, { status: 'DONE' });
+    t.teardown(clock.uninstall);
+  });
+
+  t.test('should complete order WATINING_FOR_PAYMENT', async (t) => {
+    const { cleanup, request, adminCookie, findOrder } = await getServer({
+      t,
+      scenarios: [
+        'product',
+        'admin',
+        'user',
+        'subscriptionOrderWaitingForPayment',
+      ],
+    });
+    t.teardown(cleanup);
+
+    const clock = fakeTimer.install({ shouldClearNativeTimers: true });
+    clock.setSystemTime(addYears(new Date(), 100));
+
+    const cookieHeader: string | null = await adminCookie();
+    const order = await findOrder((o) => o.status === 'WAITING_FOR_PAYMENT');
+
+    const resp = await request(`/api/admin/order/complete/${order.id}`, {
+      method: 'PATCH',
+      cookie: cookieHeader,
+      body: {},
+    });
+
+    const data = await resp.json();
+
+    t.match(resp, { status: 200 }, 'should return 200 status');
+    t.match(data, { status: 'DONE' });
+    t.teardown(clock.uninstall);
+  });
+});

@@ -4,7 +4,7 @@ import type { RouteOptions } from 'fastify';
 
 import { generateActivationCodes } from '../../utils/activation-code.js';
 import { createDecorateWithOrder } from '../../hooks/preHandler/decorateWithOrder.js';
-import { cannotUpdateNotActiveOrder } from '../../hooks/preHandler/cannotUpdateNotActiveOrder.js';
+import { cannotUpdateDoneOrder } from '../../hooks/preHandler/cannotUpdateDoneOrder.js';
 
 interface iParams {
   orderId: string;
@@ -24,7 +24,7 @@ export const updateOrderRoute: RouteOptions = {
       required: ['status', 'productId', 'userId'],
     },
   },
-  preHandler: [createDecorateWithOrder('params'), cannotUpdateNotActiveOrder],
+  preHandler: [createDecorateWithOrder('params'), cannotUpdateDoneOrder],
   async handler(req) {
     const params = req.params as iParams;
     const body = req.body as Prisma.OrderUncheckedCreateInput;

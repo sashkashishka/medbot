@@ -1,16 +1,22 @@
 import { type FastifyInstance } from 'fastify';
 import { product } from './product.js';
-import { existingAdmin } from './existingAdmin.js';
+import { admin } from './admin.js';
 import { ONE_TIME_ORDER } from './oneTimeOrder.js';
-import { subscriptionOrderActive } from './subscriptionOrder-active.js';
+import { SUBSCRIPTION_ORDER } from './subscriptionOrder.js';
 import { user, user2 } from './user.js';
 
-const SCENARIOS = {
+const SCENARIOS: Record<string, (...args: any[]) => Promise<any>> = {
   product,
-  existingAdmin,
+  admin,
   oneTimeOrderActive: ONE_TIME_ORDER.active,
   oneTimeOrderWaitingForPayment: ONE_TIME_ORDER.waitingForPayment,
-  subscriptionOrderActive,
+  oneTimeOrderActiveWithAppointments: ONE_TIME_ORDER.activeWithAppointments,
+  oneTimeOrderDone: ONE_TIME_ORDER.done,
+  subscriptionOrderActive: SUBSCRIPTION_ORDER.active,
+  subscriptionOrderWaitingForPayment: SUBSCRIPTION_ORDER.waitingForPayment,
+  subscriptionOrderActiveWithAppointments:
+    SUBSCRIPTION_ORDER.activeWithAppointments,
+  subscriptionOrderDone: SUBSCRIPTION_ORDER.done,
   user,
   user2,
 };

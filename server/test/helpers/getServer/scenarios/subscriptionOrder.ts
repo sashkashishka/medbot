@@ -1,10 +1,11 @@
 import { type FastifyInstance } from 'fastify';
 import { user } from '../fixtures/user.js';
+import { addMonths } from 'date-fns';
 
 async function done(fastify: FastifyInstance) {
   const product = await fastify.prisma.product.findFirst({
     where: {
-      subscriptionDuration: { equals: 0 },
+      subscriptionDuration: { gt: 0 },
     },
   });
 
@@ -14,7 +15,7 @@ async function done(fastify: FastifyInstance) {
       productId: product.id,
       status: 'DONE',
       createdAt: new Date(),
-      subscriptionEndsAt: null,
+      subscriptionEndsAt: addMonths(new Date(), product.subscriptionDuration)
     },
   });
 }
@@ -22,7 +23,7 @@ async function done(fastify: FastifyInstance) {
 async function active(fastify: FastifyInstance) {
   const product = await fastify.prisma.product.findFirst({
     where: {
-      subscriptionDuration: { equals: 0 },
+      subscriptionDuration: { gt: 0 },
     },
   });
 
@@ -32,7 +33,7 @@ async function active(fastify: FastifyInstance) {
       productId: product.id,
       status: 'ACTIVE',
       createdAt: new Date(),
-      subscriptionEndsAt: null,
+      subscriptionEndsAt: addMonths(new Date(), product.subscriptionDuration)
     },
   });
 }
@@ -40,7 +41,7 @@ async function active(fastify: FastifyInstance) {
 async function waitingForPayment(fastify: FastifyInstance) {
   const product = await fastify.prisma.product.findFirst({
     where: {
-      subscriptionDuration: { equals: 0 },
+      subscriptionDuration: { gt: 0 },
     },
   });
   await fastify.prisma.order.create({
@@ -49,7 +50,7 @@ async function waitingForPayment(fastify: FastifyInstance) {
       productId: product.id,
       status: 'WAITING_FOR_PAYMENT',
       createdAt: new Date(),
-      subscriptionEndsAt: null,
+      subscriptionEndsAt: addMonths(new Date(), product.subscriptionDuration)
     },
   });
 }
@@ -72,7 +73,7 @@ async function activeWithAppointments(fastify: FastifyInstance) {
   });
 }
 
-export const ONE_TIME_ORDER = {
+export const SUBSCRIPTION_ORDER = {
   active,
   activeWithAppointments,
   waitingForPayment,

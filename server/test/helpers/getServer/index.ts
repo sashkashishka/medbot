@@ -1,8 +1,10 @@
+import type { Prisma } from '@prisma/client';
 import { type Test } from 'tap';
 import { main } from '../../../src/server.js';
 import { medbotPluginMock } from './plugins/medbotPlugin.js';
 import { googleCalendarPluginMock } from './plugins/googleCalendarPlugin.js';
 import { applyScenario, type tScenario } from './scenarios/index.js';
+import { admin } from './fixtures/admin.js';
 
 interface iOptions {
   t: Test;
@@ -13,6 +15,8 @@ interface iRequestOptions extends Omit<RequestInit, 'body'> {
   body?: Record<string, unknown>;
   cookie?: string;
 }
+
+const webAppHeader = { 'x-webapp-info': process.env.X_WEBAPP_INFO! };
 
 export async function getServer({ t, scenarios }: iOptions) {
   const fastify = await main({
@@ -40,6 +44,38 @@ export async function getServer({ t, scenarios }: iOptions) {
 
   await applyScenario({ fastify, scenarios, request });
 
+  async function adminCookie() {
+    const { headers } = await request('/api/auth/admin/login', {
+      method: 'POST',
+      body: admin,
+    });
+
+    return headers.get('set-cookie')!;
+  }
+
+  async function getProducts(): Promise<Prisma.ProductUncheckedCreateInput[]> {
+    const resp = await request('/api/product/list', {
+      method: 'GET',
+      headers: webAppHeader,
+    });
+
+    return resp.json() as Promise<Prisma.ProductUncheckedCreateInput[]>;
+  }
+
+  async function findOrder(
+    filter: (order: Prisma.OrderUncheckedCreateInput) => boolean,
+  ) {
+    const cookieHeader = await adminCookie();
+
+    const orderListResp = await request('/api/admin/order/list', {
+      cookie: cookieHeader,
+    });
+    const orderList = (await orderListResp.json()) as {
+      items: Prisma.OrderUncheckedCreateInput[];
+    };
+    return orderList.items.find(filter);
+  }
+
   return {
     fastify,
     request,
@@ -57,5 +93,9 @@ export async function getServer({ t, scenarios }: iOptions) {
 
       await fastify.close();
     },
+    adminCookie,
+    webAppHeader,
+    getProducts,
+    findOrder,
   };
 }

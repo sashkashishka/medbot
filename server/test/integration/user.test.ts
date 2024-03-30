@@ -1,9 +1,5 @@
-// create user
-// user list route should return array of users
-// index route should return user by its id. if not - null
 import t from 'tap';
 import { getServer } from '../helpers/getServer/index.js';
-import { admin } from '../helpers/getServer/fixtures/admin.js';
 
 const test = t.test;
 
@@ -16,23 +12,14 @@ const user = {
   email: 'test@test.com',
 };
 
-const webAppHeader = { 'x-webapp-info': process.env.X_WEBAPP_INFO! };
-
 test('user', async (t) => {
-  const { cleanup, request } = await getServer({
+  const { cleanup, request, adminCookie, webAppHeader } = await getServer({
     t,
-    scenarios: ['product', 'existingAdmin'],
+    scenarios: ['product', 'admin'],
   });
   t.teardown(cleanup);
 
-  let cookieHeader: string | null = null;
-
-  const { headers } = await request('/api/auth/admin/login', {
-    method: 'POST',
-    body: admin,
-  });
-
-  cookieHeader = headers.get('set-cookie')!;
+  const cookieHeader: string = await adminCookie();
 
   t.test('create user', async (t) => {
     const resp = await request('/api/user/create', {

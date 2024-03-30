@@ -1,6 +1,6 @@
 import t from 'tap';
 import { getServer } from '../helpers/getServer/index.js';
-import { admin } from '../helpers/getServer/fixtures/admin.js';
+import type { Prisma } from '@prisma/client';
 
 const test = t.test;
 
@@ -13,21 +13,15 @@ const product = {
 };
 
 test('product', async (t) => {
-  const { cleanup, request } = await getServer({
+  const { cleanup, request, adminCookie } = await getServer({
     t,
-    scenarios: ['existingAdmin'],
+    scenarios: ['admin'],
   });
   t.teardown(cleanup);
 
   let productId: number | null = null;
-  let cookieHeader: string | null = null;
+  let cookieHeader: string | null = await adminCookie();
 
-  const { headers } = await request('/api/auth/admin/login', {
-    method: 'POST',
-    body: admin,
-  });
-
-  cookieHeader = headers.get('set-cookie')!;
 
   t.test('create product', async (t) => {
     const resp = await request('/api/admin/product/create', {
@@ -36,7 +30,7 @@ test('product', async (t) => {
       cookie: cookieHeader!,
     });
 
-    const data = await resp.json();
+    const data = await resp.json() as Prisma.ProductUncheckedCreateInput;
     productId = data.id;
 
     t.match(
