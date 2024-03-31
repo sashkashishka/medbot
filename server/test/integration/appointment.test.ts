@@ -43,7 +43,7 @@ test('appointment creation', async (t) => {
       const order = await findOrder((o) => o.status === 'ACTIVE');
 
       const resp = await request('/api/appointment/create', {
-        method: 'POST',
+        method: 'PUT',
         headers: webAppHeader,
         body: {
           ...appointment,
@@ -87,7 +87,7 @@ test('appointment creation', async (t) => {
     const order = await findOrder((o) => o.status === 'ACTIVE');
 
     const resp = await request('/api/appointment/create', {
-      method: 'POST',
+      method: 'PUT',
       headers: webAppHeader,
       body: {
         ...appointment,
@@ -128,7 +128,7 @@ test('appointment creation', async (t) => {
     const order = await findOrder((o) => o.status === 'DONE');
 
     const resp = await request('/api/appointment/create', {
-      method: 'POST',
+      method: 'PUT',
       headers: webAppHeader,
       body: {
         ...appointment,
@@ -171,7 +171,7 @@ test('appointment creation', async (t) => {
     const order = await findOrder((o) => o.status === 'ACTIVE');
 
     const resp = await request('/api/appointment/create', {
-      method: 'POST',
+      method: 'PUT',
       headers: webAppHeader,
       body: {
         ...appointment,
@@ -214,7 +214,7 @@ test('appointment creation', async (t) => {
       const order = await findOrder((o) => o.status === 'ACTIVE');
 
       const resp = await request('/api/appointment/create', {
-        method: 'POST',
+        method: 'PUT',
         headers: webAppHeader,
         body: {
           ...appointment,
@@ -237,7 +237,7 @@ test('appointment creation', async (t) => {
     const clock = fakeTimer.install({ shouldClearNativeTimers: true });
     clock.setSystemTime(new Date('2024-01-01T12:00:00Z'));
 
-    const { request, webAppHeader, findOrder, getUsers } = await getServer({
+    const { request, webAppHeader, findOrder, getUsers, findAppointment } = await getServer({
       t,
       scenarios: {
         product: true,
@@ -263,16 +263,17 @@ test('appointment creation', async (t) => {
 
     const [user] = await getUsers();
     const order = await findOrder((o) => o.status === 'ACTIVE');
+    const appointment = await findAppointment((a) => a.status === 'ACTIVE');
 
     const resp = await request('/api/appointment/create', {
-      method: 'POST',
+      method: 'PUT',
       headers: webAppHeader,
       body: {
         ...appointment,
         orderId: order.id,
         userId: user.id,
         status: 'ACTIVE',
-        time: addHours(new Date(), 3).toISOString(),
+        time: appointment.time,
       },
     });
 
@@ -308,7 +309,7 @@ test('appointment creation', async (t) => {
       const order = await findOrder((o) => o.status === 'ACTIVE');
 
       const resp = await request('/api/appointment/create', {
-        method: 'POST',
+        method: 'PUT',
         headers: webAppHeader,
         body: {
           ...appointment,
@@ -362,7 +363,7 @@ test('appointment creation', async (t) => {
       );
 
       const resp = await request('/api/appointment/create', {
-        method: 'POST',
+        method: 'PUT',
         headers: webAppHeader,
         body: {
           ...appointment,
@@ -413,7 +414,7 @@ test('appointment creation', async (t) => {
     );
 
     const resp = await request('/api/appointment/create', {
-      method: 'POST',
+      method: 'PUT',
       headers: webAppHeader,
       body: {
         ...appointment,
@@ -626,5 +627,314 @@ test('appointment list', async (t) => {
       items: [],
       count: 0,
     });
+  });
+});
+
+test('update appointment', async (t) => {
+  t.test(
+    'cannot update appointment with time out of working hours',
+    async (t) => {
+      const clock = fakeTimer.install({ shouldClearNativeTimers: true });
+      clock.setSystemTime(new Date('2024-01-01T00:00:00Z'));
+
+      const { request, webAppHeader, findAppointment } = await getServer({
+        t,
+        scenarios: {
+          product: true,
+          admin: true,
+          user: [
+            {
+              order: {
+                type: 'one-time',
+                status: 'ACTIVE',
+                appointment: 'active',
+              },
+            },
+          ],
+        },
+      });
+
+      const appointment = await findAppointment((o) => o.status === 'ACTIVE');
+
+      const resp = await request(`/api/appointment/${appointment.id}`, {
+        method: 'PATCH',
+        headers: webAppHeader,
+        body: {
+          ...appointment,
+          chronicDiseases: 'lupus',
+        },
+      });
+
+      t.match(resp, { status: 400 }, 'should return 400 status');
+      t.matchStrict(await resp.json(), {
+        error: { time: 'out-of-working-hours' },
+      });
+      t.teardown(clock.uninstall);
+    },
+  );
+
+  t.test('cannot update appointment with time too early', async (t) => {
+    const clock = fakeTimer.install({ shouldClearNativeTimers: true });
+    clock.setSystemTime(new Date('2024-01-01T12:00:00Z'));
+
+    const { request, webAppHeader, findAppointment } = await getServer({
+      t,
+      scenarios: {
+        product: true,
+        admin: true,
+        user: [
+          {
+            order: {
+              type: 'one-time',
+              status: 'ACTIVE',
+              appointment: 'active',
+            },
+          },
+        ],
+      },
+    });
+
+    const appointment = await findAppointment((o) => o.status === 'ACTIVE');
+
+    const resp = await request(`/api/appointment/${appointment.id}`, {
+      method: 'PATCH',
+      headers: webAppHeader,
+      body: {
+        ...appointment,
+        chronicDiseases: 'lupus',
+        time: setHours(new Date(), 13).toISOString(),
+      },
+    });
+
+    t.match(resp, { status: 400 }, 'should return 400 status');
+    t.matchStrict(await resp.json(), { error: { time: 'too-early' } });
+    t.teardown(clock.uninstall);
+  });
+
+  t.test(
+    'cannot update not active appointment (status not ACTIVE)',
+    async (t) => {
+      const clock = fakeTimer.install({ shouldClearNativeTimers: true });
+      clock.setSystemTime(new Date('2024-01-01T12:00:00Z'));
+
+      const { request, webAppHeader, findAppointment } = await getServer({
+        t,
+        scenarios: {
+          product: true,
+          admin: true,
+          user: [
+            {
+              order: {
+                type: 'one-time',
+                status: 'ACTIVE',
+                appointment: 'done',
+              },
+            },
+          ],
+        },
+      });
+
+      const appointment = await findAppointment((o) => o.status === 'DONE');
+
+      const resp = await request(`/api/appointment/${appointment.id}`, {
+        method: 'PATCH',
+        headers: webAppHeader,
+        body: {
+          ...appointment,
+          chronicDiseases: 'lupus',
+        },
+      });
+
+      t.match(resp, { status: 400 }, 'should return 400 status');
+      t.matchStrict(await resp.json(), {
+        error: 'cannot-update-not-active-appointment',
+      });
+      t.teardown(clock.uninstall);
+    },
+  );
+
+  t.test(
+    'cannot update not active appointment (status ACTIVE but time is past)',
+    async (t) => {
+      const clock = fakeTimer.install({ shouldClearNativeTimers: true });
+      clock.setSystemTime(new Date('2024-01-01T12:00:00Z'));
+
+      const { request, webAppHeader, findAppointment } = await getServer({
+        t,
+        scenarios: {
+          product: true,
+          admin: true,
+          user: [
+            {
+              order: {
+                type: 'one-time',
+                status: 'ACTIVE',
+                appointment: 'active',
+              },
+            },
+          ],
+        },
+      });
+
+      const appointment = await findAppointment((o) => o.status === 'ACTIVE');
+
+      clock.setSystemTime(addHours(new Date(appointment.time), 1));
+
+      const resp = await request(`/api/appointment/${appointment.id}`, {
+        method: 'PATCH',
+        headers: webAppHeader,
+        body: {
+          ...appointment,
+          time: addHours(new Date(), 3).toISOString(),
+          chronicDiseases: 'lupus',
+        },
+      });
+
+      t.match(resp, { status: 400 }, 'should return 400 status');
+      t.matchStrict(await resp.json(), {
+        error: 'cannot-update-not-active-appointment',
+      });
+      t.teardown(clock.uninstall);
+    },
+  );
+
+  t.test('cannot update appointment as slot is occupied', async (t) => {
+    const clock = fakeTimer.install({ shouldClearNativeTimers: true });
+    clock.setSystemTime(new Date('2024-01-01T12:00:00Z'));
+
+    const { request, webAppHeader, getAppointments } = await getServer({
+      t,
+      scenarios: {
+        product: true,
+        admin: true,
+        user: [
+          {
+            order: {
+              type: 'one-time',
+              status: 'ACTIVE',
+              appointment: 'active',
+            },
+          },
+          {
+            order: {
+              type: 'one-time',
+              status: 'ACTIVE',
+              appointment: 'active',
+            },
+          },
+        ],
+      },
+    });
+
+    const [a1, a2] = await getAppointments();
+
+    const resp = await request(`/api/appointment/${a1.id}`, {
+      method: 'PATCH',
+      headers: webAppHeader,
+      body: {
+        ...a1,
+        time: a2.time,
+        chronicDiseases: 'lupus',
+      },
+    });
+
+    t.match(resp, { status: 400 }, 'should return 400 status');
+    t.matchStrict(await resp.json(), { error: { time: 'occupied' } });
+    t.teardown(clock.uninstall);
+  });
+
+  t.test(
+    'cannot update appointment as time is behind order expiration date',
+    async (t) => {
+      const clock = fakeTimer.install({ shouldClearNativeTimers: true });
+      clock.setSystemTime(new Date('2024-01-01T12:00:00Z'));
+
+      const { request, webAppHeader, findAppointment, findOrder } =
+        await getServer({
+          t,
+          scenarios: {
+            product: true,
+            admin: true,
+            user: [
+              {
+                order: {
+                  type: 'subscription',
+                  status: 'ACTIVE',
+                  appointment: 'active',
+                },
+              },
+            ],
+          },
+        });
+
+      const order = await findOrder((o) => o.status === 'ACTIVE');
+      const appointment = await findAppointment((o) => o.status === 'ACTIVE');
+
+      const resp = await request(`/api/appointment/${appointment.id}`, {
+        method: 'PATCH',
+        headers: webAppHeader,
+        body: {
+          ...appointment,
+          chronicDiseases: 'lupus',
+          time: addHours(new Date(order.subscriptionEndsAt), 1).toISOString(),
+        },
+      });
+
+      t.match(resp, { status: 400 }, 'should return 400 status');
+      t.matchStrict(await resp.json(), {
+        error: {
+          time: 'cannot-create-appointment-behind-order-expiration-date',
+        },
+      });
+      t.teardown(clock.uninstall);
+    },
+  );
+
+  t.test('should update appointment', async (t) => {
+    const clock = fakeTimer.install({ shouldClearNativeTimers: true });
+    clock.setSystemTime(new Date('2024-01-01T12:00:00Z'));
+
+    const { fastify, request, webAppHeader, findAppointment } = await getServer(
+      {
+        t,
+        scenarios: {
+          product: true,
+          admin: true,
+          user: [
+            {
+              order: {
+                type: 'one-time',
+                status: 'ACTIVE',
+                appointment: 'active',
+              },
+            },
+          ],
+        },
+      },
+    );
+
+    const appointment = await findAppointment((o) => o.status === 'ACTIVE');
+    const gcUpdate = t.capture(fastify.googleCalendar.events, 'update');
+
+    const resp = await request(`/api/appointment/${appointment.id}`, {
+      method: 'PATCH',
+      headers: webAppHeader,
+      body: {
+        ...appointment,
+        chronicDiseases: 'lupus',
+        time: addHours(new Date(), 24).toISOString(),
+      },
+    });
+
+    t.match(resp, { status: 200 }, 'should return 200 status');
+    t.matchStrict(await resp.json(), {
+      status: 'ACTIVE',
+      chronicDiseases: 'lupus',
+    });
+
+    const results = gcUpdate();
+    t.equal(results.length, 1);
+
+    t.teardown(clock.uninstall);
   });
 });

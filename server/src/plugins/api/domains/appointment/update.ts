@@ -5,14 +5,17 @@ import { createGoogleCalendarEvent } from '../../utils/google-calendar.js';
 import { transformAppointmentTimeToStartOfHour } from '../../hooks/transformAppointmentTimeToStartOfHour.js';
 import { checkIsAppointmentOutOfWorkingHours } from '../../hooks/checkIsAppointmentOutOfWorkingHours.js';
 import { checkIsAppointmentTooEarly } from '../../hooks/checkIsAppointmentTooEarly.js';
-import { canUpdateAppointment } from '../../hooks/preHandler/canUpdateAppointment.js';
+import { checkIfCanUpdateNotActiveAppointment } from '../../hooks/checkIfCanUpdateNotActiveAppointment.js';
+import { checkIfTimeSlotFree } from '../../hooks/checkIfTimeSlotFree.js';
+import { checkIfAppointmentTimeBehindOrderExpirationDate } from '../../hooks/checkIfAppointmentTimeBehindOrderExpirationDate.js';
+import { createDecorateWithOrder } from '../../hooks/decorateWithOrder.js';
 
 interface iParams {
   appointmentId: string;
 }
 
 export const updateAppointmentRoute: RouteOptions = {
-  method: 'PUT',
+  method: 'PATCH',
   url: '/appointment/:appointmentId',
   schema: {
     body: {
@@ -47,7 +50,10 @@ export const updateAppointmentRoute: RouteOptions = {
     transformAppointmentTimeToStartOfHour,
     checkIsAppointmentOutOfWorkingHours,
     checkIsAppointmentTooEarly,
-    canUpdateAppointment,
+    checkIfCanUpdateNotActiveAppointment,
+    checkIfTimeSlotFree,
+    createDecorateWithOrder('body'),
+    checkIfAppointmentTimeBehindOrderExpirationDate,
   ],
   async handler(request) {
     const params = request.params as iParams;

@@ -87,9 +87,7 @@ export async function getServer({ t, scenarios }: iOptions) {
     return orderList.items.find(filter);
   }
 
-  async function findAppointment(
-    filter: (appointment: Prisma.AppointmentUncheckedCreateInput) => boolean,
-  ) {
+  async function getAppointments() {
     const cookieHeader = await adminCookie();
 
     const appointmentListResp = await request('/api/admin/appointment/list', {
@@ -98,7 +96,16 @@ export async function getServer({ t, scenarios }: iOptions) {
     const appointmentList = (await appointmentListResp.json()) as {
       items: Prisma.AppointmentUncheckedCreateInput[];
     };
-    return appointmentList.items.find(filter);
+
+    return appointmentList.items;
+  }
+
+  async function findAppointment(
+    filter: (appointment: Prisma.AppointmentUncheckedCreateInput) => boolean,
+  ) {
+    const list = await getAppointments();
+
+    return list.find(filter);
   }
 
   async function cleanDB() {
@@ -130,6 +137,7 @@ export async function getServer({ t, scenarios }: iOptions) {
     webAppHeader,
     getUsers,
     getProducts,
+    getAppointments,
     findOrder,
     findAppointment,
   };

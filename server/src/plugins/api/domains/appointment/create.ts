@@ -13,7 +13,7 @@ import { checkIsDoneOrder } from '../../hooks/checkIsDoneOrder.js';
 import { checkIfAppointmentTimeBehindOrderExpirationDate } from '../../hooks/checkIfAppointmentTimeBehindOrderExpirationDate.js';
 
 export const createAppointmentRoute: RouteOptions = {
-  method: 'POST',
+  method: 'PUT',
   url: '/appointment/create',
   schema: {
     body: {

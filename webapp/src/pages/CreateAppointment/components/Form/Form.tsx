@@ -133,7 +133,7 @@ export class CreateAppointmentForm extends Component<iProps> {
         }) as API.UPDATE_DELETE_APPOINTMENT)
       : API.CREATE_APPOINTMENT;
 
-    const method = isUpdate ? 'PUT' : 'POST';
+    const method = isUpdate ? 'PATCH' : 'PUT';
 
     const api = createApi(endpoint, {
       method,
