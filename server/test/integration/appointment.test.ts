@@ -1,7 +1,7 @@
 import t from 'tap';
 import type { Prisma } from '@prisma/client';
 import fakeTimer from '@sinonjs/fake-timers';
-import { addHours, addYears, isValid, setHours } from 'date-fns';
+import { addHours, setHours } from 'date-fns';
 import { getServer } from '../helpers/getServer/index.js';
 
 const test = t.test;
@@ -501,5 +501,68 @@ test('delete appointment', async (t) => {
 
     const results = gcDelete();
     t.equal(results.length, 1);
+  });
+});
+
+test('active appointment', async (t) => {
+  t.test('should return active appointment', async (t) => {
+    const { request, webAppHeader, getUsers } = await getServer({
+      t,
+      scenarios: {
+        product: true,
+        admin: true,
+        user: [
+          {
+            order: {
+              type: 'one-time',
+              status: 'ACTIVE',
+              appointment: 'active',
+            },
+          },
+        ],
+      },
+    });
+
+    const [user] = await getUsers();
+
+    const resp = await request(`/api/appointment/${user.id}`, {
+      method: 'GET',
+      headers: webAppHeader,
+    });
+
+    const data = (await resp.json()) as Prisma.AppointmentUncheckedCreateInput;
+
+    t.match(resp, { status: 200 }, 'should return 200 status');
+    t.match(data, { status: 'ACTIVE', userId: user.id });
+    t.ok(data.time);
+    t.ok(data.timezoneOffset === 0);
+    t.ok(data.complaints);
+    t.ok(data.medicine);
+    t.ok(data.complaintsStarted);
+  });
+
+  t.test('should return null if no active appointment', async (t) => {
+    const { request, webAppHeader, getUsers } = await getServer({
+      t,
+      scenarios: {
+        product: true,
+        admin: true,
+        user: [
+          {
+            order: { type: 'one-time', status: 'ACTIVE', appointment: 'none' },
+          },
+        ],
+      },
+    });
+
+    const [user] = await getUsers();
+
+    const resp = await request(`/api/appointment/${user.id}`, {
+      method: 'GET',
+      headers: webAppHeader,
+    });
+
+    t.match(resp, { status: 200 }, 'should return 200 status');
+    t.match(await resp.json(), null);
   });
 });
