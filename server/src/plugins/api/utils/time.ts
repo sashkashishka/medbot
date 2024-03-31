@@ -12,6 +12,7 @@ import {
 } from 'date-fns';
 import { uk } from 'date-fns/locale';
 
+// TODO: move to env variables
 const startHour = 10;
 const lastHour = 22;
 

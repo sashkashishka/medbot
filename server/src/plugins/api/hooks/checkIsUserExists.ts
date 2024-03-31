@@ -5,13 +5,13 @@ export const checkIsUserExists: preHandlerAsyncHookHandler =
   async function checkIsUserExists(request) {
     const params = request.params as { userId: string };
 
-    const user = await this.prisma.user.findFirst({
+    const count = await this.prisma.user.count({
       where: {
         id: Number(params.userId),
       },
     });
 
-    if (!user) {
+    if (count === 0) {
       throw new UserError('user-not-exists');
     }
   };

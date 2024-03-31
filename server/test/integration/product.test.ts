@@ -13,15 +13,13 @@ const product = {
 };
 
 test('product', async (t) => {
-  const { cleanup, request, adminCookie } = await getServer({
+  const { request, adminCookie } = await getServer({
     t,
-    scenarios: ['admin'],
+    scenarios: { admin: true },
   });
-  t.teardown(cleanup);
 
   let productId: number | null = null;
   let cookieHeader: string | null = await adminCookie();
-
 
   t.test('create product', async (t) => {
     const resp = await request('/api/admin/product/create', {
@@ -30,7 +28,7 @@ test('product', async (t) => {
       cookie: cookieHeader!,
     });
 
-    const data = await resp.json() as Prisma.ProductUncheckedCreateInput;
+    const data = (await resp.json()) as Prisma.ProductUncheckedCreateInput;
     productId = data.id;
 
     t.match(

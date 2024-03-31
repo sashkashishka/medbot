@@ -6,14 +6,14 @@ export const checkDuplicateOrderWithSameProduct: preHandlerAsyncHookHandler =
   async function checkDuplicateOrderWithSameProduct(request) {
     const body = request.body as Prisma.OrderUncheckedCreateInput;
 
-    const order = await this.prisma.order.findFirst({
+    const count = await this.prisma.order.count({
       where: {
         productId: Number(body.productId),
         status: 'WAITING_FOR_PAYMENT',
       },
     });
 
-    if (order) {
+    if (count > 0) {
       throw new OrderError(
         'duplicate-waiting-for-payment-order-with-same-product',
       );

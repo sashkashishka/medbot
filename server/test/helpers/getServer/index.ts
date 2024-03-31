@@ -3,12 +3,12 @@ import { type Test } from 'tap';
 import { main } from '../../../src/server.js';
 import { medbotPluginMock } from './plugins/medbotPlugin.js';
 import { googleCalendarPluginMock } from './plugins/googleCalendarPlugin.js';
-import { applyScenario, type tScenario } from './scenarios/index.js';
+import { applyScenario, type iScenarios } from './scenarios/index.js';
 import { admin } from './fixtures/admin.js';
 
 interface iOptions {
   t: Test;
-  scenarios?: Array<tScenario>;
+  scenarios?: iScenarios;
 }
 
 interface iRequestOptions extends Omit<RequestInit, 'body'> {
@@ -42,8 +42,6 @@ export async function getServer({ t, scenarios }: iOptions) {
     });
   }
 
-  await applyScenario({ fastify, scenarios, request });
-
   async function adminCookie() {
     const { headers } = await request('/api/auth/admin/login', {
       method: 'POST',
@@ -62,6 +60,19 @@ export async function getServer({ t, scenarios }: iOptions) {
     return resp.json() as Promise<Prisma.ProductUncheckedCreateInput[]>;
   }
 
+  async function getUsers(): Promise<Prisma.ProductUncheckedCreateInput[]> {
+    const cookieHeader = await adminCookie();
+    const resp = await request('/api/admin/user/list?date_sort=asc', {
+      cookie: cookieHeader,
+    });
+
+    const data = (await resp.json()) as {
+      items: Prisma.ProductUncheckedCreateInput[];
+    };
+
+    return data.items;
+  }
+
   async function findOrder(
     filter: (order: Prisma.OrderUncheckedCreateInput) => boolean,
   ) {
@@ -76,25 +87,34 @@ export async function getServer({ t, scenarios }: iOptions) {
     return orderList.items.find(filter);
   }
 
+  async function cleanDB() {
+    await fastify.prisma.appointment.deleteMany();
+    await fastify.prisma.activationCode.deleteMany();
+    await fastify.prisma.order.deleteMany();
+    await fastify.prisma.product.deleteMany();
+    await fastify.prisma.user.deleteMany();
+
+    await fastify.prisma.$transaction([
+      fastify.prisma.admin.deleteMany(),
+      fastify.prisma.telegrafSessions.deleteMany(),
+    ]);
+  }
+
+  async function cleanup() {
+    await cleanDB();
+    await fastify.close();
+  }
+
+  await applyScenario({ fastify, scenarios, request, cleanDB });
+
+  t.teardown(cleanup);
+
   return {
     fastify,
     request,
-    async cleanup() {
-      await fastify.prisma.appointment.deleteMany();
-      await fastify.prisma.activationCode.deleteMany();
-      await fastify.prisma.order.deleteMany();
-      await fastify.prisma.product.deleteMany();
-      await fastify.prisma.user.deleteMany();
-
-      await fastify.prisma.$transaction([
-        fastify.prisma.admin.deleteMany(),
-        fastify.prisma.telegrafSessions.deleteMany(),
-      ]);
-
-      await fastify.close();
-    },
     adminCookie,
     webAppHeader,
+    getUsers,
     getProducts,
     findOrder,
   };

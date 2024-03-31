@@ -3,13 +3,12 @@ import { RegisterError } from '../utils/errors.js';
 
 export const checkIsAdminExists: onRequestHookHandler =
   async function checkIsAdminExists() {
-    const admin = await this.prisma.admin.findMany({
+    const count = await this.prisma.admin.count({
       take: 1,
       skip: 0,
     });
 
-    if (admin?.length) {
+    if (count > 0) {
       throw new RegisterError('too-much-registrations');
     }
   };
-

@@ -5,14 +5,14 @@ export const checkHasOrderActiveAppointments: preHandlerAsyncHookHandler =
   async function checkHasOrderActiveAppointments(request) {
     const params = request.params as { orderId: string };
 
-    const appointments = await this.prisma.appointment.findMany({
+    const count = await this.prisma.appointment.count({
       where: {
         orderId: Number(params.orderId),
         status: 'ACTIVE',
       },
     });
 
-    if (appointments?.length) {
+    if (count > 0) {
       throw new OrderError('complete-appointment-before-closing-order');
     }
   };

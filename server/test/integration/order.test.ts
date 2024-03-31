@@ -3,7 +3,6 @@ import type { Prisma } from '@prisma/client';
 import fakeTimer from '@sinonjs/fake-timers';
 import { addYears, isValid } from 'date-fns';
 import { getServer } from '../helpers/getServer/index.js';
-import { user, user2 } from '../helpers/getServer/fixtures/user.js';
 
 const test = t.test;
 
@@ -12,11 +11,21 @@ const order = {
 };
 
 test('order creation', async (t) => {
-  const { cleanup, request, webAppHeader, getProducts } = await getServer({
+  const { request, webAppHeader, getProducts } = await getServer({
     t,
-    scenarios: ['product', 'user'],
+    scenarios: {
+      product: true,
+      user: [
+        {
+          order: {
+            type: 'none',
+            status: 'DONE',
+            appointment: 'none',
+          },
+        },
+      ],
+    },
   });
-  t.teardown(cleanup);
 
   const products = await getProducts();
   const [p1, p2, p3, p4, p5] = products;
@@ -120,13 +129,25 @@ test('order creation', async (t) => {
 });
 
 test('waiting-for-payment order', async (t) => {
-  const { cleanup, request, getProducts, webAppHeader } = await getServer({
+  const { request, getProducts, getUsers, webAppHeader } = await getServer({
     t,
-    scenarios: ['product', 'user', 'oneTimeOrderWaitingForPayment'],
+    scenarios: {
+      product: true,
+      admin: true,
+      user: [
+        {
+          order: {
+            type: 'one-time',
+            status: 'WAITING_FOR_PAYMENT',
+            appointment: 'none',
+          },
+        },
+      ],
+    },
   });
-  t.teardown(cleanup);
 
   const products = await getProducts();
+  const [user] = await getUsers();
   const [p1, p2] = products;
 
   t.test('no waiting-for-payment order with p2', async (t) => {
@@ -155,11 +176,22 @@ test('waiting-for-payment order', async (t) => {
 });
 
 test('order list', async (t) => {
-  const { cleanup, request, adminCookie } = await getServer({
+  const { request, adminCookie } = await getServer({
     t,
-    scenarios: ['product', 'user', 'admin', 'oneTimeOrderWaitingForPayment'],
+    scenarios: {
+      product: true,
+      admin: true,
+      user: [
+        {
+          order: {
+            type: 'one-time',
+            status: 'WAITING_FOR_PAYMENT',
+            appointment: 'none',
+          },
+        },
+      ],
+    },
   });
-  t.teardown(cleanup);
 
   const cookieHeader: string = await adminCookie();
 
@@ -181,11 +213,29 @@ test('order list', async (t) => {
 });
 
 test('create subscription order for multiple members and create next one via activation code', async (t) => {
-  const { cleanup, request, webAppHeader, getProducts } = await getServer({
+  const { request, webAppHeader, getProducts } = await getServer({
     t,
-    scenarios: ['product', 'user', 'user2'],
+    scenarios: {
+      product: true,
+      admin: true,
+      user: [
+        {
+          order: {
+            type: 'none',
+            status: 'WAITING_FOR_PAYMENT',
+            appointment: 'none',
+          },
+        },
+        {
+          order: {
+            type: 'none',
+            status: 'WAITING_FOR_PAYMENT',
+            appointment: 'none',
+          },
+        },
+      ],
+    },
   });
-  t.teardown(cleanup);
 
   const products = await getProducts();
 
@@ -307,11 +357,31 @@ test('create subscription order for multiple members and create next one via act
 });
 
 test('active order', async (t) => {
-  const { cleanup, request, webAppHeader } = await getServer({
+  const { request, webAppHeader, getUsers } = await getServer({
     t,
-    scenarios: ['product', 'user', 'user2', 'oneTimeOrderActive'],
+    scenarios: {
+      product: true,
+      admin: true,
+      user: [
+        {
+          order: {
+            type: 'one-time',
+            status: 'ACTIVE',
+            appointment: 'none',
+          },
+        },
+        {
+          order: {
+            type: 'none',
+            status: 'WAITING_FOR_PAYMENT',
+            appointment: 'none',
+          },
+        },
+      ],
+    },
   });
-  t.teardown(cleanup);
+
+  const [user, user2] = await getUsers();
 
   t.test('get active order', async (t) => {
     const resp = await request(`/api/order/active/${user.id}`, {
@@ -341,11 +411,22 @@ test('active order', async (t) => {
 
 test('complete one time order', async (t) => {
   t.test('cannot update DONE order', async (t) => {
-    const { cleanup, request, adminCookie, findOrder } = await getServer({
+    const { request, adminCookie, findOrder } = await getServer({
       t,
-      scenarios: ['product', 'admin', 'user', 'oneTimeOrderDone'],
+      scenarios: {
+        product: true,
+        admin: true,
+        user: [
+          {
+            order: {
+              type: 'one-time',
+              status: 'DONE',
+              appointment: 'none',
+            },
+          },
+        ],
+      },
     });
-    t.teardown(cleanup);
 
     const cookieHeader: string | null = await adminCookie();
     const order = await findOrder((o) => o.status === 'DONE');
@@ -363,16 +444,22 @@ test('complete one time order', async (t) => {
   });
 
   t.test('has active appointments', async (t) => {
-    const { cleanup, request, adminCookie, findOrder } = await getServer({
+    const { request, adminCookie, findOrder } = await getServer({
       t,
-      scenarios: [
-        'product',
-        'admin',
-        'user',
-        'oneTimeOrderActiveWithAppointments',
-      ],
+      scenarios: {
+        product: true,
+        admin: true,
+        user: [
+          {
+            order: {
+              type: 'one-time',
+              status: 'ACTIVE',
+              appointment: 'active',
+            },
+          },
+        ],
+      },
     });
-    t.teardown(cleanup);
 
     const cookieHeader: string | null = await adminCookie();
     const order = await findOrder((o) => o.status === 'ACTIVE');
@@ -390,11 +477,22 @@ test('complete one time order', async (t) => {
   });
 
   t.test('should complete order ACTIVE', async (t) => {
-    const { cleanup, request, adminCookie, findOrder } = await getServer({
+    const { request, adminCookie, findOrder } = await getServer({
       t,
-      scenarios: ['product', 'admin', 'user', 'oneTimeOrderActive'],
+      scenarios: {
+        product: true,
+        admin: true,
+        user: [
+          {
+            order: {
+              type: 'one-time',
+              status: 'ACTIVE',
+              appointment: 'none',
+            },
+          },
+        ],
+      },
     });
-    t.teardown(cleanup);
 
     const cookieHeader: string | null = await adminCookie();
     const order = await findOrder((o) => o.status === 'ACTIVE');
@@ -410,11 +508,22 @@ test('complete one time order', async (t) => {
   });
 
   t.test('should complete order WATINING_FOR_PAYMENT', async (t) => {
-    const { cleanup, request, adminCookie, findOrder } = await getServer({
+    const { request, adminCookie, findOrder } = await getServer({
       t,
-      scenarios: ['product', 'admin', 'user', 'oneTimeOrderWaitingForPayment'],
+      scenarios: {
+        product: true,
+        admin: true,
+        user: [
+          {
+            order: {
+              type: 'one-time',
+              status: 'WAITING_FOR_PAYMENT',
+              appointment: 'none',
+            },
+          },
+        ],
+      },
     });
-    t.teardown(cleanup);
 
     const cookieHeader: string | null = await adminCookie();
     const order = await findOrder((o) => o.status === 'WAITING_FOR_PAYMENT');
@@ -432,11 +541,22 @@ test('complete one time order', async (t) => {
 
 test('complete subscription order', async (t) => {
   t.test('cannot update DONE order', async (t) => {
-    const { cleanup, request, adminCookie, findOrder } = await getServer({
+    const { request, adminCookie, findOrder } = await getServer({
       t,
-      scenarios: ['product', 'admin', 'user', 'subscriptionOrderDone'],
+      scenarios: {
+        product: true,
+        admin: true,
+        user: [
+          {
+            order: {
+              type: 'subscription',
+              status: 'DONE',
+              appointment: 'none',
+            },
+          },
+        ],
+      },
     });
-    t.teardown(cleanup);
 
     const cookieHeader: string | null = await adminCookie();
     const order = await findOrder((o) => o.status === 'DONE');
@@ -455,11 +575,22 @@ test('complete subscription order', async (t) => {
 
   t.test('not expired subscription order', async (t) => {
     t.test('order ACTIVE', async (t) => {
-      const { cleanup, request, adminCookie, findOrder } = await getServer({
+      const { request, adminCookie, findOrder } = await getServer({
         t,
-        scenarios: ['product', 'admin', 'user', 'subscriptionOrderActive'],
+        scenarios: {
+          product: true,
+          admin: true,
+          user: [
+            {
+              order: {
+                type: 'subscription',
+                status: 'ACTIVE',
+                appointment: 'none',
+              },
+            },
+          ],
+        },
       });
-      t.teardown(cleanup);
 
       const cookieHeader: string | null = await adminCookie();
       const order = await findOrder((o) => o.status === 'ACTIVE');
@@ -477,16 +608,22 @@ test('complete subscription order', async (t) => {
     });
 
     t.test('order ACTIVE with appointments', async (t) => {
-      const { cleanup, request, adminCookie, findOrder } = await getServer({
+      const { request, adminCookie, findOrder } = await getServer({
         t,
-        scenarios: [
-          'product',
-          'admin',
-          'user',
-          'subscriptionOrderActiveWithAppointments',
-        ],
+        scenarios: {
+          product: true,
+          admin: true,
+          user: [
+            {
+              order: {
+                type: 'subscription',
+                status: 'ACTIVE',
+                appointment: 'active',
+              },
+            },
+          ],
+        },
       });
-      t.teardown(cleanup);
 
       const cookieHeader: string | null = await adminCookie();
       const order = await findOrder((o) => o.status === 'ACTIVE');
@@ -504,16 +641,22 @@ test('complete subscription order', async (t) => {
     });
 
     t.test('order WATINING_FOR_PAYMENT', async (t) => {
-      const { cleanup, request, adminCookie, findOrder } = await getServer({
+      const { request, adminCookie, findOrder } = await getServer({
         t,
-        scenarios: [
-          'product',
-          'admin',
-          'user',
-          'subscriptionOrderWaitingForPayment',
-        ],
+        scenarios: {
+          product: true,
+          admin: true,
+          user: [
+            {
+              order: {
+                type: 'subscription',
+                status: 'WAITING_FOR_PAYMENT',
+                appointment: 'none',
+              },
+            },
+          ],
+        },
       });
-      t.teardown(cleanup);
 
       const cookieHeader: string | null = await adminCookie();
       const order = await findOrder((o) => o.status === 'WAITING_FOR_PAYMENT');
@@ -532,11 +675,22 @@ test('complete subscription order', async (t) => {
   });
 
   t.test('should complete order ACTIVE', async (t) => {
-    const { cleanup, request, adminCookie, findOrder } = await getServer({
+    const { request, adminCookie, findOrder } = await getServer({
       t,
-      scenarios: ['product', 'admin', 'user', 'subscriptionOrderActive'],
+      scenarios: {
+        product: true,
+        admin: true,
+        user: [
+          {
+            order: {
+              type: 'subscription',
+              status: 'ACTIVE',
+              appointment: 'none',
+            },
+          },
+        ],
+      },
     });
-    t.teardown(cleanup);
 
     const clock = fakeTimer.install({ shouldClearNativeTimers: true });
     clock.setSystemTime(addYears(new Date(), 100));
@@ -558,16 +712,22 @@ test('complete subscription order', async (t) => {
   });
 
   t.test('should complete order ACTIVE with appointments', async (t) => {
-    const { fastify, cleanup, request, adminCookie, findOrder } = await getServer({
+    const { fastify, request, adminCookie, findOrder } = await getServer({
       t,
-      scenarios: [
-        'product',
-        'admin',
-        'user',
-        'subscriptionOrderActiveWithAppointments',
-      ],
+      scenarios: {
+        product: true,
+        admin: true,
+        user: [
+          {
+            order: {
+              type: 'subscription',
+              status: 'ACTIVE',
+              appointment: 'active',
+            },
+          },
+        ],
+      },
     });
-    t.teardown(cleanup);
 
     const gcDeletions = t.capture(fastify.googleCalendar.events, 'delete');
 
@@ -595,16 +755,22 @@ test('complete subscription order', async (t) => {
   });
 
   t.test('should complete order WATINING_FOR_PAYMENT', async (t) => {
-    const { cleanup, request, adminCookie, findOrder } = await getServer({
+    const { request, adminCookie, findOrder } = await getServer({
       t,
-      scenarios: [
-        'product',
-        'admin',
-        'user',
-        'subscriptionOrderWaitingForPayment',
-      ],
+      scenarios: {
+        product: true,
+        admin: true,
+        user: [
+          {
+            order: {
+              type: 'subscription',
+              status: 'WAITING_FOR_PAYMENT',
+              appointment: 'none',
+            },
+          },
+        ],
+      },
     });
-    t.teardown(cleanup);
 
     const clock = fakeTimer.install({ shouldClearNativeTimers: true });
     clock.setSystemTime(addYears(new Date(), 100));

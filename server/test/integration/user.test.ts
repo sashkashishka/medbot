@@ -13,11 +13,13 @@ const user = {
 };
 
 test('user', async (t) => {
-  const { cleanup, request, adminCookie, webAppHeader } = await getServer({
+  const { request, adminCookie, webAppHeader } = await getServer({
     t,
-    scenarios: ['product', 'admin'],
+    scenarios: {
+      product: true,
+      admin: true,
+    },
   });
-  t.teardown(cleanup);
 
   const cookieHeader: string = await adminCookie();
 

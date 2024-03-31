@@ -6,8 +6,7 @@ const test = t.test;
 const user = { name: 'Kate', password: '1234' };
 
 test('auth', async (t) => {
-  const { fastify, cleanup, request } = await getServer({ t });
-  t.teardown(cleanup);
+  const { fastify, request } = await getServer({ t, scenarios: {} });
 
   let cookieHeader: string | null = null;
 
