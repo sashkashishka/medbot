@@ -1,11 +1,12 @@
+import { computed } from 'nanostores';
 import { generatePath } from 'react-router-dom';
-import addHours from 'date-fns/addHours';
+import { isBefore, addHours } from 'date-fns';
 
 import { API } from '../constants/api';
 import { createFetcherStore } from './fetcher';
 import { iFreeSlot, type iAppointment } from '../types';
 import { getUserId } from '../utils/tg';
-import { computed } from 'nanostores';
+import { $activeOrder } from './order';
 
 const userId = String(getUserId());
 
@@ -21,18 +22,33 @@ export const { store: $freeSlots, refetch: refetchFreeSlots } =
     url: API.FREE_SLOTS,
   });
 
-export const $availableTimeslots = computed(
-  [$freeSlots, $activeAppointment],
-  ({ data: freeSlots }, { data: activeAppointment }) => {
+export const $freeSlotsFiltered = computed(
+  [$freeSlots, $activeOrder],
+  ({ data: freeSlots }, { data: activeOrder }) => {
     if (!freeSlots) return [];
 
-    if (!activeAppointment) return freeSlots;
+    if (!activeOrder?.subscriptionEndsAt) return freeSlots;
+
+    const { subscriptionEndsAt } = activeOrder;
+
+    return freeSlots.filter((slot) =>
+      isBefore(new Date(slot.startTime), new Date(subscriptionEndsAt)),
+    );
+  },
+);
+
+export const $availableTimeslots = computed(
+  [$freeSlotsFiltered, $activeAppointment],
+  (freeSlotsFiltered, { data: activeAppointment }) => {
+    if (!freeSlotsFiltered) return [];
+
+    if (!activeAppointment) return freeSlotsFiltered;
 
     const { time } = activeAppointment;
 
     const endTime = addHours(new Date(time), 1);
 
-    return freeSlots.concat({
+    return freeSlotsFiltered.concat({
       id: time,
       startTime: time,
       endTime: endTime.toISOString(),
