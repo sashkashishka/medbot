@@ -90,9 +90,12 @@ export async function getServer({ t, scenarios }: iOptions) {
   async function getAppointments() {
     const cookieHeader = await adminCookie();
 
-    const appointmentListResp = await request('/api/admin/appointment/list', {
-      cookie: cookieHeader,
-    });
+    const appointmentListResp = await request(
+      '/api/admin/appointment/list?date_sort=asc',
+      {
+        cookie: cookieHeader,
+      },
+    );
     const appointmentList = (await appointmentListResp.json()) as {
       items: Prisma.AppointmentUncheckedCreateInput[];
     };
