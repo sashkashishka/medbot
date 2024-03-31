@@ -1,16 +1,8 @@
 import t from 'tap';
 import { getServer } from '../helpers/getServer/index.js';
+import { user } from '../helpers/getServer/fixtures/user.js';
 
 const test = t.test;
-
-const user = {
-  id: 1,
-  name: 'Kate',
-  surname: 'Smith',
-  birthDate: '1990-01-01T19:40:27.326Z',
-  phone: '+1234567890',
-  email: 'test@test.com',
-};
 
 test('user', async (t) => {
   const { request, adminCookie, webAppHeader } = await getServer({
@@ -42,7 +34,7 @@ test('user', async (t) => {
     });
 
     t.match(resp, { status: 400 }, 'should return 400 status as user exists');
-    t.match(await resp.json(), { error: 'duplicate-user' });
+    t.matchStrict(await resp.json(), { error: 'duplicate-user' });
   });
 
   t.test('get user', async (t) => {
@@ -96,6 +88,6 @@ test('user', async (t) => {
       { status: 400 },
       'should return 400 status as user not found',
     );
-    t.match(await resp.json(), { error: 'user-not-exists' });
+    t.matchStrict(await resp.json(), { error: 'user-not-exists' });
   });
 });

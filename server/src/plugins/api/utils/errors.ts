@@ -23,7 +23,6 @@ export class AppointmentError {
     switch (this.reason) {
       case 'too-early':
       case 'out-of-working-hours':
-      case 'has-active':
       case 'occupied': {
         return create400Response({ time: this.reason });
       }
@@ -31,6 +30,7 @@ export class AppointmentError {
       case 'cannot-delete-not-active-appointment':
       case 'cannot-update-not-active-appointment':
       case 'one-time-order-cannot-create-twice':
+      case 'has-active':
       default: {
         return create400Response(this.reason);
       }

@@ -5,8 +5,11 @@ import { createGoogleCalendarEvent } from '../../utils/google-calendar.js';
 import { transformAppointmentTimeToStartOfHour } from '../../hooks/transformAppointmentTimeToStartOfHour.js';
 import { checkIsAppointmentOutOfWorkingHours } from '../../hooks/checkIsAppointmentOutOfWorkingHours.js';
 import { checkIsAppointmentTooEarly } from '../../hooks/checkIsAppointmentTooEarly.js';
-import { canCreateAppointment } from '../../hooks/preHandler/canCreateAppointment.js';
 import { createDecorateWithOrder } from '../../hooks/decorateWithOrder.js';
+import { checkIfActiveAppointmentExits } from '../../hooks/checkIfActiveAppointmentExits.js';
+import { checkIfOneTimeOrderHasDoneAppointments } from '../../hooks/checkIfOneTimeOrderHasDoneAppointments.js';
+import { checkIfTimeSlotFree } from '../../hooks/checkIfTimeSlotFree.js';
+import { checkIsDoneOrder } from '../../hooks/checkIsDoneOrder.js';
 
 export const createAppointmentRoute: RouteOptions = {
   method: 'POST',
@@ -45,7 +48,10 @@ export const createAppointmentRoute: RouteOptions = {
     checkIsAppointmentOutOfWorkingHours,
     checkIsAppointmentTooEarly,
     createDecorateWithOrder('body'),
-    canCreateAppointment,
+    checkIsDoneOrder,
+    checkIfActiveAppointmentExits,
+    checkIfOneTimeOrderHasDoneAppointments,
+    checkIfTimeSlotFree,
   ],
   async handler(req) {
     const body = req.body as Prisma.AppointmentUncheckedCreateInput;

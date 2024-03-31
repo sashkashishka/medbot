@@ -94,7 +94,7 @@ test('order creation', async (t) => {
         { status: 400 },
         'should return 400 status as order not created',
       );
-      t.match(await resp.json(), {
+      t.matchStrict(await resp.json(), {
         error: 'duplicate-waiting-for-payment-order-with-same-product',
       });
     },
@@ -124,7 +124,7 @@ test('order creation', async (t) => {
       { status: 400 },
       'should return 400 status as order not created',
     );
-    t.match(await resp.json(), { error: 'has-active' });
+    t.matchStrict(await resp.json(), { error: 'has-active' });
   });
 });
 
@@ -301,7 +301,7 @@ test('create subscription order for multiple members and create next one via act
     });
 
     t.match(resp, { status: 400 }, 'should return 400 status');
-    t.match(await resp.json(), { error: 'invalid-activation-code' });
+    t.matchStrict(await resp.json(), { error: 'invalid-activation-code' });
   });
 
   t.test('3.2. check if code not expired', async (t) => {
@@ -316,7 +316,7 @@ test('create subscription order for multiple members and create next one via act
     });
 
     t.match(resp, { status: 400 }, 'should return 400 status');
-    t.match(await resp.json(), { error: 'code-expired' });
+    t.matchStrict(await resp.json(), { error: 'code-expired' });
 
     t.teardown(clock.uninstall);
   });
@@ -351,7 +351,7 @@ test('create subscription order for multiple members and create next one via act
       );
 
       t.match(resp, { status: 400 }, 'should return 400 status');
-      t.match(await resp.json(), { error: 'has-active' });
+      t.matchStrict(await resp.json(), { error: 'has-active' });
     },
   );
 });
@@ -440,7 +440,7 @@ test('complete one time order', async (t) => {
     const data = await resp.json();
 
     t.match(resp, { status: 400 }, 'should return 400 status');
-    t.match(data, { error: 'not-active' });
+    t.matchStrict(data, { error: 'not-active' });
   });
 
   t.test('has active appointments', async (t) => {
@@ -471,7 +471,7 @@ test('complete one time order', async (t) => {
     });
 
     t.match(resp, { status: 400 }, 'should return 400 status');
-    t.match(await resp.json(), {
+    t.matchStrict(await resp.json(), {
       error: 'complete-appointment-before-closing-order',
     });
   });
@@ -570,7 +570,7 @@ test('complete subscription order', async (t) => {
     const data = await resp.json();
 
     t.match(resp, { status: 400 }, 'should return 400 status');
-    t.match(data, { error: 'not-active' });
+    t.matchStrict(data, { error: 'not-active' });
   });
 
   t.test('not expired subscription order', async (t) => {
@@ -602,7 +602,7 @@ test('complete subscription order', async (t) => {
       });
 
       t.match(resp, { status: 400 });
-      t.match(await resp.json(), {
+      t.matchStrict(await resp.json(), {
         error: 'cannot-complete-non-expired-subscription',
       });
     });
@@ -635,7 +635,7 @@ test('complete subscription order', async (t) => {
       });
 
       t.match(resp, { status: 400 });
-      t.match(await resp.json(), {
+      t.matchStrict(await resp.json(), {
         error: 'cannot-complete-non-expired-subscription',
       });
     });
@@ -668,7 +668,7 @@ test('complete subscription order', async (t) => {
       });
 
       t.match(resp, { status: 400 });
-      t.match(await resp.json(), {
+      t.matchStrict(await resp.json(), {
         error: 'cannot-complete-non-expired-subscription',
       });
     });
