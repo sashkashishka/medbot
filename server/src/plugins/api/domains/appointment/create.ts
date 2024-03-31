@@ -10,6 +10,7 @@ import { checkIfActiveAppointmentExits } from '../../hooks/checkIfActiveAppointm
 import { checkIfOneTimeOrderHasDoneAppointments } from '../../hooks/checkIfOneTimeOrderHasDoneAppointments.js';
 import { checkIfTimeSlotFree } from '../../hooks/checkIfTimeSlotFree.js';
 import { checkIsDoneOrder } from '../../hooks/checkIsDoneOrder.js';
+import { checkIfAppointmentTimeBehindOrderExpirationDate } from '../../hooks/checkIfAppointmentTimeBehindOrderExpirationDate.js';
 
 export const createAppointmentRoute: RouteOptions = {
   method: 'POST',
@@ -49,6 +50,7 @@ export const createAppointmentRoute: RouteOptions = {
     checkIsAppointmentTooEarly,
     createDecorateWithOrder('body'),
     checkIsDoneOrder,
+    checkIfAppointmentTimeBehindOrderExpirationDate,
     checkIfActiveAppointmentExits,
     checkIfOneTimeOrderHasDoneAppointments,
     checkIfTimeSlotFree,

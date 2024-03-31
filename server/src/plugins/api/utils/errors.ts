@@ -7,6 +7,7 @@ export type tAppointmentErrorReason =
   | 'out-of-working-hours'
   | 'cannot-delete-not-active-appointment'
   | 'cannot-update-not-active-appointment'
+  | 'cannot-create-appointment-behind-order-expiration-date'
   | 'one-time-order-cannot-create-twice';
 
 export function create400Response<tData>(data: tData) {
@@ -23,6 +24,7 @@ export class AppointmentError {
     switch (this.reason) {
       case 'too-early':
       case 'out-of-working-hours':
+      case 'cannot-create-appointment-behind-order-expiration-date':
       case 'occupied': {
         return create400Response({ time: this.reason });
       }

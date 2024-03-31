@@ -1,5 +1,4 @@
 import type { preHandlerAsyncHookHandler } from 'fastify';
-import { AppointmentError } from '../../utils/errors.js';
 
 declare module 'fastify' {
   // eslint-disable-next-line
@@ -8,8 +7,8 @@ declare module 'fastify' {
   }
 }
 
-export const cannotDeleteNotActiveAppointment: preHandlerAsyncHookHandler =
-  async function cannotDeleteNotActiveAppointment(request) {
+export const decorateWithGoogleCalendarEventId: preHandlerAsyncHookHandler =
+  async function decorateWithGoogleCalendarEventId(request) {
     const params = request.params as { appointmentId: string };
 
     const { appointmentId } = params;
@@ -19,11 +18,10 @@ export const cannotDeleteNotActiveAppointment: preHandlerAsyncHookHandler =
         id: Number(appointmentId),
         status: 'ACTIVE',
       },
+      select: {
+        calendarEventId: true,
+      },
     });
-
-    if (!appointment) {
-      throw new AppointmentError('cannot-delete-not-active-appointment');
-    }
 
     request.$calendarEventId = appointment.calendarEventId;
   };

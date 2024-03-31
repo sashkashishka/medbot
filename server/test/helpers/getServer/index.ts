@@ -87,6 +87,20 @@ export async function getServer({ t, scenarios }: iOptions) {
     return orderList.items.find(filter);
   }
 
+  async function findAppointment(
+    filter: (appointment: Prisma.AppointmentUncheckedCreateInput) => boolean,
+  ) {
+    const cookieHeader = await adminCookie();
+
+    const appointmentListResp = await request('/api/admin/appointment/list', {
+      cookie: cookieHeader,
+    });
+    const appointmentList = (await appointmentListResp.json()) as {
+      items: Prisma.AppointmentUncheckedCreateInput[];
+    };
+    return appointmentList.items.find(filter);
+  }
+
   async function cleanDB() {
     await fastify.prisma.appointment.deleteMany();
     await fastify.prisma.activationCode.deleteMany();
@@ -117,5 +131,6 @@ export async function getServer({ t, scenarios }: iOptions) {
     getUsers,
     getProducts,
     findOrder,
+    findAppointment,
   };
 }

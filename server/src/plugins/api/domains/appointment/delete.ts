@@ -1,5 +1,6 @@
 import type { RouteOptions } from 'fastify';
-import { cannotDeleteNotActiveAppointment } from '../../hooks/preHandler/cannotDeleteNotActiveAppointment.js';
+import { checkIfAppointmentActive } from '../../hooks/checkIfAppointmentActive.js';
+import { decorateWithGoogleCalendarEventId } from '../../hooks/decorateWithGoogleCalendarEventId.js';
 
 interface iParams {
   appointmentId: string;
@@ -8,7 +9,7 @@ interface iParams {
 export const deleteAppointmentRoute: RouteOptions = {
   method: 'DELETE',
   url: '/appointment/:appointmentId',
-  preHandler: [cannotDeleteNotActiveAppointment],
+  preHandler: [checkIfAppointmentActive, decorateWithGoogleCalendarEventId],
   async handler(request) {
     const params = request.params as iParams;
 

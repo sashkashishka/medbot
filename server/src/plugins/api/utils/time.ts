@@ -26,6 +26,9 @@ export function isWithinWorkingHours(time: string | Date): boolean {
   return hour >= startHour && hour < lastHour;
 }
 
+/**
+ * @deprecated
+ */
 export function isOccupied(
   time: string | Date,
   appointmentTime: string | Date,

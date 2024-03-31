@@ -3,6 +3,8 @@ export const APPOINTMENT_ERRORS: Record<string, string> = {
   occupied: 'Цей час вже зайнятий. Оберіть іншу годину',
   'has-active':
     'Ви вже маєте запис. Якщо хочете створити новий, то видаліть попередній зі списку або змініть в ньому час візиту',
+  'cannot-create-appointment-behind-order-expiration-date':
+    'Ваша підписка у цей час вже буде закінчена. Оберіть інший час візиту',
   'out-of-working-hours':
     'Ви обрали час поза робочими годинами. Оберіть ті що є в списку',
   'cannot-delete-not-active-appointment': 'Неможливо видалити минулий візит',
