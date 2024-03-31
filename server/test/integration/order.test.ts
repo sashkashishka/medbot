@@ -176,26 +176,26 @@ test('waiting-for-payment order', async (t) => {
 });
 
 test('order list', async (t) => {
-  const { request, adminCookie } = await getServer({
-    t,
-    scenarios: {
-      product: true,
-      admin: true,
-      user: [
-        {
-          order: {
-            type: 'one-time',
-            status: 'WAITING_FOR_PAYMENT',
-            appointment: 'none',
-          },
-        },
-      ],
-    },
-  });
-
-  const cookieHeader: string = await adminCookie();
-
   t.test('list orders', async (t) => {
+    const { request, adminCookie } = await getServer({
+      t,
+      scenarios: {
+        product: true,
+        admin: true,
+        user: [
+          {
+            order: {
+              type: 'one-time',
+              status: 'WAITING_FOR_PAYMENT',
+              appointment: 'none',
+            },
+          },
+        ],
+      },
+    });
+
+    const cookieHeader: string = await adminCookie();
+
     const resp = await request('/api/admin/order/list', {
       cookie: cookieHeader!,
     });
@@ -206,6 +206,41 @@ test('order list', async (t) => {
       {
         items: [{ status: 'WAITING_FOR_PAYMENT' }],
         count: 1,
+      },
+      'should return orders',
+    );
+  });
+
+  t.test('empty list', async (t) => {
+    const { request, adminCookie } = await getServer({
+      t,
+      scenarios: {
+        product: true,
+        admin: true,
+        user: [
+          {
+            order: {
+              type: 'none',
+              status: 'WAITING_FOR_PAYMENT',
+              appointment: 'none',
+            },
+          },
+        ],
+      },
+    });
+
+    const cookieHeader: string = await adminCookie();
+
+    const resp = await request('/api/admin/order/list', {
+      cookie: cookieHeader!,
+    });
+
+    t.match(resp, { status: 200 }, 'should return 200 status');
+    t.match(
+      await resp.json(),
+      {
+        items: [],
+        count: 0,
       },
       'should return orders',
     );

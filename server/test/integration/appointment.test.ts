@@ -566,3 +566,65 @@ test('active appointment', async (t) => {
     t.match(await resp.json(), null);
   });
 });
+
+test('appointment list', async (t) => {
+  t.test('list orders', async (t) => {
+    const { request, adminCookie } = await getServer({
+      t,
+      scenarios: {
+        product: true,
+        admin: true,
+        user: [
+          {
+            order: {
+              type: 'one-time',
+              status: 'ACTIVE',
+              appointment: 'active',
+            },
+          },
+        ],
+      },
+    });
+    const cookieHeader: string = await adminCookie();
+
+    const resp = await request('/api/admin/appointment/list', {
+      cookie: cookieHeader!,
+    });
+
+    t.match(resp, { status: 200 }, 'should return 200 status');
+    t.match(await resp.json(), {
+      items: [{ status: 'ACTIVE' }],
+      count: 1,
+    });
+  });
+
+  t.test('empty list', async (t) => {
+    const { request, adminCookie } = await getServer({
+      t,
+      scenarios: {
+        product: true,
+        admin: true,
+        user: [
+          {
+            order: {
+              type: 'one-time',
+              status: 'ACTIVE',
+              appointment: 'none',
+            },
+          },
+        ],
+      },
+    });
+    const cookieHeader: string = await adminCookie();
+
+    const resp = await request('/api/admin/appointment/list', {
+      cookie: cookieHeader!,
+    });
+
+    t.match(resp, { status: 200 }, 'should return 200 status');
+    t.match(await resp.json(), {
+      items: [],
+      count: 0,
+    });
+  });
+});
