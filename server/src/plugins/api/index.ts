@@ -11,6 +11,7 @@ import { createProductRoute } from './domains/product/create.js';
 import { productListRoute } from './domains/product/list.js';
 import { editProductRoute } from './domains/product/edit.js';
 import { deleteProductRoute } from './domains/product/delete.js';
+import { productRoute } from './domains/product/index.js';
 
 import { activeOrderRoute } from './domains/order/active.js';
 import { createOrderRoute } from './domains/order/create.js';
@@ -84,6 +85,7 @@ const serviceApi: FastifyPluginCallback = (fastify, _opts, done) => {
   fastify.route(activeAppointmentRoute);
   fastify.route(userRoute);
   fastify.route(updateUserRoute);
+  fastify.route(productRoute);
 
   fastify.setErrorHandler(errorHandler);
   done();
@@ -117,6 +119,7 @@ const adminApi: FastifyPluginCallback = (fastify, _opts, done) => {
   fastify.route(freeSlotsRoute);
   fastify.route(deleteAppointmentRoute);
   fastify.route(completeOrderRoute);
+  fastify.route(productRoute);
 
   fastify.setErrorHandler(errorHandler);
 

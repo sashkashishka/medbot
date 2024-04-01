@@ -87,3 +87,39 @@ test('product', async (t) => {
     );
   });
 });
+
+test('get product', async (t) => {
+  t.test('should return product', async (t) => {
+    const { request, adminCookie, getProducts } = await getServer({
+      t,
+      scenarios: { admin: true, product: true },
+    });
+
+    const [product] = await getProducts()
+
+    const resp = await request(`/api/admin/product/${product.id}`, {
+      method: 'GET',
+      cookie: await adminCookie(),
+    });
+
+    t.match(resp, { status: 200 });
+    t.match(await resp.json(), { id: product.id });
+  });
+
+  t.test('should return null if no product', async (t) => {
+    const { request, adminCookie, getProducts } = await getServer({
+      t,
+      scenarios: { admin: true, product: true },
+    });
+
+    const [product] = await getProducts()
+
+    const resp = await request(`/api/admin/product/${product.id - 1}`, {
+      method: 'GET',
+      cookie: await adminCookie(),
+    });
+
+    t.match(resp, { status: 200 });
+    t.match(await resp.json(), null);
+  });
+});
