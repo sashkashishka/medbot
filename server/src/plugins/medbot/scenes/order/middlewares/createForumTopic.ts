@@ -2,7 +2,6 @@ import type { Prisma } from '@prisma/client';
 import type { MiddlewareFn } from 'telegraf';
 import type { Update } from 'telegraf/types';
 import type { iMedbotContext } from '../../../types.js';
-import { medbotLogger } from '../../../../../logger.js';
 import { SCENES } from '../../../constants/scenes.js';
 import { forumTopicEntryMsg } from '../messages/forumTopicEntry.js';
 
@@ -46,7 +45,7 @@ export const createForumTopic: MiddlewareFn<iMedbotContext> =
 
       return scene.enter(SCENES.CHAT);
     } catch (e) {
-      medbotLogger.error(e, 'appointmentScene');
+      ctx.logger.error(e, 'appointmentScene');
       return undefined;
     }
   };
@@ -70,7 +69,7 @@ async function initTopicInfo(
   );
 
   if (err) {
-    medbotLogger.error(err, 'initTopicInfo: getActiveOrdersProduct');
+    ctx.logger.error(err, 'initTopicInfo: getActiveOrdersProduct');
   }
 
   await ctx.telegram.sendMessage(

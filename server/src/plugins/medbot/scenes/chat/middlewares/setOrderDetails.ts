@@ -1,7 +1,6 @@
 import type { MiddlewareFn } from 'telegraf';
 import type { iMedbotContext } from '../../../types.js';
 import type { Update } from 'telegraf/types';
-import { medbotLogger } from '../../../../../logger.js';
 
 /**
  * @note only for chat scene as we need to
@@ -28,7 +27,7 @@ export const setOrderDetails: MiddlewareFn<iMedbotContext> =
           };
         }
       } catch (e) {
-        medbotLogger.error(e, 'setOrderDetails');
+        ctx.logger.error(e, 'setOrderDetails');
       }
     }
 

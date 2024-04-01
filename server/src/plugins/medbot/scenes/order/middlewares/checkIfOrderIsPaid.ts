@@ -1,7 +1,6 @@
 import type { MiddlewareFn } from 'telegraf';
 import type { iMedbotContext } from '../../../types.js';
 import { orderNotPaidMsg } from '../messages/orderNotPaid.js';
-import { medbotLogger } from '../../../../../logger.js';
 
 export const checkIfOrderIsPaid: MiddlewareFn<iMedbotContext> =
   async function checkIfOrderIsPaid(ctx: iMedbotContext, next) {
@@ -20,6 +19,6 @@ export const checkIfOrderIsPaid: MiddlewareFn<iMedbotContext> =
 
       return next();
     } catch (e) {
-      medbotLogger.error(e, 'orderScene--check-if-order-paid');
+      ctx.logger.error(e, 'orderScene--check-if-order-paid');
     }
   };

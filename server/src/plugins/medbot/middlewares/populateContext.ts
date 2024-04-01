@@ -8,6 +8,7 @@ export function populateContext({
   webAppUrl,
   adminAreaUrl,
   serviceApiSdk,
+  logger,
 }: Partial<iMedbotContext>): MiddlewareFn<iMedbotContext> {
   return function populateContextMiddleware(ctx, next) {
     ctx.forumId = forumId;
@@ -16,6 +17,7 @@ export function populateContext({
     ctx.webAppUrl = webAppUrl;
     ctx.adminAreaUrl = adminAreaUrl;
     ctx.serviceApiSdk = serviceApiSdk;
+    ctx.logger = logger;
 
     return next();
   };

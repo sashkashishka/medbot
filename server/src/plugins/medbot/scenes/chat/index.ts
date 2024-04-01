@@ -1,7 +1,6 @@
 import { Scenes } from 'telegraf';
 import { SCENES } from '../../constants/scenes.js';
 import type { iMedbotContext } from '../../types.js';
-import { medbotLogger } from '../../../../logger.js';
 import { checkIfViaBot } from '../../middlewares/checkIfViaBot.js';
 import { setMessageThreadId } from './middlewares/setMessageThreadId.js';
 import { setOrderDetails } from './middlewares/setOrderDetails.js';
@@ -48,7 +47,7 @@ chatScene.command(
         message ? ctx.reply(message) : Promise.resolve(),
       ]);
     } catch (e) {
-      medbotLogger.error(e, 'chatScene--command--send-appointment-status');
+      ctx.logger.error(e, 'chatScene--command--send-appointment-status');
     }
   },
 );
@@ -66,7 +65,7 @@ chatScene.use(
         { message_thread_id: ctx.session.messageThreadId },
       );
     } catch (e) {
-      medbotLogger.error(e, 'chatScene');
+      ctx.logger.error(e, 'chatScene');
     }
   },
 );

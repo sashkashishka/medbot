@@ -2,7 +2,6 @@ import type { Update } from 'telegraf/types';
 import { Scenes } from 'telegraf';
 import { SCENES } from '../../constants/scenes.js';
 import type { iMedbotContext } from '../../types.js';
-import { medbotLogger } from '../../../../logger.js';
 import { replyOrderNotActive } from './utils.js';
 import { ignoreGeneralTopicUpdates } from './middlewares/ignoreGeneralTopicUpdates.js';
 import { setBotChatId } from './middlewares/setBotChatId.js';
@@ -35,7 +34,7 @@ forumScene.use(
         ctx.message.message_id,
       );
     } catch (e) {
-      medbotLogger.error(e, 'forumScene');
+      ctx.logger.error(e, 'forumScene');
     }
   },
 );

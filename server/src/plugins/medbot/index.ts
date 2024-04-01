@@ -49,7 +49,9 @@ export const medbotPlugin: FastifyPluginAsync = fp(async (fastify) => {
       googleCalendar: fastify.googleCalendar,
       googleCalendarId: fastify.config.GOOGLE_CALENDAR_ID,
       webAppUrl: fastify.config.TG_BOT_WEBAPP_URL,
+      adminAreaUrl: fastify.config.ADMIN_AREA_URL,
       serviceApiSdk: fastify.serviceApiSdk,
+      logger: medbotLogger,
     }),
   );
 

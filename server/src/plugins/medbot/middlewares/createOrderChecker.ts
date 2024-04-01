@@ -1,6 +1,5 @@
 import type { MiddlewareFn } from 'telegraf';
 import type { iMedbotContext } from '../types.js';
-import { medbotLogger } from '../../../logger.js';
 
 type tParamsGetter = (ctx: iMedbotContext) => {
   id: number;
@@ -30,7 +29,7 @@ export function createOrderChecker(
         );
       }
     } catch (e) {
-      medbotLogger.error(e, 'orderChecker');
+      ctx.logger.error(e, 'orderChecker');
 
       return ctx.reply('Error occured in checkIfHasActiveOrder middleware');
     }

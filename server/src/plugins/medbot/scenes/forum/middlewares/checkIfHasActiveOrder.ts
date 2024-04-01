@@ -1,7 +1,6 @@
 import type { MiddlewareFn } from 'telegraf';
 import type { iMedbotContext } from '../../../types.js';
 import type { Update } from 'telegraf/types';
-import { medbotLogger } from '../../../../../logger.js';
 
 export const checkIfHasActiveOrder: MiddlewareFn<iMedbotContext> =
   async function checkIfHasActiveOrder(ctx, next) {
@@ -19,7 +18,7 @@ export const checkIfHasActiveOrder: MiddlewareFn<iMedbotContext> =
 
       ctx.session.botChatId = data.botChatId;
     } catch (e) {
-      medbotLogger.error(e, 'checkIfHasActiveOrder');
+      ctx.logger.error(e, 'checkIfHasActiveOrder');
 
       return ctx.reply('Error occured in checkIfHasActiveOrder middleware');;
     }

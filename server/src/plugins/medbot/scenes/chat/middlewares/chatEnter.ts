@@ -1,7 +1,6 @@
 import type { MiddlewareFn } from 'telegraf';
 import type { iMedbotContext } from '../../../types.js';
 import type { Update } from 'telegraf/types';
-import { medbotLogger } from '../../../../../logger.js';
 import { entryMsg } from '../messages/entry.js';
 
 export const chatEnter: MiddlewareFn<iMedbotContext> = async function chatEnter(
@@ -19,7 +18,7 @@ export const chatEnter: MiddlewareFn<iMedbotContext> = async function chatEnter(
     ]);
 
   if (productErr || activeOrderErr) {
-    medbotLogger.error(
+    ctx.logger.error(
       { productErr, activeOrderErr },
       'chatEnter: getActiveOrdersProduct or activeOrder',
     );

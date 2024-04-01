@@ -1,6 +1,7 @@
 import type { Context, Scenes } from 'telegraf';
 import type { calendar_v3 } from '@googleapis/calendar';
 import type { Prisma } from '@prisma/client';
+import type { Logger } from 'pino';
 import type { ServiceApiSdk } from '../serviceApiSdk/sdk.js';
 
 export interface iMedbotSession extends Scenes.WizardSession {
@@ -19,6 +20,7 @@ export interface iMedbotContext extends Context {
   webAppUrl: string;
   adminAreaUrl: string;
   serviceApiSdk: ServiceApiSdk;
+  logger: Logger;
 
   // declare session type
   session: iMedbotSession;

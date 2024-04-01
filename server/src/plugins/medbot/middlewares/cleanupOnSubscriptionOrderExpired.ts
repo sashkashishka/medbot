@@ -1,7 +1,6 @@
 import { isPast } from 'date-fns';
 import type { MiddlewareFn, NarrowedContext, Types } from 'telegraf';
 import type { iMedbotContext } from '../types.js';
-import { medbotLogger } from '../../../logger.js';
 
 export const cleanupOnSubscriptionOrderExpired: MiddlewareFn<
   NarrowedContext<iMedbotContext, Types.MountMap['text']>
@@ -30,7 +29,7 @@ export const cleanupOnSubscriptionOrderExpired: MiddlewareFn<
         throw err;
       }
     } catch (e) {
-      medbotLogger.error(e, 'cleanupOnSubscriptionOrderExpired');
+      ctx.logger.error(e, 'cleanupOnSubscriptionOrderExpired');
     }
   }
 
