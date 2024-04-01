@@ -90,16 +90,16 @@ test('product', async (t) => {
 
 test('get product', async (t) => {
   t.test('should return product', async (t) => {
-    const { request, adminCookie, getProducts } = await getServer({
+    const { request, serviceHeader, getProducts } = await getServer({
       t,
       scenarios: { admin: true, product: true },
     });
 
-    const [product] = await getProducts()
+    const [product] = await getProducts();
 
-    const resp = await request(`/api/admin/product/${product.id}`, {
+    const resp = await request(`/api/service/product/${product.id}`, {
       method: 'GET',
-      cookie: await adminCookie(),
+      headers: serviceHeader,
     });
 
     t.match(resp, { status: 200 });
@@ -107,16 +107,16 @@ test('get product', async (t) => {
   });
 
   t.test('should return null if no product', async (t) => {
-    const { request, adminCookie, getProducts } = await getServer({
+    const { request, serviceHeader, getProducts } = await getServer({
       t,
       scenarios: { admin: true, product: true },
     });
 
-    const [product] = await getProducts()
+    const [product] = await getProducts();
 
-    const resp = await request(`/api/admin/product/${product.id - 1}`, {
+    const resp = await request(`/api/service/product/${product.id - 1}`, {
       method: 'GET',
-      cookie: await adminCookie(),
+      headers: serviceHeader,
     });
 
     t.match(resp, { status: 200 });

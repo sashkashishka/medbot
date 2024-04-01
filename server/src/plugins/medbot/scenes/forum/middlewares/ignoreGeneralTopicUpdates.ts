@@ -1,5 +1,5 @@
 import type { MiddlewareFn } from 'telegraf';
-import type { iMedbotContext } from '../types.js';
+import type { iMedbotContext } from '../../../types.js';
 import type { Update } from 'telegraf/types';
 
 export const ignoreGeneralTopicUpdates: MiddlewareFn<iMedbotContext> =

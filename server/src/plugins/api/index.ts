@@ -119,7 +119,6 @@ const adminApi: FastifyPluginCallback = (fastify, _opts, done) => {
   fastify.route(freeSlotsRoute);
   fastify.route(deleteAppointmentRoute);
   fastify.route(completeOrderRoute);
-  fastify.route(productRoute);
 
   fastify.setErrorHandler(errorHandler);
 

@@ -26,11 +26,11 @@ export class ServiceApiSdk {
   }
 
   public async activeOrder(userId: number) {
-    return this.request<Prisma.OrderCreateInput>(`/order/active/${userId}`);
+    return this.request<Prisma.OrderUncheckedCreateInput>(`/order/active/${userId}`);
   }
 
   public async activeAppointment(userId: number) {
-    return this.request<Prisma.AppointmentCreateInput>(
+    return this.request<Prisma.AppointmentUncheckedCreateInput>(
       `/appointment/${userId}`,
     );
   }

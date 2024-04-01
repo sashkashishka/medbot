@@ -16,8 +16,6 @@ interface iRequestOptions extends Omit<RequestInit, 'body'> {
   cookie?: string;
 }
 
-const webAppHeader = { 'x-webapp-info': process.env.X_WEBAPP_INFO! };
-
 export async function getServer({ t, scenarios }: iOptions) {
   const fastify = await main({
     plugins: {
@@ -25,6 +23,9 @@ export async function getServer({ t, scenarios }: iOptions) {
       googleCalendar: googleCalendarPluginMock,
     },
   });
+
+  const webAppHeader = { 'x-webapp-info': process.env.X_WEBAPP_INFO! };
+  const serviceHeader = { 'x-token': fastify.config.TG_BOT_TOKEN! };
 
   const port = fastify.config.PORT;
 
@@ -138,6 +139,7 @@ export async function getServer({ t, scenarios }: iOptions) {
     request,
     adminCookie,
     webAppHeader,
+    serviceHeader,
     getUsers,
     getProducts,
     getAppointments,

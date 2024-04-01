@@ -1,10 +1,15 @@
 import type { Context, Scenes } from 'telegraf';
 import type { calendar_v3 } from '@googleapis/calendar';
+import type { Prisma } from '@prisma/client';
 import type { ServiceApiSdk } from '../serviceApiSdk/sdk.js';
 
 export interface iMedbotSession extends Scenes.WizardSession {
   messageThreadId?: number;
   botChatId?: number;
+  order?: Pick<
+    Prisma.OrderUncheckedCreateInput,
+    'subscriptionEndsAt' | 'id'
+  >;
 }
 
 export interface iMedbotContext extends Context {

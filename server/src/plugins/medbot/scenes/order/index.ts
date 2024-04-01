@@ -1,8 +1,9 @@
 import { Scenes, Composer } from 'telegraf';
 import { SCENES } from '../../constants/scenes.js';
 import type { iMedbotContext } from '../../types.js';
-import { MESSAGES } from './messages.js';
 import { medbotLogger } from '../../../../logger.js';
+import { entryMessage } from './messages/entry.js';
+import { orderNotPaid } from './messages/orderNotPaid.js';
 
 const orderHandler = new Composer<iMedbotContext>();
 
@@ -10,7 +11,7 @@ orderHandler.start(async (ctx) => {
   const webAppOrderUrl = `${ctx.webAppUrl}/products`;
 
   await Promise.all([
-    ctx.reply(MESSAGES.ORDER),
+    ctx.reply(entryMessage()),
     ctx.setChatMenuButton({
       text: 'Замовити',
       type: 'web_app',
@@ -37,7 +38,7 @@ orderHandler.command(
       }
 
       if (!order) {
-        return ctx.reply(MESSAGES.ERROR.ORDER_NOT_PAID);
+        return ctx.reply(orderNotPaid());
       }
 
       return next();

@@ -1,7 +1,7 @@
+import { useStore } from '@nanostores/react';
 import { Button, Flex, Typography, Popconfirm } from 'antd';
 import type { iOrder } from '../../../types';
 import { completeOrder } from '../../../stores/order';
-import { useStore } from '@nanostores/react';
 import { $user } from '../../../stores/user';
 
 interface iProps {
