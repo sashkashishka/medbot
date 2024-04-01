@@ -17,6 +17,7 @@ export interface iMedbotContext extends Context {
   googleCalendar: calendar_v3.Calendar;
   googleCalendarId: string;
   webAppUrl: string;
+  adminAreaUrl: string;
   serviceApiSdk: ServiceApiSdk;
 
   // declare session type

@@ -41,6 +41,7 @@ const schema = {
     'PASSWORD_SALT',
     'JWT_SECRET',
     'COOKIE_SECRET',
+    'ADMIN_AREA_URL',
   ],
   properties: {
     MYSQL_DATABASE: { type: 'string' },
@@ -68,6 +69,7 @@ const schema = {
     PASSWORD_SALT: { type: 'string' },
     JWT_SECRET: { type: 'string' },
     COOKIE_SECRET: { type: 'string' },
+    ADMIN_AREA_URL: { type: 'string' },
   } as const,
 };
 

@@ -1,6 +1,6 @@
 import type { Prisma } from '@prisma/client';
 
-export function entryMessage({
+export function entryMsg({
   product,
   activationCodes,
 }: {

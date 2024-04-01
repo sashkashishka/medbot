@@ -40,6 +40,15 @@ export class ServiceApiSdk {
     );
   }
 
+  public async getActiveOrdersProduct(
+    id: number,
+    idType: 'messageThreadId' | 'botChatId',
+  ) {
+    return this.request<Prisma.ProductUncheckedCreateInput>(
+      `/orders-product/${id}?id=${idType}`,
+    );
+  }
+
   public async activeAppointment(userId: number) {
     return this.request<Prisma.AppointmentUncheckedCreateInput>(
       `/appointment/${userId}`,
