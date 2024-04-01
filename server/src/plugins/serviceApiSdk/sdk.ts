@@ -26,7 +26,18 @@ export class ServiceApiSdk {
   }
 
   public async activeOrder(userId: number) {
-    return this.request<Prisma.OrderUncheckedCreateInput>(`/order/active/${userId}`);
+    return this.request<Prisma.OrderUncheckedCreateInput>(
+      `/order/active/${userId}`,
+    );
+  }
+
+  public async checkOrderActive(
+    id: number,
+    idType: 'messageThreadId' | 'botChatId',
+  ) {
+    return this.request<{ active: boolean }>(
+      `/check-order-active/${id}?id=${idType}`,
+    );
   }
 
   public async activeAppointment(userId: number) {

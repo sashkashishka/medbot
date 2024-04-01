@@ -61,14 +61,14 @@ export async function getServer({ t, scenarios }: iOptions) {
     return resp.json() as Promise<Prisma.ProductUncheckedCreateInput[]>;
   }
 
-  async function getUsers(): Promise<Prisma.ProductUncheckedCreateInput[]> {
+  async function getUsers(): Promise<Prisma.UserUncheckedCreateInput[]> {
     const cookieHeader = await adminCookie();
     const resp = await request('/api/admin/user/list?date_sort=asc', {
       cookie: cookieHeader,
     });
 
     const data = (await resp.json()) as {
-      items: Prisma.ProductUncheckedCreateInput[];
+      items: Prisma.UserUncheckedCreateInput[];
     };
 
     return data.items;

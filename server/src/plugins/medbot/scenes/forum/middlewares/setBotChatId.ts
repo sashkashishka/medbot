@@ -21,6 +21,8 @@ export const setBotChatId: MiddlewareFn<iMedbotContext> =
         ctx.session.botChatId = data.botChatId;
       } catch (e) {
         medbotLogger.error(e, 'setBotChatId');
+
+        return ctx.reply('Error occured in setBotChatId middleware');
       }
     }
 
