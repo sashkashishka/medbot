@@ -9,6 +9,7 @@ import { medbotScenes, forumScenes } from './scenes/index.js';
 // import { commands } from './commands/index.js';
 import { createIsForumUpdateFilter } from './filters/isForumUpdate.js';
 import { PrismaSessionStorage } from './services/storage/prisma.js';
+import { MedbotSdk } from './services/sdk/index.js';
 import type { iMedbotContext } from './types.js';
 import { populateContext } from './middlewares/populateContext.js';
 import { cleanupOnSecondStartCommand } from './middlewares/cleanupOnSecondStartCommand.js';
@@ -18,6 +19,7 @@ declare module 'fastify' {
   // eslint-disable-next-line
   interface FastifyInstance {
     medbot: Telegraf;
+    medbotSdk: MedbotSdk;
   }
 }
 
@@ -70,6 +72,14 @@ export const medbotPlugin: FastifyPluginAsync = fp(async (fastify) => {
 
   // Make medbot Client available through the fastify fastify instance: fastify.medbot
   fastify.decorate('medbot', bot);
+  fastify.decorate(
+    'medbotSdk',
+    new MedbotSdk({
+      telegram: bot.telegram,
+      webAppUrl: fastify.config.TG_BOT_WEBAPP_URL,
+      logger: medbotLogger,
+    }),
+  );
 
   fastify.addHook('onListen', async () => {
     bot.launch();

@@ -51,3 +51,17 @@ export const APPOINTMENT_STATUS_MESSAGES = {
     return `Зустріч з лікарем була відмінена. Але ви завжди можете записатися на нову зустріч.`;
   },
 } as const;
+
+export function completeAppointmentByDoctorMsg(
+  order: Prisma.OrderUncheckedCreateInput,
+) {
+  if (order.subscriptionEndsAt) {
+    return `Дякуємо за візит. Ви можете назначити новий натиснувши кнопку "Запис"`;
+  }
+
+  return `Дякуємо за візит. На жаль, за обраною послугою ви не можете знову записатись на прийом, але можете писати і отримувати повідомлення від лікаря, поки ваше замовлення лікар не закінчить.`;
+}
+
+export function deleteAppointmentByDoctorMsg() {
+  return `Лікар відмінив зустріч.`;
+}

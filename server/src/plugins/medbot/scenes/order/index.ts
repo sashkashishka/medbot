@@ -5,19 +5,14 @@ import { entryMsg } from './messages/entry.js';
 import { checkIfViaBot } from '../../middlewares/checkIfViaBot.js';
 import { checkIfOrderIsPaid } from './middlewares/checkIfOrderIsPaid.js';
 import { createForumTopic } from './middlewares/createForumTopic.js';
+import { menuButton } from '../../buttons/menu.js';
 
 const orderHandler = new Composer<iMedbotContext>();
 
 orderHandler.start(async (ctx) => {
-  const webAppOrderUrl = `${ctx.webAppUrl}/products`;
-
   await Promise.all([
     ctx.reply(entryMsg()),
-    ctx.setChatMenuButton({
-      text: 'Замовити',
-      type: 'web_app',
-      web_app: { url: webAppOrderUrl },
-    }),
+    ctx.setChatMenuButton(menuButton.order(ctx.webAppUrl)),
   ]);
 });
 

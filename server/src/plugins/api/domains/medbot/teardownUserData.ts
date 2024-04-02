@@ -19,16 +19,7 @@ export const teardownUserDataRoute: RouteOptions = {
       this.prisma.$transaction([
         this.prisma.telegrafSessions.updateMany({
           where: {
-            OR: [
-              {
-                key: {
-                  contains: String(userId),
-                },
-              },
-              {
-                session: { contains: String(userId) },
-              },
-            ],
+            session: { contains: String(userId) },
           },
           data: { session: JSON.stringify({ __scenes: {} }) },
         }),

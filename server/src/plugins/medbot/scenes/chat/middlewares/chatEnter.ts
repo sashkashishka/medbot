@@ -2,6 +2,7 @@ import type { MiddlewareFn } from 'telegraf';
 import type { iMedbotContext } from '../../../types.js';
 import type { Update } from 'telegraf/types';
 import { entryMsg } from '../messages/entry.js';
+import { menuButton } from '../../../buttons/menu.js';
 
 export const chatEnter: MiddlewareFn<iMedbotContext> = async function chatEnter(
   ctx,
@@ -24,8 +25,6 @@ export const chatEnter: MiddlewareFn<iMedbotContext> = async function chatEnter(
     );
   }
 
-  const webAppAppointmentUrl = `${ctx.webAppUrl}/appointment/list`;
-
   await Promise.all([
     ctx.reply(
       entryMsg({
@@ -34,10 +33,6 @@ export const chatEnter: MiddlewareFn<iMedbotContext> = async function chatEnter(
       }),
       { parse_mode: 'Markdown' },
     ),
-    ctx.setChatMenuButton({
-      text: 'Запис',
-      type: 'web_app',
-      web_app: { url: webAppAppointmentUrl },
-    }),
+    ctx.setChatMenuButton(menuButton.appointment(ctx.webAppUrl)),
   ]);
 };

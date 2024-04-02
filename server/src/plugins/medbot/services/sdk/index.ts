@@ -1,0 +1,1 @@
+export { MedbotSdk } from './sdk';
