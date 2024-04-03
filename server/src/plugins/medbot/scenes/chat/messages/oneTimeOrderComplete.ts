@@ -1,4 +1,3 @@
 export function oneTimeOrderCompleteMsg() {
-  // TODO: add message
-  return 'One-time order completed';
+  return 'Дякуємо за візит! Замовлення закрите. Щоб отримати повторну консультацію - оформіть нове замовлення.';
 }

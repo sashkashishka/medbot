@@ -1,11 +1,13 @@
 import { Scenes } from 'telegraf';
 import { SCENES } from '../../constants/scenes.js';
+import type { Update } from 'telegraf/types';
 import type { iMedbotContext } from '../../types.js';
 import { checkIfViaBot } from '../../middlewares/checkIfViaBot.js';
 import { setMessageThreadId } from './middlewares/setMessageThreadId.js';
-import { setOrderDetails } from './middlewares/setOrderDetails.js';
 import { chatEnter } from './middlewares/chatEnter.js';
 import { APPOINTMENT_STATUS_MESSAGES } from './messages/appointmentStatus.js';
+import { createOrderChecker } from '../../middlewares/createOrderChecker.js';
+import { teardownUserData } from './utils.js';
 
 export const chatScene = new Scenes.BaseScene<iMedbotContext>(SCENES.CHAT);
 
@@ -54,8 +56,16 @@ chatScene.command(
 
 chatScene.use(
   setMessageThreadId,
-  setOrderDetails,
-  // check if order active
+  // TODO: think about solution where order is saved
+  // to session object
+  // setOrderDetails,
+  createOrderChecker(
+    (ctx) => ({
+      id: (ctx.update as Update.MessageUpdate).message.chat.id,
+      idType: 'botChatId',
+    }),
+    [teardownUserData],
+  ),
   async (ctx) => {
     try {
       await ctx.telegram.copyMessage(

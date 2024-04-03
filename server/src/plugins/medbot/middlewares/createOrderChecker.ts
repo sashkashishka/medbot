@@ -6,6 +6,9 @@ type tParamsGetter = (ctx: iMedbotContext) => {
   idType: Parameters<iMedbotContext['serviceApiSdk']['checkOrderActive']>[1];
 };
 
+/**
+ * @TODO: optimise this middleware
+ */
 export function createOrderChecker(
   getParams: tParamsGetter,
   fns: Array<(ctx: iMedbotContext) => Promise<iMedbotContext>>,

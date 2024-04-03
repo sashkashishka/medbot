@@ -27,8 +27,6 @@ const createDefaultCacheEntity = (): iCacheEntity => ({
   frequencyDueDate: new Date(),
 });
 
-// TODO show to user that exceeded limit of using this endpoint
-// and show blocking time in minutes
 export function createProgressiveDelay(options: iOptions) {
   const { cacheCapacity = 100 } = options;
   const cache = new LRUCache<iCacheEntity>(cacheCapacity);

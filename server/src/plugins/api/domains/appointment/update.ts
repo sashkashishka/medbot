@@ -88,6 +88,8 @@ export const updateAppointmentRoute: RouteOptions = {
     await this.googleCalendar.events.update(
       createGoogleCalendarEvent({
         calendarId: this.config.GOOGLE_CALENDAR_ID,
+        tgForumUrlTemplate: this.config.TG_BOT_FORUM_URL_TEMPLATE,
+        adminAreaUrl: this.config.ADMIN_AREA_URL,
         eventId: appointment.calendarEventId,
         user: appointment.user,
         appointment: appointment,

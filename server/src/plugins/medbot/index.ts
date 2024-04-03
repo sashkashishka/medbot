@@ -6,13 +6,13 @@ import type { Update } from 'telegraf/types';
 import { medbotLogger } from '../../logger.js';
 
 import { medbotScenes, forumScenes } from './scenes/index.js';
+import { cleanupOnSecondStartCommand } from './commands/secondStart.js';
 // import { commands } from './commands/index.js';
 import { createIsForumUpdateFilter } from './filters/isForumUpdate.js';
 import { PrismaSessionStorage } from './services/storage/prisma.js';
 import { MedbotSdk } from './services/sdk/index.js';
 import type { iMedbotContext } from './types.js';
 import { populateContext } from './middlewares/populateContext.js';
-import { cleanupOnSecondStartCommand } from './middlewares/cleanupOnSecondStartCommand.js';
 import { loggerMiddleware } from './middlewares/loggerMiddleware.js';
 
 declare module 'fastify' {
@@ -58,11 +58,14 @@ export const medbotPlugin: FastifyPluginAsync = fp(async (fastify) => {
 
   // clear scene and start from scratch
   bot.command('start', cleanupOnSecondStartCommand);
+  // bot.command('help')
+  // bot.command('terms')
 
   bot.on(
     createIsForumUpdateFilter(fastify.config.TG_BOT_FORUM_ID),
     forumScenes.middleware(),
   );
+
   bot.on('message', medbotScenes.middleware());
 
   bot.catch((err) => {

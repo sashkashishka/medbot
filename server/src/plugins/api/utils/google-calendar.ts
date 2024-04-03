@@ -3,13 +3,22 @@ import { addHours } from 'date-fns';
 
 interface iOptions {
   calendarId: string;
+  tgForumUrlTemplate: string;
+  adminAreaUrl: string;
   eventId?: string;
   user: Prisma.UserUncheckedCreateInput;
   appointment: Prisma.AppointmentUncheckedCreateInput;
 }
 
 export function createGoogleCalendarEvent(options: iOptions) {
-  const { calendarId, eventId, user, appointment } = options;
+  const {
+    calendarId,
+    eventId,
+    user,
+    appointment,
+    tgForumUrlTemplate,
+    adminAreaUrl,
+  } = options;
 
   return {
     calendarId,
@@ -25,8 +34,11 @@ export function createGoogleCalendarEvent(options: iOptions) {
         timeZone: 'Etc/Universal',
       },
       description: `
-        Link to tg chat: https://t.me/c/2086610592/${user.messageThreadId}
-        Info about user: https://TODO.MAKE.ME
+        Link to tg chat: ${tgForumUrlTemplate.replace(
+          ':id',
+          String(user.messageThreadId),
+        )}
+        User info: ${adminAreaUrl}/users/${user.id}
       `,
       reminders: {
         useDefault: true,
