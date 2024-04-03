@@ -46,7 +46,9 @@ export const tgCompleteOrderRoute: RouteOptions = {
           key: `${body.userId}:${body.botChatId}`,
         },
       }),
-      tgAction(body.botChatId),
+      params.orderType === 'one-time'
+        ? this.medbotSdk.completeOneTimeOrder(body.botChatId)
+        : this.medbotSdk.completeSubscriptionOrder(body.botChatId),
     ]);
 
     return { done: true };

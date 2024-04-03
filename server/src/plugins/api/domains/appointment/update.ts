@@ -9,6 +9,7 @@ import { checkIfCanUpdateNotActiveAppointment } from '../../hooks/checkIfCanUpda
 import { checkIfTimeSlotFree } from '../../hooks/checkIfTimeSlotFree.js';
 import { checkIfAppointmentTimeBehindOrderExpirationDate } from '../../hooks/checkIfAppointmentTimeBehindOrderExpirationDate.js';
 import { createDecorateWithOrder } from '../../hooks/decorateWithOrder.js';
+import { checkIfSubscriptionOrderExpired } from '../../hooks/checkIfSubscriptionOrderExpired.js';
 
 interface iParams {
   appointmentId: string;
@@ -48,11 +49,12 @@ export const updateAppointmentRoute: RouteOptions = {
   },
   preHandler: [
     transformAppointmentTimeToStartOfHour,
+    createDecorateWithOrder('body'),
+    checkIfSubscriptionOrderExpired,
     checkIsAppointmentOutOfWorkingHours,
     checkIsAppointmentTooEarly,
     checkIfCanUpdateNotActiveAppointment,
     checkIfTimeSlotFree,
-    createDecorateWithOrder('body'),
     checkIfAppointmentTimeBehindOrderExpirationDate,
   ],
   async handler(request) {

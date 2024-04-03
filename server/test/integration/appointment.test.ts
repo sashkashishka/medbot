@@ -1,7 +1,7 @@
 import t from 'tap';
 import type { Prisma } from '@prisma/client';
 import fakeTimer from '@sinonjs/fake-timers';
-import { addHours, setHours } from 'date-fns';
+import { addHours, addYears, setHours } from 'date-fns';
 import { getServer } from '../helpers/getServer/index.js';
 
 const test = t.test;
@@ -985,7 +985,7 @@ test('update appointment', async (t) => {
         status: 'ACTIVE',
         chronicDiseases: 'lupus',
       });
-      
+
       t.equal(data.treatment, undefined, 'should not exist in response');
       t.equal(data.report, undefined, 'should not exist in response');
 
@@ -995,4 +995,261 @@ test('update appointment', async (t) => {
       t.teardown(clock.uninstall);
     },
   );
+});
+
+test('complete expired order when CRUD appointment', async (t) => {
+  t.test('create appointment (out of working day)', async (t) => {
+    const {
+      fastify,
+      request,
+      getUsers,
+      webAppHeader,
+      findOrder,
+      getTelegrafSessions,
+    } = await getServer({
+      t,
+      scenarios: {
+        product: true,
+        admin: true,
+        user: [
+          {
+            order: {
+              type: 'subscription',
+              status: 'ACTIVE',
+              appointment: 'none',
+            },
+            session: true,
+          },
+        ],
+      },
+    });
+
+    const clock = fakeTimer.install({ shouldClearNativeTimers: true });
+    clock.setSystemTime(addYears(new Date('2024-01-01T22:00:00Z'), 100));
+
+    const [user] = await getUsers();
+    const order = await findOrder((o) => o.status === 'ACTIVE');
+    const gcInsert = t.capture(
+      fastify.googleCalendar.events,
+      'insert',
+      async () => ({ data: { id: 'gc1' } }),
+    );
+    const medbotMethod = t.capture(
+      fastify.medbotSdk,
+      'completeSubscriptionOrder',
+      () => Promise.resolve(),
+    );
+
+    t.equal((await getTelegrafSessions()).length, 1, 'should have session');
+
+    const resp = await request('/api/appointment/create', {
+      method: 'PUT',
+      headers: webAppHeader,
+      body: {
+        ...appointment,
+        orderId: order.id,
+        userId: user.id,
+        status: 'ACTIVE',
+        time: addHours(new Date(), 3).toISOString(),
+      },
+    });
+
+    const data = await resp.json();
+
+    t.match(resp, { status: 200 }, 'should return 200 status');
+    t.match(data, { message: 'subscription-order-completed' });
+
+    t.equal(gcInsert().length, 0, 'should not call google calendar');
+
+    t.equal(medbotMethod().length, 1, 'should call complete');
+
+    const telegrafSessions = await getTelegrafSessions();
+
+    t.equal(telegrafSessions.length, 0, 'should clear session');
+
+    t.teardown(clock.uninstall);
+  });
+
+  t.test('create appointment', async (t) => {
+    const {
+      fastify,
+      request,
+      getUsers,
+      webAppHeader,
+      findOrder,
+      getTelegrafSessions,
+    } = await getServer({
+      t,
+      scenarios: {
+        product: true,
+        admin: true,
+        user: [
+          {
+            order: {
+              type: 'subscription',
+              status: 'ACTIVE',
+              appointment: 'none',
+            },
+            session: true,
+          },
+        ],
+      },
+    });
+
+    const clock = fakeTimer.install({ shouldClearNativeTimers: true });
+    clock.setSystemTime(addYears(new Date('2024-01-01T12:00:00Z'), 100));
+
+    const [user] = await getUsers();
+    const order = await findOrder((o) => o.status === 'ACTIVE');
+    const gcInsert = t.capture(
+      fastify.googleCalendar.events,
+      'insert',
+      async () => ({ data: { id: 'gc1' } }),
+    );
+    const medbotMethod = t.capture(
+      fastify.medbotSdk,
+      'completeSubscriptionOrder',
+      () => Promise.resolve(),
+    );
+
+    t.equal((await getTelegrafSessions()).length, 1, 'should have session');
+
+    const resp = await request('/api/appointment/create', {
+      method: 'PUT',
+      headers: webAppHeader,
+      body: {
+        ...appointment,
+        orderId: order.id,
+        userId: user.id,
+        status: 'ACTIVE',
+        time: addHours(new Date(), 3).toISOString(),
+      },
+    });
+
+    const data = await resp.json();
+
+    t.match(resp, { status: 200 }, 'should return 200 status');
+    t.match(data, { message: 'subscription-order-completed' });
+
+    t.equal(gcInsert().length, 0, 'should not call google calendar');
+
+    t.equal(medbotMethod().length, 1, 'should call complete');
+
+    t.equal((await getTelegrafSessions()).length, 0, 'should clear session');
+
+    t.teardown(clock.uninstall);
+  });
+
+  t.test('update appointment', async (t) => {
+    const {
+      fastify,
+      request,
+      webAppHeader,
+      findAppointment,
+      getTelegrafSessions,
+    } = await getServer({
+      t,
+      scenarios: {
+        product: true,
+        admin: true,
+        user: [
+          {
+            order: {
+              type: 'subscription',
+              status: 'ACTIVE',
+              appointment: 'active',
+            },
+            session: true,
+          },
+        ],
+      },
+    });
+
+    const clock = fakeTimer.install({ shouldClearNativeTimers: true });
+    clock.setSystemTime(addYears(new Date('2024-01-01T12:00:00Z'), 100));
+
+    const medbotMethod = t.capture(
+      fastify.medbotSdk,
+      'completeSubscriptionOrder',
+      () => Promise.resolve(),
+    );
+
+    const appointment = await findAppointment((o) => o.status === 'ACTIVE');
+    const gcUpdate = t.capture(fastify.googleCalendar.events, 'update');
+
+    t.equal((await getTelegrafSessions()).length, 1, 'should have session');
+
+    const resp = await request(`/api/appointment/${appointment.id}`, {
+      method: 'PATCH',
+      headers: webAppHeader,
+      body: {
+        ...appointment,
+        chronicDiseases: 'lupus',
+        treatment: 'Dr.House',
+      },
+    });
+
+    const data = await resp.json();
+
+    t.match(resp, { status: 200 }, 'should return 200 status');
+    t.match(data, { message: 'subscription-order-completed' });
+
+    t.equal(gcUpdate().length, 0, 'should not call google calendar');
+
+    t.equal(medbotMethod().length, 1, 'should call complete');
+
+    t.equal((await getTelegrafSessions()).length, 0, 'should clear session');
+
+    t.teardown(clock.uninstall);
+  });
+
+  t.test('active appointment', async (t) => {
+    const { fastify, request, webAppHeader, getUsers, getTelegrafSessions } =
+      await getServer({
+        t,
+        scenarios: {
+          product: true,
+          admin: true,
+          user: [
+            {
+              order: {
+                type: 'subscription',
+                status: 'ACTIVE',
+                appointment: 'active',
+              },
+              session: true,
+            },
+          ],
+        },
+      });
+
+    const clock = fakeTimer.install({ shouldClearNativeTimers: true });
+    clock.setSystemTime(addYears(new Date('2024-01-01T12:00:00Z'), 100));
+
+    const medbotMethod = t.capture(
+      fastify.medbotSdk,
+      'completeSubscriptionOrder',
+      () => Promise.resolve(),
+    );
+
+    const [user] = await getUsers();
+
+    t.equal((await getTelegrafSessions()).length, 1, 'should have session');
+
+    const resp = await request(`/api/appointment/${user.id}`, {
+      method: 'GET',
+      headers: webAppHeader,
+    });
+
+    const data = await resp.json();
+
+    t.match(resp, { status: 200 }, 'should return 200 status');
+    t.match(data, { message: 'subscription-order-completed' });
+
+    t.equal(medbotMethod().length, 1, 'should call complete');
+
+    t.equal((await getTelegrafSessions()).length, 0, 'should clear session');
+
+    t.teardown(clock.uninstall);
+  });
 });

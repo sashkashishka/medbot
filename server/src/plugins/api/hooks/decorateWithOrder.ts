@@ -9,7 +9,7 @@ declare module 'fastify' {
 }
 
 export function createDecorateWithOrder(
-  src: 'params' | 'body',
+  src: 'params' | 'body' | 'query',
 ): preHandlerAsyncHookHandler {
   return async function decorateWithOrder(request) {
     const source = request[src] as { orderId: string };

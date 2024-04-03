@@ -7,7 +7,7 @@ import {
   SubscriptionOrderExpired,
   UserError,
 } from '../utils/errors.js';
-import { teardownUserDataRoute } from '../domains/medbot/teardownUserData.js';
+import { tgCompleteOrderRoute } from '../domains/medbot/tgCompleteOrder.js';
 
 type tSetErrorHandlerParams = Parameters<FastifyInstance['setErrorHandler']>;
 
@@ -34,8 +34,21 @@ export const errorHandler: tSetErrorHandlerParams[0] =
     if (error instanceof SubscriptionOrderExpired) {
       const order: Prisma.OrderUncheckedCreateInput = error.order;
 
-      await teardownUserDataRoute.handler.apply(this, [
-        { params: { userId: order.userId } },
+      const user = await this.prisma.user.findFirst({
+        where: {
+          order: { some: { id: order.id } },
+        },
+        select: {
+          id: true,
+          botChatId: true,
+        },
+      });
+
+      await tgCompleteOrderRoute.handler.apply(this, [
+        {
+          params: { type: 'subsription' },
+          body: { userId: user.id, botChatId: user.botChatId },
+        },
         {},
       ]);
 

@@ -10,3 +10,23 @@ export const checkIfSubscriptionOrderExpired: preHandlerAsyncHookHandler =
       throw new SubscriptionOrderExpired(request.$order);
     }
   };
+
+export const checkIfSubscriptionOrderExpired2: preHandlerAsyncHookHandler =
+  async function checkIfSubscriptionOrderExpired2(request) {
+    const params = request.params as { userId: string };
+
+    const order = await this.prisma.order.findFirst({
+      where: {
+        user: { id: Number(params.userId) },
+        status: 'ACTIVE',
+        subscriptionEndsAt: {
+          not: null,
+          lt: new Date().toISOString(),
+        },
+      },
+    });
+
+    if (order) {
+      throw new SubscriptionOrderExpired(order);
+    }
+  };

@@ -11,7 +11,7 @@ import { $activeOrder } from './order';
 const userId = String(getUserId());
 
 export const { store: $activeAppointment, refetch: refetchActiveAppointment } =
-  createFetcherStore<iAppointment>({
+  createFetcherStore<iAppointment | { message: string }>({
     url: generatePath(API.ACTIVE_APPOINTMENT, {
       userId,
     }),

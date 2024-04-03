@@ -11,6 +11,7 @@ import { checkIfOneTimeOrderHasDoneAppointments } from '../../hooks/checkIfOneTi
 import { checkIfTimeSlotFree } from '../../hooks/checkIfTimeSlotFree.js';
 import { checkIsDoneOrder } from '../../hooks/checkIsDoneOrder.js';
 import { checkIfAppointmentTimeBehindOrderExpirationDate } from '../../hooks/checkIfAppointmentTimeBehindOrderExpirationDate.js';
+import { checkIfSubscriptionOrderExpired } from '../../hooks/checkIfSubscriptionOrderExpired.js';
 
 export const createAppointmentRoute: RouteOptions = {
   method: 'PUT',
@@ -46,9 +47,10 @@ export const createAppointmentRoute: RouteOptions = {
   },
   preHandler: [
     transformAppointmentTimeToStartOfHour,
+    createDecorateWithOrder('body'),
+    checkIfSubscriptionOrderExpired,
     checkIsAppointmentOutOfWorkingHours,
     checkIsAppointmentTooEarly,
-    createDecorateWithOrder('body'),
     checkIsDoneOrder,
     checkIfAppointmentTimeBehindOrderExpirationDate,
     checkIfActiveAppointmentExits,

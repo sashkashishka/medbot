@@ -162,6 +162,20 @@ export class CreateAppointmentForm extends Component<iProps> {
           };
         }
 
+        if (data.error === 'subscription-order-completed') {
+          tg.showPopup(
+            {
+              message: 'Ваша підписка закінчилась',
+              buttons: [{ type: 'close' }],
+            },
+            () => {
+              tg.close();
+            },
+          );
+
+          return FORM_ERROR;
+        }
+
         const errorText = APPOINTMENT_ERRORS[data.error] || 'Невідома помилка';
         tg.showPopup({ message: errorText, buttons: [{ type: 'close' }] });
         return FORM_ERROR;
