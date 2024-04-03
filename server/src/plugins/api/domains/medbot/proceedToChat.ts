@@ -6,6 +6,7 @@ export const proceedToChatRoute: RouteOptions = {
   handler(req) {
     const { $tgQueryId } = req;
 
+    // TODO: move to sdk
     return this.medbot.telegram.answerWebAppQuery($tgQueryId, {
       id: '0',
       type: 'article',

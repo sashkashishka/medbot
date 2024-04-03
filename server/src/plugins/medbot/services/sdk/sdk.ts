@@ -2,35 +2,54 @@ import type { Telegraf } from 'telegraf';
 import type { Logger } from 'pino';
 import type { Prisma } from '@prisma/client';
 import type { iMedbotContext } from '../../types.js';
-import { oneTimeOrderClosedMsg } from '../../scenes/chat/messages/oneTimeOrderClosed.js';
+import { oneTimeOrderCompleteMsg } from '../../scenes/chat/messages/oneTimeOrderComplete.js';
 import { menuButton } from '../../buttons/menu.js';
 import {
   completeAppointmentByDoctorMsg,
   deleteAppointmentByDoctorMsg,
 } from '../../scenes/chat/messages/appointmentStatus.js';
+import { subscriptionOrderCompleteMsg } from '../../scenes/chat/messages/subscriptionOrderComplete.js';
 
-interface iOptions {
+export interface iMedbotSdkOptions {
   telegram: Telegraf<iMedbotContext>['telegram'];
   webAppUrl: string;
   logger: Logger;
 }
 
 export class MedbotSdk {
-  private telegram: iOptions['telegram'];
+  private telegram: iMedbotSdkOptions['telegram'];
 
-  private webAppUrl: iOptions['webAppUrl'];
+  private webAppUrl: iMedbotSdkOptions['webAppUrl'];
 
-  private logger: iOptions['logger'];
+  private logger: iMedbotSdkOptions['logger'];
 
-  constructor({ telegram, webAppUrl, logger }: iOptions) {
+  constructor({ telegram, webAppUrl, logger }: iMedbotSdkOptions) {
     this.telegram = telegram;
     this.webAppUrl = webAppUrl;
     this.logger = logger;
   }
 
-  public async closeOneTimeOrder(botChatId: number) {
+  public async completeSubscriptionOrder(botChatId: number) {
     try {
-      await this.telegram.sendMessage(botChatId, oneTimeOrderClosedMsg(), {
+      await this.telegram.sendMessage(
+        botChatId,
+        subscriptionOrderCompleteMsg(),
+        {
+          parse_mode: 'Markdown',
+        },
+      );
+      await this.telegram.setChatMenuButton({
+        chatId: botChatId,
+        menuButton: menuButton.order(this.webAppUrl),
+      });
+    } catch (e) {
+      this.logger.error(e, 'medbotSdk:completeSubscriptionOrder');
+    }
+  }
+
+  public async completeOneTimeOrder(botChatId: number) {
+    try {
+      await this.telegram.sendMessage(botChatId, oneTimeOrderCompleteMsg(), {
         parse_mode: 'Markdown',
       });
       await this.telegram.setChatMenuButton({
@@ -38,7 +57,7 @@ export class MedbotSdk {
         menuButton: menuButton.order(this.webAppUrl),
       });
     } catch (e) {
-      this.logger.error(e, 'medbotSdk:closeOneTimeOrder');
+      this.logger.error(e, 'medbotSdk:completeOneTimeOrder');
     }
   }
 
@@ -46,18 +65,30 @@ export class MedbotSdk {
     botChatId: number,
     order: Prisma.OrderUncheckedCreateInput,
   ) {
-    await this.telegram.sendMessage(
-      botChatId,
-      completeAppointmentByDoctorMsg(order),
-      {
-        parse_mode: 'Markdown',
-      },
-    );
+    try {
+      await this.telegram.sendMessage(
+        botChatId,
+        completeAppointmentByDoctorMsg(order),
+        {
+          parse_mode: 'Markdown',
+        },
+      );
+    } catch (e) {
+      this.logger.error(e, 'medbotSdk:completeAppointment');
+    }
   }
 
   public async deleteAppointment(botChatId: number) {
-    await this.telegram.sendMessage(botChatId, deleteAppointmentByDoctorMsg(), {
-      parse_mode: 'Markdown',
-    });
+    try {
+      await this.telegram.sendMessage(
+        botChatId,
+        deleteAppointmentByDoctorMsg(),
+        {
+          parse_mode: 'Markdown',
+        },
+      );
+    } catch (e) {
+      this.logger.error(e, 'medbotSdk:deleteAppointment');
+    }
   }
 }

@@ -17,6 +17,10 @@ interface iProps {
   appointment: iAppointment;
 }
 
+/**
+ * @deprecated
+ * @description tmp do not use this component until issue with timezone has been solved
+ */
 export function ChangeTime({ appointment }: iProps) {
   const [open, setOpen] = useState(false);
 

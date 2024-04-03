@@ -3,9 +3,11 @@ import { product } from './product.js';
 import { admin } from './admin.js';
 import { order, type iOrderMock } from './order.js';
 import { user } from './user.js';
+import { telegrafSession } from './telegrafSession.js';
 
 interface iUserScenarios {
   order: Omit<iOrderMock, 'userId'>;
+  session?: boolean;
 }
 
 export interface iScenarios {
@@ -38,10 +40,13 @@ function scenarioToSeeder(
     }
 
     if (key === 'user') {
-      scenarios[key].forEach(({ order: orderOptions }, i) => {
+      scenarios[key].forEach(({ order: orderOptions, session }, i) => {
         acc.push(async () => {
-          await user(fastify, i);
-          await order(fastify, { userId: i + 1, ...orderOptions });
+          const u = await user(fastify, i);
+          await Promise.all([
+            order(fastify, { userId: i + 1, ...orderOptions }),
+            session ? telegrafSession(fastify, u) : Promise.resolve(),
+          ]);
         });
       });
     }

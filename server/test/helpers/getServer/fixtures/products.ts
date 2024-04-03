@@ -1,4 +1,6 @@
-export const products = [
+import type { Prisma } from '@prisma/client';
+
+export const products: Array<Prisma.ProductUncheckedCreateInput> = [
   {
     name: 'Індивідуальна консультація',
     description: 'текстова в повідомленнях в ТГ',

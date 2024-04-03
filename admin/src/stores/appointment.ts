@@ -9,11 +9,7 @@ import {
   type iFreeSlot,
 } from '../types';
 import { createListFilters, type iPagination } from './_list-filters';
-import { $sendMessage } from './bot';
-import {
-  getAppointmentCompleteMessage,
-  getAppointmentDeleteMessage,
-} from '../utils/tg-messages';
+import { $tgCompleteAppointment, $tgDeleteAppointment } from './bot';
 
 export const APPOINTMENT_PAGE_SIZE = 20;
 
@@ -125,11 +121,9 @@ export const $deleteAppointment = createMutatorStore<iAppointment>(
 export async function completeAppointment({
   appointment,
   user,
-  activeOrder,
 }: {
   appointment: iAppointment;
   user: iUser;
-  activeOrder: iOrder;
 }): Promise<boolean> {
   try {
     const resp = (await $editAppointment.mutate({
@@ -138,9 +132,9 @@ export async function completeAppointment({
     })) as Response;
 
     if (resp.ok) {
-      await $sendMessage.mutate({
-        botChatId: user?.botChatId,
-        text: getAppointmentCompleteMessage({ activeOrder }),
+      await $tgCompleteAppointment.mutate({
+        botChatId: user?.botChatId!,
+        userId: user?.id!,
       });
       notification.success({ message: 'Appointment completed!' });
       return true;
@@ -164,13 +158,13 @@ export async function completeAppointment({
   }
 }
 
-// TODO: think how to put all logic tied to telegram in medbot instance
-// here just trigger specific api
-// Confusing a messages that lie here but not in medbot plugin
+/**
+ * @deprecated
+ */
 export async function changeAppointmentTime({
   appointment,
-  user,
-  activeOrder,
+  // user,
+  // activeOrder,
 }: {
   appointment: iAppointment;
   user: iUser;
@@ -180,10 +174,10 @@ export async function changeAppointmentTime({
     const resp = (await $editAppointment.mutate(appointment)) as Response;
 
     if (resp.ok) {
-      await $sendMessage.mutate({
-        botChatId: user?.botChatId,
-        text: getAppointmentCompleteMessage({ activeOrder }),
-      });
+      // await $sendMessage.mutate({
+      //   botChatId: user?.botChatId,
+      //   text: getAppointmentCompleteMessage({ activeOrder }),
+      // });
       notification.success({ message: 'Appointment time changed!' });
       return true;
     }
@@ -217,9 +211,9 @@ export async function deleteAppointment({
     const resp = (await $deleteAppointment.mutate(appointment)) as Response;
 
     if (resp.ok) {
-      await $sendMessage.mutate({
-        botChatId: user?.botChatId,
-        text: getAppointmentDeleteMessage(),
+      await $tgDeleteAppointment.mutate({
+        userId: user?.id!,
+        botChatId: user?.botChatId!,
       });
       notification.success({ message: 'Appointment deleted' });
       return true;

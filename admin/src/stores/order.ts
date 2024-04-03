@@ -3,8 +3,7 @@ import { createFetcherStore, createMutatorStore } from './_query';
 import type { iPaginatorResp, iOrder, iUser } from '../types';
 import { createListFilters, type iPagination } from './_list-filters';
 import { $userId } from './user';
-import { $sendMessage } from './bot';
-import { getOrderCompleteMessage } from '../utils/tg-messages';
+import { $tgCompleteOrder } from './bot';
 
 export const ORDER_PAGE_SIZE = 20;
 
@@ -83,9 +82,12 @@ export async function completeOrder({
     const resp = (await $completeOrder.mutate(activeOrder)) as Response;
 
     if (resp.ok) {
-      await $sendMessage.mutate({
-        botChatId: user?.botChatId,
-        text: getOrderCompleteMessage(),
+      await $tgCompleteOrder.mutate({
+        type: activeOrder.subscriptionEndsAt ? 'subscription' : 'one-time',
+        body: {
+          userId: user?.id!,
+          botChatId: user?.botChatId!,
+        },
       });
       notification.success({ message: 'Order completed!' });
       return true;

@@ -1,1 +1,1 @@
-export { MedbotSdk } from './sdk';
+export { MedbotSdk } from './sdk.js';

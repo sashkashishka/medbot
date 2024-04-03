@@ -28,6 +28,7 @@ export const sendAppointmentStatusRoute: RouteOptions = {
     const { $tgQueryId } = req;
     const { status } = req.body as iBody;
 
+    // TODO: move to medbot sdk
     return this.medbot.telegram.answerWebAppQuery($tgQueryId, {
       id: `${Math.random()}`,
       type: 'article',

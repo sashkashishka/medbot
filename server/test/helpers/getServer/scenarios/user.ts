@@ -6,8 +6,8 @@ import {
 
 const fixtures = [userFixture, userFixture2];
 
-export async function user(fastify: FastifyInstance, fixtureId: number) {
-  await fastify.prisma.user.create({
+export function user(fastify: FastifyInstance, fixtureId: number) {
+  return fastify.prisma.user.create({
     data: fixtures[fixtureId],
   });
 }

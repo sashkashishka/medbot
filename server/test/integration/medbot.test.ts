@@ -305,3 +305,163 @@ test('get product by messageThreadId or botChatId', async (t) => {
     });
   });
 });
+
+test('complete order', async (t) => {
+  (['one-time', 'subscription'] as const).forEach((type) => {
+    const method =
+      type === 'one-time'
+        ? 'completeOneTimeOrder'
+        : 'completeSubscriptionOrder';
+
+    t.test(
+      `should return error if ${type} order status not DONE`,
+      async (t) => {
+        const { fastify, request, adminCookie, getUsers, getTelegrafSessions } =
+          await getServer({
+            t,
+            scenarios: {
+              product: true,
+              admin: true,
+              user: [
+                {
+                  order: { type, status: 'ACTIVE', appointment: 'none' },
+                  session: true,
+                },
+              ],
+            },
+          });
+
+        const medbotSdkMethod = t.capture(fastify.medbotSdk, method, () =>
+          Promise.resolve(),
+        );
+
+        const [user] = await getUsers();
+
+        const resp = await request(`/api/admin/bot/order/complete/${type}`, {
+          method: 'PATCH',
+          cookie: await adminCookie(),
+          body: { userId: user.id, botChatId: user.botChatId },
+        });
+
+        const data = (await resp.json()) as { error: string };
+        t.match(resp, { status: 400 });
+        t.match(data, { error: 'cannot-complete-active-order' });
+
+        const results = medbotSdkMethod();
+        t.equal(results.length, 0);
+
+        const telegrafSessions = await getTelegrafSessions();
+        t.equal(telegrafSessions.length, 1);
+      },
+    );
+
+    t.test(`should clean session if ${type} order status DONE`, async (t) => {
+      const { fastify, request, adminCookie, getUsers, getTelegrafSessions } =
+        await getServer({
+          t,
+          scenarios: {
+            product: true,
+            admin: true,
+            user: [
+              {
+                order: { type, status: 'DONE', appointment: 'none' },
+                session: true,
+              },
+            ],
+          },
+        });
+
+      const medbotSdkMethod = t.capture(fastify.medbotSdk, method, () =>
+        Promise.resolve(),
+      );
+
+      const [user] = await getUsers();
+
+      const resp = await request(`/api/admin/bot/order/complete/${type}`, {
+        method: 'PATCH',
+        cookie: await adminCookie(),
+        body: { userId: user.id, botChatId: user.botChatId },
+      });
+
+      const data = (await resp.json()) as { error: string };
+      t.match(resp, { status: 200 });
+      t.match(data, { done: true });
+
+      const results = medbotSdkMethod();
+      t.equal(results.length, 1);
+
+      const telegrafSessions = await getTelegrafSessions();
+      t.equal(telegrafSessions.length, 0);
+    });
+  });
+});
+
+test('complete appointment', async (t) => {
+  const { fastify, request, adminCookie, getUsers } = await getServer({
+    t,
+    scenarios: {
+      product: true,
+      admin: true,
+      user: [
+        {
+          order: { type: 'one-time', status: 'ACTIVE', appointment: 'none' },
+          session: true,
+        },
+      ],
+    },
+  });
+
+  const sdkMethod = t.capture(fastify.medbotSdk, 'completeAppointment', () =>
+    Promise.resolve(),
+  );
+
+  const [user] = await getUsers();
+
+  const resp = await request('/api/admin/bot/appointment/complete', {
+    method: 'PATCH',
+    cookie: await adminCookie(),
+    body: { userId: user.id, botChatId: user.botChatId },
+  });
+
+  const data = (await resp.json()) as { error: string };
+  t.match(resp, { status: 200 });
+  t.match(data, { done: true });
+
+  const results = sdkMethod();
+  t.equal(results.length, 1);
+});
+
+test('delete appointment', async (t) => {
+  const { fastify, request, adminCookie, getUsers } = await getServer({
+    t,
+    scenarios: {
+      product: true,
+      admin: true,
+      user: [
+        {
+          order: { type: 'one-time', status: 'ACTIVE', appointment: 'none' },
+          session: true,
+        },
+      ],
+    },
+  });
+
+  const sdkMethod = t.capture(fastify.medbotSdk, 'deleteAppointment', () =>
+    Promise.resolve(),
+  );
+
+  const [user] = await getUsers();
+
+  const resp = await request('/api/admin/bot/appointment/delete', {
+    method: 'PATCH',
+    cookie: await adminCookie(),
+    body: { userId: user.id, botChatId: user.botChatId },
+  });
+
+  const data = (await resp.json()) as { error: string };
+  t.match(resp, { status: 200 });
+  t.match(data, { done: true });
+
+  const results = sdkMethod();
+  t.equal(results.length, 1);
+});

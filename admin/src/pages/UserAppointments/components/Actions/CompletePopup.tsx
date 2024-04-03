@@ -41,7 +41,6 @@ export function CompletePopup({ appointment }: iProps) {
             onClick={() =>
               completeAppointment({
                 user: user!,
-                activeOrder: activeOrder!,
                 appointment,
               })
             }
@@ -56,7 +55,6 @@ export function CompletePopup({ appointment }: iProps) {
               onClick={async () => {
                 const done = await completeAppointment({
                   user: user!,
-                  activeOrder: activeOrder!,
                   appointment,
                 });
 

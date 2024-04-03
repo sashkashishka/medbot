@@ -112,6 +112,10 @@ export async function getServer({ t, scenarios }: iOptions) {
     return list.find(filter);
   }
 
+  function getTelegrafSessions() {
+    return fastify.prisma.telegrafSessions.findMany();
+  }
+
   async function cleanDB() {
     await fastify.prisma.appointment.deleteMany();
     await fastify.prisma.activationCode.deleteMany();
@@ -145,5 +149,6 @@ export async function getServer({ t, scenarios }: iOptions) {
     getAppointments,
     findOrder,
     findAppointment,
+    getTelegrafSessions,
   };
 }

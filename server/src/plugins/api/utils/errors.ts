@@ -47,6 +47,7 @@ export type tOrderErrorReason =
   | 'complete-appointment-before-closing-order'
   | 'invalid-activation-code'
   | 'code-expired'
+  | 'cannot-complete-active-order'
   | 'duplicate-waiting-for-payment-order-with-same-product'
   | 'too-many-requests';
 

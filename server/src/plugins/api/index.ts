@@ -26,9 +26,11 @@ import { proceedToChatRoute } from './domains/medbot/proceedToChat.js';
 import { botChatIdRoute } from './domains/medbot/botChatId.js';
 import { messageThreadIdRoute } from './domains/medbot/messageThreadId.js';
 import { teardownUserDataRoute } from './domains/medbot/teardownUserData.js';
-import { sendMessageRoute } from './domains/medbot/sendMessage.js';
 import { checkOrderActiveRoute } from './domains/medbot/checkOrderActive.js';
 import { ordersProductRoute } from './domains/medbot/ordersProduct.js';
+import { tgCompleteOrderRoute } from './domains/medbot/tgCompleteOrder.js';
+import { tgDeleteAppointmentRoute } from './domains/medbot/tgDeleteAppointment.js';
+import { tgCompleteAppointmentRoute } from './domains/medbot/tgCompleteAppointment.js';
 
 import { freeSlotsRoute } from './domains/appointment/freeSlots.js';
 import { createAppointmentRoute } from './domains/appointment/create.js';
@@ -119,10 +121,12 @@ const adminApi: FastifyPluginCallback = (fastify, _opts, done) => {
   fastify.route(updateAppointmentRoute);
   fastify.route(activeOrderRoute);
   fastify.route(updateOrderRoute);
-  fastify.route(sendMessageRoute);
   fastify.route(freeSlotsRoute);
   fastify.route(deleteAppointmentRoute);
   fastify.route(completeOrderRoute);
+  fastify.route(tgCompleteOrderRoute);
+  fastify.route(tgCompleteAppointmentRoute);
+  fastify.route(tgDeleteAppointmentRoute);
 
   fastify.setErrorHandler(errorHandler);
 
