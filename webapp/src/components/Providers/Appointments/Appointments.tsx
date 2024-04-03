@@ -5,6 +5,7 @@ import { $initAppointmentProviderStore } from '../../../stores/initAppointmentPr
 import { ErrorInit } from '../../ErrorStates/ErrorInit';
 import { NoActiveOrderGuard } from '../Guards/NoActiveOrderGuard';
 import { Loader } from '../../Loader';
+import { SubscriptionExpiredGuard } from '../Guards/SubscriptionExpiredGuard';
 
 interface iProps {
   children: ReactNode | ReactNode[];
@@ -27,5 +28,9 @@ export function AppointmentProvider({ children }: iProps) {
     return <ErrorInit emoji="astonished" />;
   }
 
-  return <NoActiveOrderGuard>{children}</NoActiveOrderGuard>;
+  return (
+    <SubscriptionExpiredGuard>
+      <NoActiveOrderGuard>{children}</NoActiveOrderGuard>;
+    </SubscriptionExpiredGuard>
+  );
 }

@@ -7,6 +7,7 @@ import {
   SubscriptionOrderExpired,
   UserError,
 } from '../utils/errors.js';
+import { teardownUserDataRoute } from '../domains/medbot/teardownUserData.js';
 import { tgCompleteOrderRoute } from '../domains/medbot/tgCompleteOrder.js';
 
 type tSetErrorHandlerParams = Parameters<FastifyInstance['setErrorHandler']>;
@@ -43,6 +44,10 @@ export const errorHandler: tSetErrorHandlerParams[0] =
           botChatId: true,
         },
       });
+
+      await teardownUserDataRoute.handler.apply(this, [
+        { params: { userId: order.userId } },
+      ]);
 
       await tgCompleteOrderRoute.handler.apply(this, [
         {
