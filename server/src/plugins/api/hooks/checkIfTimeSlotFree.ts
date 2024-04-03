@@ -14,6 +14,13 @@ export const checkIfTimeSlotFree: preHandlerAsyncHookHandler =
         time: {
           equals: time,
         },
+        ...(body.id
+          ? {
+              id: {
+                not: Number(body.id),
+              },
+            }
+          : {}),
       },
     });
 

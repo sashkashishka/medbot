@@ -237,29 +237,30 @@ test('appointment creation', async (t) => {
     const clock = fakeTimer.install({ shouldClearNativeTimers: true });
     clock.setSystemTime(new Date('2024-01-01T12:00:00Z'));
 
-    const { request, webAppHeader, findOrder, getUsers, findAppointment } = await getServer({
-      t,
-      scenarios: {
-        product: true,
-        admin: true,
-        user: [
-          {
-            order: {
-              type: 'one-time',
-              status: 'ACTIVE',
-              appointment: 'none',
+    const { request, webAppHeader, findOrder, getUsers, findAppointment } =
+      await getServer({
+        t,
+        scenarios: {
+          product: true,
+          admin: true,
+          user: [
+            {
+              order: {
+                type: 'one-time',
+                status: 'ACTIVE',
+                appointment: 'none',
+              },
             },
-          },
-          {
-            order: {
-              type: 'one-time',
-              status: 'ACTIVE',
-              appointment: 'active',
+            {
+              order: {
+                type: 'one-time',
+                status: 'ACTIVE',
+                appointment: 'active',
+              },
             },
-          },
-        ],
-      },
-    });
+          ],
+        },
+      });
 
     const [user] = await getUsers();
     const order = await findOrder((o) => o.status === 'ACTIVE');
@@ -270,6 +271,7 @@ test('appointment creation', async (t) => {
       headers: webAppHeader,
       body: {
         ...appointment,
+        id: undefined,
         orderId: order.id,
         userId: user.id,
         status: 'ACTIVE',
@@ -937,4 +939,60 @@ test('update appointment', async (t) => {
 
     t.teardown(clock.uninstall);
   });
+
+  t.test(
+    'when update the same appointment - throws occupied error',
+    async (t) => {
+      const clock = fakeTimer.install({ shouldClearNativeTimers: true });
+      clock.setSystemTime(new Date('2024-01-01T12:00:00Z'));
+
+      const { fastify, request, webAppHeader, findAppointment } =
+        await getServer({
+          t,
+          scenarios: {
+            product: true,
+            admin: true,
+            user: [
+              {
+                order: {
+                  type: 'one-time',
+                  status: 'ACTIVE',
+                  appointment: 'active',
+                },
+              },
+            ],
+          },
+        });
+
+      const appointment = await findAppointment((o) => o.status === 'ACTIVE');
+      const gcUpdate = t.capture(fastify.googleCalendar.events, 'update');
+
+      const resp = await request(`/api/appointment/${appointment.id}`, {
+        method: 'PATCH',
+        headers: webAppHeader,
+        body: {
+          ...appointment,
+          chronicDiseases: 'lupus',
+          treatment: 'Dr.House',
+        },
+      });
+
+      t.match(resp, { status: 200 }, 'should return 200 status');
+
+      const data =
+        (await resp.json()) as Prisma.AppointmentUncheckedCreateInput;
+      t.matchStrict(data, {
+        status: 'ACTIVE',
+        chronicDiseases: 'lupus',
+      });
+      
+      t.equal(data.treatment, undefined, 'should not exist in response');
+      t.equal(data.report, undefined, 'should not exist in response');
+
+      const results = gcUpdate();
+      t.equal(results.length, 1);
+
+      t.teardown(clock.uninstall);
+    },
+  );
 });

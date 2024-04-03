@@ -44,7 +44,6 @@ export const medbotPlugin: FastifyPluginAsync = fp(async (fastify) => {
   const store = new PrismaSessionStorage(fastify.prisma);
 
   bot.use(session({ store, getSessionKey }));
-  bot.use(loggerMiddleware);
   bot.use(
     populateContext({
       forumId: fastify.config.TG_BOT_FORUM_ID,
@@ -56,6 +55,7 @@ export const medbotPlugin: FastifyPluginAsync = fp(async (fastify) => {
       logger: medbotLogger,
     }),
   );
+  bot.use(loggerMiddleware);
 
   // clear scene and start from scratch
   bot.command('start', cleanupOnSecondStartCommand);

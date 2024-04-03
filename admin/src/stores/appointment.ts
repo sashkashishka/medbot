@@ -93,7 +93,7 @@ export const $editAppointment = createMutatorStore<iAppointment>(
     invalidate((k) => Boolean(k.match(APPOINTMENT_KEYS.list)));
 
     return fetch(`/api/admin/appointment/${data.id}`, {
-      method: 'PUT',
+      method: 'PATCH',
       body: JSON.stringify(data),
       headers: { 'content-type': 'application/json' },
     });

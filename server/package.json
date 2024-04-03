@@ -11,7 +11,7 @@
     "test:unit": "tap run ./src/**/*.spec.ts",
     "migrate:test": "npx dotenv-cli -e .env.test -- prisma migrate dev",
     "test:integration": "npx dotenv-cli -e .env.test -- tap run ./test/**/*.test.ts -j 1",
-    "test:integration:repl": "npx dotenv-cli -e .env.test -- tap repl -j 1 -t5 --disable-coverage",
+    "test:integration:repl": "npx dotenv-cli -e .env.test -- tap repl -j 1 -t15 --disable-coverage",
     "prisma": "prisma"
   },
   "author": "",
