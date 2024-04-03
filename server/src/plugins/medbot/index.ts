@@ -18,7 +18,6 @@ import { loggerMiddleware } from './middlewares/loggerMiddleware.js';
 declare module 'fastify' {
   // eslint-disable-next-line
   interface FastifyInstance {
-    medbot: Telegraf;
     medbotSdk: MedbotSdk;
   }
 }
@@ -70,8 +69,6 @@ export const medbotPlugin: FastifyPluginAsync = fp(async (fastify) => {
     medbotLogger.error(err);
   });
 
-  // Make medbot Client available through the fastify fastify instance: fastify.medbot
-  fastify.decorate('medbot', bot);
   fastify.decorate(
     'medbotSdk',
     new MedbotSdk({

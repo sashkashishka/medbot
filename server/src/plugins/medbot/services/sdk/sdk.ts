@@ -9,6 +9,7 @@ import {
   deleteAppointmentByDoctorMsg,
 } from '../../scenes/chat/messages/appointmentStatus.js';
 import { subscriptionOrderCompleteMsg } from '../../scenes/chat/messages/subscriptionOrderComplete.js';
+import { capitalize } from '../../../../utils/string.js';
 
 export interface iMedbotSdkOptions {
   telegram: Telegraf<iMedbotContext>['telegram'];
@@ -27,6 +28,13 @@ export class MedbotSdk {
     this.telegram = telegram;
     this.webAppUrl = webAppUrl;
     this.logger = logger;
+
+    this.completeSubscriptionOrder = this.completeSubscriptionOrder.bind(this);
+    this.completeOneTimeOrder = this.completeOneTimeOrder.bind(this);
+    this.completeAppointment = this.completeAppointment.bind(this);
+    this.deleteAppointment = this.deleteAppointment.bind(this);
+    this.sendAppointmentStatus = this.sendAppointmentStatus.bind(this);
+    this.proceedToChat = this.proceedToChat.bind(this);
   }
 
   public async completeSubscriptionOrder(botChatId: number) {
@@ -89,6 +97,36 @@ export class MedbotSdk {
       );
     } catch (e) {
       this.logger.error(e, 'medbotSdk:deleteAppointment');
+    }
+  }
+
+  public async sendAppointmentStatus(tgQueryId: string, status: string) {
+    try {
+      await this.telegram.answerWebAppQuery(tgQueryId, {
+        id: `${Math.random()}`,
+        type: 'article',
+        title: 'Оновлення статусу зустрічі',
+        input_message_content: {
+          message_text: `/appointment${capitalize(status)}`,
+        },
+      });
+    } catch (e) {
+      this.logger.error(e, 'medbotSdk:sendAppointmentStatus');
+    }
+  }
+
+  public async proceedToChat(tgQueryId: string) {
+    try {
+      await this.telegram.answerWebAppQuery(tgQueryId, {
+        id: '0',
+        type: 'article',
+        title: 'Дякуємо за замовлення!',
+        input_message_content: {
+          message_text: '/successfullOrder',
+        },
+      });
+    } catch (e) {
+      this.logger.error(e, 'medbotSdk:proceedToChat');
     }
   }
 }

@@ -1,5 +1,4 @@
 import type { RouteOptions } from 'fastify';
-import { capitalize } from '../../utils/string.js';
 
 const STATUSES = ['created', 'updated', 'deleted'] as const;
 
@@ -28,14 +27,6 @@ export const sendAppointmentStatusRoute: RouteOptions = {
     const { $tgQueryId } = req;
     const { status } = req.body as iBody;
 
-    // TODO: move to medbot sdk
-    return this.medbot.telegram.answerWebAppQuery($tgQueryId, {
-      id: `${Math.random()}`,
-      type: 'article',
-      title: 'Оновлення статусу зустрічі',
-      input_message_content: {
-        message_text: `/appointment${capitalize(status)}`,
-      },
-    });
+    return this.medbotSdk.sendAppointmentStatus($tgQueryId, status);
   },
 };
