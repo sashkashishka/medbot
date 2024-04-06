@@ -16,7 +16,7 @@ env:
   ENV: ${{ github.event_name == 'pull_request' && 'stage' || 'prod' }}
 
 jobs:
-  create-artifacts:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -27,29 +27,23 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: Install admin dependencies
+      - name: Install and build admin dependencies
         working-directory: ./admin
-        run: npm ci
+        run: |
+          npm ci
+          npm run build
 
-      - name: Install server dependencies
+      - name: Install and build server dependencies
         working-directory: ./server
-        run: npm ci
+        run: |
+          npm ci
+          npm run build
 
-      - name: Install webapp dependencies
+      - name: Install and build webapp dependencies
         working-directory: ./webapp
-        run: npm ci
-
-      - name: Build admin assets
-        working-directory: ./admin
-        run: npm run build
-
-      - name: Build server assets
-        working-directory: ./server
-        run: npm run build
-
-      - name: Build webapp assets
-        working-directory: ./webapp
-        run: npm run build
+        run: |
+          npm ci
+          npm run build
 
       - name: Build docker image
         run: |
