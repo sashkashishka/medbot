@@ -45,6 +45,8 @@ import { logoutAdminRoute } from './domains/admin/logout.js';
 import { adminRoute } from './domains/admin/admin.js';
 import { adminConfigRoute } from './domains/admin/config.js';
 
+import { healthcheckRoute } from './domains/healthcheck/index.js';
+
 import { validateIsMedbot } from './hooks/validateIsMedbot.js';
 import { validateIsWebapp } from './hooks/validateIsWebapp.js';
 import { errorHandler } from './hooks/errorHandler.js';
@@ -148,4 +150,6 @@ export const apiPlugin: FastifyPluginCallback = async (fastify) => {
   await fastify.register(serviceApi, { prefix: '/service' });
   await fastify.register(adminAuthApi, { prefix: '/auth/admin' });
   await fastify.register(adminApi, { prefix: '/admin' });
+
+  fastify.route(healthcheckRoute);
 };
