@@ -14,8 +14,8 @@ services:
         target: /etc/nginx/ssl
         read_only: true
       - type: volume
-        source: ./logs
-        target: /etc/nginx/logs
+        source: ./logs/nginx
+        target: /usr/app/logs
         read_only: false
     expose:
       - 80
@@ -40,7 +40,7 @@ services:
       start_period: 2m
     volumes:
       - type: volume
-        source: ./logs
+        source: ./logs/fastify
         target: /usr/app/logs
         read_only: false
     ports:

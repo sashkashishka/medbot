@@ -36,8 +36,8 @@ server {
   charset utf-8;
   client_max_body_size 128M;
 
-  access_log /usr/app/logs/nginx/${DOMAIN}.ssl.access.log prod;
-  error_log /usr/app/logs/nginx/${DOMAIN}.ssl.error.log;
+  access_log /usr/app/logs/${DOMAIN}.ssl.access.log prod;
+  error_log /usr/app/logs/${DOMAIN}.ssl.error.log;
 
   location /dashboard {
     try_files $uri $uri/ /usr/app/admin/index.html;
