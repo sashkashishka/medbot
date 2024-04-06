@@ -52,8 +52,8 @@ jobs:
 
       - name: Save docker image
         run: |
-          docker save -o ./images ${{env.NGINX_IMAGE}} 
-          docker save -o ./images ${{env.FASTIFY_IMAGE}}
+          docker save -o ./images/nginx ${{env.NGINX_IMAGE}} 
+          docker save -o ./images/fastify ${{env.FASTIFY_IMAGE}}}
 
       - name: Copy images dir
         uses: appleboy/scp-action@v0.1.6
