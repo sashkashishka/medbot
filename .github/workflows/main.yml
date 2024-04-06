@@ -63,7 +63,7 @@ jobs:
           password: ${{ secrets.PASSWORD }}
           port: ${{ secrets.PORT }}
           source: "images"
-          target: ~/${{ secrets.IMAGES_DIR }}
+          target: ${{ secrets.IMAGES_DIR }}
 
       - name: Copy deploy dir
         uses: appleboy/scp-action@v0.1.6
@@ -73,20 +73,21 @@ jobs:
           password: ${{ secrets.PASSWORD }}
           port: ${{ secrets.PORT }}
           source: ".deploy"
-          target: ~/${{ secrets.DIR }}
+          target: ${{ secrets.DIR }}
 
       - name: Start containers
         uses: appleboy/ssh-action@v1.0.1
         env:
           TAG: ${{ github.sha }}
           DIR: ${{ secrets.DIR }}
+          IMAGES_DIR: ${{ secrets.IMAGES_DIR }}
           ENV: ${{ env.ENV }}
         with:
           host: ${{ secrets.HOSTNAME }}
           username: ${{ secrets.USER }}
           password: ${{ secrets.PASSWORD }}
           port: ${{ secrets.PORT }}
-          envs: TAG,DIR,ENV
+          envs: TAG,DIR,ENV,IMAGES_DIR
           script: |
-            bash ~/${{ secrets.DIR }}/.deploy/scripts/run-containers.sh
-            bash ~/${{ secrets.DIR }}/.deploy/scripts/migrate.sh
+            bash ${{ secrets.DIR }}/.deploy/scripts/run-containers.sh
+            bash ${{ secrets.DIR }}/.deploy/scripts/migrate.sh
