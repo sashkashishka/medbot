@@ -26,7 +26,9 @@ export function AppointmentListPage() {
 
   switch (true) {
     case Boolean(
-      activeAppointment?.status === 'DONE' && !activeOrder?.subscriptionEndsAt,
+      'status' in activeAppointment! &&
+        activeAppointment?.status === 'DONE' &&
+        !activeOrder?.subscriptionEndsAt,
     ): {
       return (
         <div className={styles.oneTimeOrderContainer}>
@@ -41,6 +43,8 @@ export function AppointmentListPage() {
     }
 
     case Boolean(activeAppointment): {
+      // TODO: fix type
+      // @ts-ignore
       const { time, id } = activeAppointment!;
       const deleteAppointment = createDeleteAppointment(id);
 

@@ -1,0 +1,98 @@
+name: Deploy
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+env:
+  NODE_VERSION: 21.7.2
+  NODE_ENV: production
+  NGINX_IMAGE: medbot/nginx:${{github.sha}}
+  FASTIFY_IMAGE: medbot/fastify:${{github.sha}}
+  ENV: ${{ github.event_name == 'pull_request' && 'stage' || 'prod' }}
+
+jobs:
+  create-artifacts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install admin dependencies
+        working-directory: ./admin
+        run: npm ci
+
+      - name: Install server dependencies
+        working-directory: ./server
+        run: npm ci
+
+      - name: Install webapp dependencies
+        working-directory: ./webapp
+        run: npm ci
+
+      - name: Build admin assets
+        working-directory: ./admin
+        run: npm run build
+
+      - name: Build server assets
+        working-directory: ./server
+        run: npm run build
+
+      - name: Build webapp assets
+        working-directory: ./webapp
+        run: npm run build
+
+      - name: Build docker image
+        run: |
+          docker build -t ${{env.NGINX_IMAGE}} .
+          docker build -t ${{env.FASTIFY_IMAGE}} ./server
+
+      - name: Save docker image
+        run: |
+          docker save -o ./images ${{env.NGINX_IMAGE}} 
+          docker save -o ./images ${{env.FASTIFY_IMAGE}}
+
+      - name: Copy images dir
+        uses: appleboy/scp-action@v0.1.6
+        with:
+          host: ${{ secrets.HOSTNAME }}
+          username: ${{ secrets.USER }}
+          password: ${{ secrets.PASSWORD }}
+          port: ${{ secrets.PORT }}
+          source: "images"
+          target: ~/${{ secrets.IMAGES_DIR }}
+
+      - name: Copy deploy dir
+        uses: appleboy/scp-action@v0.1.6
+        with:
+          host: ${{ secrets.HOSTNAME }}
+          username: ${{ secrets.USER }}
+          password: ${{ secrets.PASSWORD }}
+          port: ${{ secrets.PORT }}
+          source: ".deploy"
+          target: ~/${{ secrets.DIR }}
+
+      - name: Start containers
+        uses: appleboy/ssh-action@v1.0.1
+        env:
+          TAG: ${{ github.sha }}
+          DIR: ${{ secrets.DIR }}
+          ENV: ${{ env.ENV }}
+        with:
+          host: ${{ secrets.HOSTNAME }}
+          username: ${{ secrets.USER }}
+          password: ${{ secrets.PASSWORD }}
+          port: ${{ secrets.PORT }}
+          envs: TAG,DIR,ENV
+          script: |
+            bash ~/${{ secrets.DIR }}/.deploy/scripts/run-containers.sh
+            bash ~/${{ secrets.DIR }}/.deploy/scripts/migrate.sh

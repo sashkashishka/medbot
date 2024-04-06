@@ -1,0 +1,61 @@
+server {
+  listen 80;
+  listen [::]:80;
+  server_name ${DOMAIN};
+
+  location / {
+    return 301 https://$host$request_uri;
+  }
+}
+
+server {
+  listen 443 ssl;
+  listen [::]:443 ssl;
+  http2 on;
+  server_name ${DOMAIN};
+
+  ssl_certificate /usr/app/ssl/cert/fullchain.pem;
+  ssl_certificate_key /usr/app/ssl/cert/privkey.pem;
+  ssl_session_timeout 1d;
+  ssl_session_cache shared:SSL:10m;
+  ssl_session_tickets off;
+
+  ssl_dhparam /usr/app/ssl/dhparam.pem;
+
+  ssl_protocols TLSv1.2 TLSv1.3;
+  ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:DHE-RSA-CHACHA20-POLY1305;
+  ssl_prefer_server_ciphers off;
+
+  add_header Strict-Transport-Security "max-age=63072000" always;
+  
+  ssl_stapling on;
+  ssl_stapling_verify on;
+
+  ssl_trusted_certificate /etc/nginx/ssl/cert/chain.pem;
+
+  charset utf-8;
+  client_max_body_size 128M;
+
+  access_log /usr/app/logs/nginx/${DOMAIN}.ssl.access.log prod;
+  error_log /usr/app/logs/nginx/${DOMAIN}.ssl.error.log;
+
+  location /dashboard {
+    try_files $uri $uri/ /usr/app/admin/index.html;
+  }
+
+  location /webapp {
+    try_files $uri $uri/ /usr/app/webapp/index.html;
+  }
+
+  location ~ ^/(api|telegraf) {
+    proxy_pass http://fastify:8000;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+  }
+
+  location / {
+    try_files $uri $uri/ /usr/app/index.html;
+  }
+}

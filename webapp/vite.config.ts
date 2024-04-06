@@ -1,9 +1,13 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import legacy from '@vitejs/plugin-legacy'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import legacy from '@vitejs/plugin-legacy';
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: '/webapp/',
+  build: {
+    outDir: 'build',
+  },
   plugins: [react(), legacy()],
   css: {
     modules: {
@@ -16,6 +20,6 @@ export default defineConfig({
         target: 'http://localhost:8000',
         changeOrigin: true,
       },
-    }
-  }
-})
+    },
+  },
+});

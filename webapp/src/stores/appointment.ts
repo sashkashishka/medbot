@@ -44,6 +44,8 @@ export const $availableTimeslots = computed(
 
     if (!activeAppointment) return freeSlotsFiltered;
 
+    if ('message' in activeAppointment) return freeSlotsFiltered;
+
     const { time } = activeAppointment;
 
     const endTime = addHours(new Date(time), 1);

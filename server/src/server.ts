@@ -13,8 +13,6 @@ import { serviceApiSdk } from './plugins/serviceApiSdk/index.js';
 
 process.env.TZ = 'Etc/Universal';
 
-// TODO serve static for webapp
-
 interface iOptions {
   plugins?: {
     medbot?: FastifyPluginAsync;

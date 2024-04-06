@@ -8,7 +8,7 @@ function getLogger() {
     options.transport = {
       target: 'pino/file',
       options: {
-        destination: './logs/runtime.log',
+        destination: `./logs/fastify/runtime-${process.env.ENV}.log`,
       },
     };
   }

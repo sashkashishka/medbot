@@ -1,0 +1,84 @@
+version: "3.8"
+services:
+  nginx:
+    container_name: nginx_medbot_$ENV
+    image: medbot/nginx:$TAG
+    restart: on-failure
+    volumes:
+      - type: bind
+        source: ./volume/nginx
+        target: /etc/nginx/templates
+        read_only: true
+      - type: bind
+        source: ./ssl
+        target: /etc/nginx/ssl
+        read_only: true
+      - type: volume
+        source: ./logs
+        target: /etc/nginx/logs
+        read_only: false
+    expose:
+      - 80
+      - 443
+    ports:
+      - 80:80
+      - 443:443
+    networks:
+      - medbot_bridge_$ENV
+    depends_on:
+      - fastify
+      - adminer
+
+  fastify:
+    container_name: fastify_$ENV
+    image: medbot/fastify:$TAG
+    healthcheck:
+      test: ["CMD", "wget http://localhost:8000/api/healthcheck || exit 1"]
+      interval: 20s
+      timeout: 20s
+      retries: 3
+      start_period: 2m
+    volumes:
+      - type: volume
+        source: ./logs
+        target: /usr/app/logs
+        read_only: false
+    ports:
+      - '8000:8000'
+    expose:
+      - 8000
+    env_file:
+      - ".env.$ENV"
+    networks:
+      - medbot_bridge_$ENV
+    depends_on:
+      - db
+
+  adminer:
+    container_name: adminer_$ENV
+    image: adminer
+    ports:
+      - 8080:8080
+    networks:
+      - medbot_bridge_$ENV
+    depends_on:
+      - db
+
+  db:
+    container_name: mysql_db_$ENV
+    platform: linux/amd64
+    image: mysql:8.2.0
+    ports:
+      - "3306:3306"
+    expose:
+      - 3306
+    volumes:
+      - "./volume/db:/var/lib/mysql"
+    env_file:
+      - ".env.$ENV"
+    networks:
+      - medbot_bridge_$ENV
+
+networks:
+  medbot_bridge_stage:
+  medbot_bridge_prod:
