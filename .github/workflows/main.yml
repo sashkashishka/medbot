@@ -27,14 +27,14 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: Install and build admin dependencies
-        working-directory: ./admin
+      - name: Install and build server dependencies
+        working-directory: ./server
         run: |
           npm ci
           npm run build
 
-      - name: Install and build server dependencies
-        working-directory: ./server
+      - name: Install and build admin dependencies
+        working-directory: ./admin
         run: |
           npm ci
           npm run build
