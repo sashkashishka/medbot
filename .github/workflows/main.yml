@@ -62,7 +62,7 @@ jobs:
           username: ${{ secrets.USER }}
           password: ${{ secrets.PASSWORD }}
           port: ${{ secrets.PORT }}
-          source: "images"
+          source: "images/*"
           target: ${{ secrets.IMAGES_DIR }}
 
       - name: Copy deploy dir
@@ -72,7 +72,7 @@ jobs:
           username: ${{ secrets.USER }}
           password: ${{ secrets.PASSWORD }}
           port: ${{ secrets.PORT }}
-          source: ".deploy"
+          source: ".deploy/*"
           target: ${{ secrets.DIR }}
 
       - name: Start containers
