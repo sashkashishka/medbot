@@ -57,6 +57,10 @@ jobs:
           ls -la ./images
           docker save -o ./nginx.tar ${{env.NGINX_IMAGE}} 
           ls -la
+          chmod a+r ./images/nginx.tar
+          ls -la
+          chmod a+r ./nginx.tar
+          ls -la
           # docker save -o ./images/fastify ${{env.FASTIFY_IMAGE}}
 
       - name: Copy images dir
