@@ -52,6 +52,7 @@ jobs:
 
       - name: Save docker image
         run: |
+          mkdir images
           docker save -o ./images/nginx ${{env.NGINX_IMAGE}} 
           docker save -o ./images/fastify ${{env.FASTIFY_IMAGE}}}
 
