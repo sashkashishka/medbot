@@ -53,7 +53,10 @@ jobs:
       - name: Save docker image
         run: |
           mkdir images
-          docker save -o ./images/nginx ${{env.NGINX_IMAGE}} 
+          docker save -o ./images/nginx.tar ${{env.NGINX_IMAGE}} 
+          ls -la ./images
+          docker save -o ./nginx.tar ${{env.NGINX_IMAGE}} 
+          ls -la
           # docker save -o ./images/fastify ${{env.FASTIFY_IMAGE}}
 
       - name: Copy images dir
@@ -63,7 +66,7 @@ jobs:
           username: ${{ secrets.USER }}
           password: ${{ secrets.PASSWORD }}
           port: ${{ secrets.PORT }}
-          source: "images/nginx"
+          source: "images/*, nginx.tar"
           target: ${{ secrets.IMAGES_DIR }}
 
       # - name: Copy deploy dir
