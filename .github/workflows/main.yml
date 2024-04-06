@@ -22,16 +22,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
+      # - name: Setup Node.js
+      #   uses: actions/setup-node@v4
+      #   with:
+      #     node-version: ${{ env.NODE_VERSION }}
 
-      - name: Install and build admin dependencies
-        working-directory: ./admin
-        run: |
-          npm ci --include=dev
-          npm run build
+      # - name: Install and build admin dependencies
+      #   working-directory: ./admin
+      #   run: |
+      #     npm ci --include=dev
+      #     npm run build
 
       # - name: Install and build server dependencies
       #   working-directory: ./server
@@ -39,22 +39,27 @@ jobs:
       #     npm ci --include=dev
       #     npm run build
 
-      - name: Install and build webapp dependencies
-        working-directory: ./webapp
-        run: |
-          npm ci --include=dev
-          npm run build
+      # - name: Install and build webapp dependencies
+      #   working-directory: ./webapp
+      #   run: |
+      #     npm ci --include=dev
+      #     npm run build
 
-      - name: Build docker image
-        run: |
-          docker build -t ${{env.NGINX_IMAGE}} .
+      # - name: Build docker image
+      #   run: |
+      #     docker build -t ${{env.NGINX_IMAGE}} .
           # docker build -t ${{env.FASTIFY_IMAGE}} ./server
 
-      - name: Save docker image
+      # - name: Save docker image
+      #   run: |
+      #     mkdir images
+      #     docker save -o ./images/nginx ${{env.NGINX_IMAGE}} 
+          # docker save -o ./images/fastify ${{env.FASTIFY_IMAGE}}
+
+      - name: Test
         run: |
           mkdir images
-          docker save -o ./images/nginx ${{env.NGINX_IMAGE}} 
-          # docker save -o ./images/fastify ${{env.FASTIFY_IMAGE}}
+          echo "Hello world" > images/hello.txt
 
       - name: Copy images dir
         uses: appleboy/scp-action@v0.1.6
