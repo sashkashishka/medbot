@@ -13,7 +13,7 @@ services:
         source: ./ssl
         target: /etc/nginx/ssl
         read_only: true
-      - type: volume
+      - type: bind
         source: ./logs/nginx
         target: /usr/app/logs
         read_only: false
@@ -39,7 +39,7 @@ services:
       retries: 3
       start_period: 2m
     volumes:
-      - type: volume
+      - type: bind
         source: ./logs/fastify
         target: /usr/app/logs
         read_only: false
