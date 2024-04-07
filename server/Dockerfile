@@ -10,4 +10,6 @@ RUN npm ci --omit=dev
 COPY build/src .
 COPY prisma prisma
 
+RUN npm run prisma generate
+
 CMD ["node", "index.js"]

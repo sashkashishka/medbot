@@ -1,17 +1,18 @@
+import path from 'node:path';
 import { pino, type LoggerOptions } from 'pino';
 
 function getLogger() {
   const options: LoggerOptions = {
     timestamp: () => `,"time":"${new Date().toISOString()}"`,
   };
-  // if (process.env.NODE_ENV === 'production') {
-  //   options.transport = {
-  //     target: 'pino/file',
-  //     options: {
-  //       destination: `./logs/fastify/runtime-${process.env.ENV}.log`,
-  //     },
-  //   };
-  // }
+  if (process.env.NODE_ENV === 'production') {
+    options.transport = {
+      target: 'pino/file',
+      options: {
+        destination: path.resolve(import.meta.dirname, `../logs/fastify/runtime-${process.env.ENV}.log`),
+      },
+    };
+  }
   return pino(options);
 }
 
