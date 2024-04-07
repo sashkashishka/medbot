@@ -1,34 +1,5 @@
 version: "3.8"
 services:
-  nginx:
-    container_name: nginx_medbot_prod
-    image: medbot/nginx:$TAG
-    restart: on-failure
-    volumes:
-      - type: bind
-        source: ./volume/nginx
-        target: /etc/nginx/templates
-        read_only: true
-      - type: bind
-        source: ./ssl
-        target: /etc/nginx/ssl
-        read_only: true
-      - type: bind
-        source: ./logs/nginx
-        target: /usr/app/logs
-        read_only: false
-    expose:
-      - 80
-      - 443
-    ports:
-      - 80:80
-      - 443:443
-    networks:
-      - medbot_bridge_prod
-    depends_on:
-      - fastify
-      - adminer
-
   fastify:
     container_name: fastify_prod
     image: medbot/fastify:$TAG

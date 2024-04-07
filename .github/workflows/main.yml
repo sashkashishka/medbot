@@ -84,6 +84,7 @@ jobs:
           port: ${{ secrets.PORT }}
           source: "admin/build/*"
           target: ${{ secrets.DIR }}/static/admin/${{ env.ENV }}
+          strip_components: 2
 
       - name: Copy webapp dir
         uses: appleboy/scp-action@v0.1.6
@@ -94,6 +95,7 @@ jobs:
           port: ${{ secrets.PORT }}
           source: "webapp/build/*"
           target: ${{ secrets.DIR }}/static/webapp/${{ env.ENV }}
+          strip_components: 2
 
       - name: Start containers
         uses: appleboy/ssh-action@v1.0.1
