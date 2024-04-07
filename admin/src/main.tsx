@@ -6,7 +6,7 @@ import { routes } from './pages/routes.tsx';
 
 import './index.css';
 
-const router = createBrowserRouter(routes, { basename: '/dashboard' });
+const router = createBrowserRouter(routes, { basename: '/admin' });
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
