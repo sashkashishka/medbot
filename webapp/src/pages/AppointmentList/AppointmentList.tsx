@@ -26,7 +26,8 @@ export function AppointmentListPage() {
 
   switch (true) {
     case Boolean(
-      'status' in activeAppointment! &&
+      activeAppointment &&
+      'status' in activeAppointment &&
         activeAppointment?.status === 'DONE' &&
         !activeOrder?.subscriptionEndsAt,
     ): {
