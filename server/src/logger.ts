@@ -4,14 +4,14 @@ function getLogger() {
   const options: LoggerOptions = {
     timestamp: () => `,"time":"${new Date().toISOString()}"`,
   };
-  if (process.env.NODE_ENV === 'production') {
-    options.transport = {
-      target: 'pino/file',
-      options: {
-        destination: `./logs/fastify/runtime-${process.env.ENV}.log`,
-      },
-    };
-  }
+  // if (process.env.NODE_ENV === 'production') {
+  //   options.transport = {
+  //     target: 'pino/file',
+  //     options: {
+  //       destination: `./logs/fastify/runtime-${process.env.ENV}.log`,
+  //     },
+  //   };
+  // }
   return pino(options);
 }
 
