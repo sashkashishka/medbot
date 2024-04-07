@@ -1,43 +1,14 @@
 version: "3.8"
 services:
-  nginx:
-    container_name: nginx_medbot_stage
-    image: medbot/nginx:$TAG
-    restart: on-failure
-    volumes:
-      - type: bind
-        source: ./volume/nginx
-        target: /etc/nginx/templates
-        read_only: true
-      - type: bind
-        source: ./ssl
-        target: /etc/nginx/ssl
-        read_only: true
-      - type: bind
-        source: ./logs/nginx
-        target: /usr/app/logs
-        read_only: false
-    expose:
-      - 80
-      - 443
-    ports:
-      - 80:80
-      - 443:443
-    networks:
-      - medbot_bridge_stage
-    depends_on:
-      - fastify
-      - adminer
-
   fastify:
     container_name: fastify_stage
     image: medbot/fastify:$TAG
-    healthcheck:
-      test: ["CMD", "wget http://localhost:8000/api/healthcheck || exit 1"]
-      interval: 20s
-      timeout: 20s
-      retries: 3
-      start_period: 2m
+    # healthcheck:
+    #   test: ["CMD", "wget http://localhost:8000/api/healthcheck || exit 1"]
+    #   interval: 20s
+    #   timeout: 20s
+    #   retries: 3
+    #   start_period: 2m
     volumes:
       - type: bind
         source: ./logs/fastify

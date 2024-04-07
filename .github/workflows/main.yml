@@ -47,15 +47,12 @@ jobs:
 
       - name: Build docker image
         run: |
-          docker build -t ${{env.NGINX_IMAGE}} .
           docker build -t ${{env.FASTIFY_IMAGE}} ./server
 
       - name: Save docker image
         run: |
           mkdir images
-          docker save -o ./nginx.tar ${{env.NGINX_IMAGE}} 
           docker save -o ./fastify.tar ${{env.FASTIFY_IMAGE}}
-          chmod a+r ./nginx.tar
           chmod a+r ./fastify.tar
 
       - name: Copy images dir
@@ -77,6 +74,26 @@ jobs:
           port: ${{ secrets.PORT }}
           source: ".deploy/*"
           target: ${{ secrets.DIR }}
+
+      - name: Copy admin dir
+        uses: appleboy/scp-action@v0.1.6
+        with:
+          host: ${{ secrets.HOSTNAME }}
+          username: ${{ secrets.USER }}
+          password: ${{ secrets.PASSWORD }}
+          port: ${{ secrets.PORT }}
+          source: "admin/build/*"
+          target: ${{ secrets.DIR }}/static/admin/${{ env.ENV }}
+
+      - name: Copy webapp dir
+        uses: appleboy/scp-action@v0.1.6
+        with:
+          host: ${{ secrets.HOSTNAME }}
+          username: ${{ secrets.USER }}
+          password: ${{ secrets.PASSWORD }}
+          port: ${{ secrets.PORT }}
+          source: "webapp/build/*"
+          target: ${{ secrets.DIR }}/static/webapp/${{ env.ENV }}
 
       - name: Start containers
         uses: appleboy/ssh-action@v1.0.1

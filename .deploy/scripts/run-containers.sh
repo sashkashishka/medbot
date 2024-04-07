@@ -7,7 +7,6 @@ env=$ENV
 
 echo 'Load images';
 docker load -i $imagesDir/fastify.tar
-docker load -i $imagesDir/nginx.tar
 
 echo 'Stop previous';
 docker compose -f $dir/.deploy/docker-compose.$env.yaml stop 
@@ -20,7 +19,3 @@ docker compose -f $dir/.deploy/docker-compose.$env.yaml up adminer -d --wait
 
 echo 'Start fastify';
 docker compose -f $dir/.deploy/docker-compose.$env.yaml up fastify -d --wait
-
-echo 'Start nginx';
-docker compose -f $dir/.deploy/docker-compose.$env.yaml up nginx -d --wait
-
