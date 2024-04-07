@@ -1,7 +1,7 @@
 version: "3.8"
 services:
   nginx:
-    container_name: nginx_medbot_$ENV
+    container_name: nginx_medbot_stage
     image: medbot/nginx:$TAG
     restart: on-failure
     volumes:
@@ -24,13 +24,13 @@ services:
       - 80:80
       - 443:443
     networks:
-      - medbot_bridge_$ENV
+      - medbot_bridge_stage
     depends_on:
       - fastify
       - adminer
 
   fastify:
-    container_name: fastify_$ENV
+    container_name: fastify_stage
     image: medbot/fastify:$TAG
     healthcheck:
       test: ["CMD", "wget http://localhost:8000/api/healthcheck || exit 1"]
@@ -48,24 +48,24 @@ services:
     expose:
       - 8000
     env_file:
-      - ".env.$ENV"
+      - ".env.stage"
     networks:
-      - medbot_bridge_$ENV
+      - medbot_bridge_stage
     depends_on:
       - db
 
   adminer:
-    container_name: adminer_$ENV
+    container_name: adminer_stage
     image: adminer
     ports:
       - 8080:8080
     networks:
-      - medbot_bridge_$ENV
+      - medbot_bridge_stage
     depends_on:
       - db
 
   db:
-    container_name: mysql_db_$ENV
+    container_name: mysql_db_stage
     platform: linux/amd64
     image: mysql:8.2.0
     ports:
@@ -75,10 +75,10 @@ services:
     volumes:
       - "./volume/db:/var/lib/mysql"
     env_file:
-      - ".env.$ENV"
+      - ".env.stage"
     networks:
-      - medbot_bridge_$ENV
+      - medbot_bridge_stage
 
 networks:
   medbot_bridge_stage:
-  medbot_bridge_prod:
+
