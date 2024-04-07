@@ -9,7 +9,7 @@ function getLogger() {
     options.transport = {
       target: 'pino/file',
       options: {
-        destination: path.resolve(import.meta.dirname, `../logs/fastify/runtime-${process.env.ENV}.log`),
+        destination: path.resolve(import.meta.dirname, `logs/fastify/runtime-${process.env.ENV}.log`),
       },
     };
   }
