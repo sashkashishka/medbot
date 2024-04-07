@@ -11,5 +11,6 @@ COPY build/src .
 COPY prisma prisma
 
 RUN npm run prisma generate
+RUN mkdir -p logs/fastify
 
 CMD ["node", "index.js"]

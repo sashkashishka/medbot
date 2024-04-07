@@ -41,7 +41,7 @@ services:
     volumes:
       - type: bind
         source: ./logs/fastify
-        target: /usr/app/logs
+        target: /usr/app/logs/fastify
         read_only: false
     ports:
       - '8000:8000'
