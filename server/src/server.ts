@@ -49,7 +49,7 @@ export async function main({
 
     await fastify.listen({
       port: fastify.config.PORT,
-      host: fastify.config.HOST,
+      host: '0.0.0.0',
     });
 
     return fastify;
