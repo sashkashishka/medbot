@@ -1,5 +1,9 @@
 FROM node:21.7.2-alpine
 
+RUN apk add --update \
+  curl \
+  && rm -rf /var/cache/apk/*
+
 WORKDIR /usr/app
 
 COPY package.json .

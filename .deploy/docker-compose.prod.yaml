@@ -4,7 +4,7 @@ services:
     container_name: fastify_prod
     image: medbot/fastify:$TAG
     healthcheck:
-      test: ["CMD", "wget http://127.0.0.1:8000/api/healthcheck || exit 1"]
+      test: ["CMD", "curl -sS http://127.0.0.1:8000/api/healthcheck || exit 1"]
       interval: 20s
       timeout: 20s
       retries: 3
@@ -40,9 +40,9 @@ services:
     platform: linux/amd64
     image: mysql:8.2.0
     ports:
-      - "3306:3306"
+      - "3307:3306"
     expose:
-      - 3306
+      - 3307
     volumes:
       - "./volume/db:/var/lib/mysql"
     env_file:
