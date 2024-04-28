@@ -113,3 +113,4 @@ jobs:
           script: |
             bash ${{ secrets.DIR }}/.deploy/scripts/run-containers.sh
             bash ${{ secrets.DIR }}/.deploy/scripts/migrate.sh
+            bash ${{ secrets.DIR }}/.deploy/scripts/setup-crontab.sh

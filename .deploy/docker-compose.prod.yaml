@@ -4,7 +4,7 @@ services:
     container_name: fastify_prod
     image: medbot/fastify:$TAG
     healthcheck:
-      test: ["CMD", "wget http://localhost:8000/api/healthcheck || exit 1"]
+      test: ["CMD", "wget http://127.0.0.1:8000/api/healthcheck || exit 1"]
       interval: 20s
       timeout: 20s
       retries: 3
@@ -12,7 +12,7 @@ services:
     volumes:
       - type: bind
         source: ./logs/fastify
-        target: /usr/app/logs
+        target: /usr/app/logs/fastify
         read_only: false
     ports:
       - '8000:8000'
@@ -29,7 +29,7 @@ services:
     container_name: adminer_prod
     image: adminer
     ports:
-      - 8080:8080
+      - 8081:8080
     networks:
       - medbot_bridge_prod
     depends_on:

@@ -81,13 +81,11 @@ export const medbotPlugin: FastifyPluginAsync = fp(async (fastify) => {
     }),
   );
 
-  bot.secretPathComponent();
-
-  const webhookHandler = await bot.createWebhook({
-    domain: fastify.config.HOST,
-  });
-
   if (fastify.config.NODE_ENV === 'production') {
+    const webhookHandler = await bot.createWebhook({
+      domain: fastify.config.HOST,
+    });
+
     fastify.post(
       `/telegraf/${bot.secretPathComponent()}`,
       // @ts-ignore
