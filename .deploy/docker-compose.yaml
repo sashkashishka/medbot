@@ -74,12 +74,8 @@ services:
     container_name: mysql_db_stage
     platform: linux/amd64
     image: mysql:8.2.0
-    ports:
-      - "3306:3306"
-    expose:
-      - 3306
     volumes:
-      - "./volume/db:/var/lib/mysql"
+      - "./volume/db/stage:/var/lib/mysql"
     env_file:
       - ".env.stage"
     networks:
@@ -89,12 +85,8 @@ services:
     container_name: mysql_db_prod
     platform: linux/amd64
     image: mysql:8.2.0
-    ports:
-      - "3307:3306"
-    expose:
-      - 3307
     volumes:
-      - "./volume/db:/var/lib/mysql"
+      - "./volume/db/prod:/var/lib/mysql"
     env_file:
       - ".env.prod"
     networks:
@@ -102,4 +94,8 @@ services:
 
 networks:
   medbot_bridge_prod:
+    name: medbot_bridge_prod
+    external: true
   medbot_bridge_stage:
+    name: medbot_bridge_stage
+    external: true
