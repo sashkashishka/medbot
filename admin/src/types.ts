@@ -60,7 +60,8 @@ export interface iAppointment {
   medicine: string;
   chronicDiseases: string;
   time: string;
-  timezoneOffset: string;
+  timezoneOffset: number;
+  timeZone: string;
   status: 'ACTIVE' | 'DONE' | 'DELETED';
   calendarEventId: string;
   report: string;

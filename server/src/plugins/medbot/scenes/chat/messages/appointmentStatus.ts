@@ -1,5 +1,4 @@
 import type { Prisma } from '@prisma/client';
-import { addMinutes } from 'date-fns';
 import { formatDate } from '../../../../api/utils/time.js';
 
 export const APPOINTMENT_STATUS_MESSAGES = {
@@ -8,13 +7,9 @@ export const APPOINTMENT_STATUS_MESSAGES = {
   ) => {
     if (!appointment) return '';
 
-    const timezoneDate = addMinutes(
-      new Date(appointment.time),
-      -appointment.timezoneOffset,
-    );
-
-    const date = formatDate(timezoneDate, {
-      formatStr: 'hour-day-date-month-year',
+    const date = formatDate(appointment.time, {
+      timezoneOffset: appointment.timezoneOffset,
+      timeZone: appointment.timeZone,
     });
 
     return (
@@ -30,13 +25,9 @@ export const APPOINTMENT_STATUS_MESSAGES = {
   ) => {
     if (!appointment) return '';
 
-    const timezoneDate = addMinutes(
-      new Date(appointment.time),
-      -appointment.timezoneOffset,
-    );
-
-    const date = formatDate(timezoneDate, {
-      formatStr: 'hour-day-date-month-year',
+    const date = formatDate(appointment.time, {
+      timezoneOffset: appointment.timezoneOffset,
+      timeZone: appointment.timeZone,
     });
 
     return (

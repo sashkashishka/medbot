@@ -73,6 +73,7 @@ model Appointment {
   chronicDiseases   String            @db.MediumText
   time              DateTime
   timezoneOffset    Int               @default(0)
+  timeZone          String?
   status            AppointmentStatus
   calendarEventId   String?
   report            String?           @db.MediumText
