@@ -23,7 +23,7 @@ services:
     networks:
       - medbot_bridge_stage
     depends_on:
-      - db
+      - db_stage
 
   adminer_stage:
     container_name: adminer_stage
@@ -33,7 +33,7 @@ services:
     networks:
       - medbot_bridge_stage
     depends_on:
-      - db
+      - db_stage
 
   db_stage:
     container_name: mysql_db_stage
