@@ -5,10 +5,10 @@ services:
     image: medbot/fastify:$TAG
     healthcheck:
       test: ["CMD", "curl -sS http://127.0.0.1:8000/api/healthcheck || exit 1"]
-      interval: 20s
-      timeout: 20s
-      retries: 3
-      start_period: 2m
+      interval: 5s
+      timeout: 5s
+      retries: 6
+      start_period: 10s
     volumes:
       - type: bind
         source: ./logs/fastify
