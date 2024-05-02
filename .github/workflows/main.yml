@@ -114,4 +114,18 @@ jobs:
           script: |
             bash ${{ secrets.DIR }}/.deploy/scripts/run-containers.sh
             bash ${{ secrets.DIR }}/.deploy/scripts/migrate.sh
+
+      - name: Setup cron jobs
+        uses: appleboy/ssh-action@v1.0.1
+        if: github.ref == 'refs/heads/main'
+        env:
+          DIR: ${{ secrets.DIR }}
+        with:
+          host: ${{ secrets.HOSTNAME }}
+          username: ${{ secrets.USER }}
+          password: ${{ secrets.PASSWORD }}
+          port: ${{ secrets.PORT }}
+          envs: DIR
+          script_stop: true
+          script: |
             bash ${{ secrets.DIR }}/.deploy/scripts/setup-crontab.sh

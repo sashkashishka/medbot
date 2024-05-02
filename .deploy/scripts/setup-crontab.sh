@@ -1,23 +1,33 @@
 #!/bin/bash
 
-tag=$TAG
 dir=$DIR
-env=$ENV
 
-ENV_FILE="$dir/.deploy/.env.$env"
-source "$ENV_FILE"
+db_user="MYSQL_ROOT_USER"
+db_pass="MYSQL_ROOT_PASSWORD"
+db_name="MYSQL_DATABASE"
 
-DB_DUMP_CMD="docker compose -f $dir/.deploy/docker-compose.yaml exec db_$env mysqldump -u $MYSQL_ROOT_USER -p\"$MYSQL_ROOT_PASSWORD\" $MYSQL_DATABASE > $dir/backup/db-$env-dump-\$(date +"%Y%m%d%H%M%S").sql"
+stage_db_user=$(grep "^$db_user=" "$dir/.deploy/.env.stage" | cut -d '=' -f 2)
+prod_db_user=$(grep "^$db_user=" "$dir/.deploy/.env.prod" | cut -d '=' -f 2)
+
+stage_db_pass=$(grep "^$db_pass=" "$dir/.deploy/.env.stage" | cut -d '=' -f 2)
+prod_db_pass=$(grep "^$db_pass=" "$dir/.deploy/.env.prod" | cut -d '=' -f 2)
+
+stage_db_name=$(grep "^$db_name=" "$dir/.deploy/.env.stage" | cut -d '=' -f 2)
+prod_db_name=$(grep "^$db_name=" "$dir/.deploy/.env.prod" | cut -d '=' -f 2)
+
+STAGE_DB_DUMP_CMD="docker compose -f $dir/.deploy/docker-compose.yaml exec db_stage mysqldump -u $stage_db_user -p\"$stage_db_pass\" $stage_db_name > $dir/backup/db-stage-dump-\$(date +"%Y%m%d%H%M%S").sql"
+PROD_DB_DUMP_CMD="docker compose -f $dir/.deploy/docker-compose.yaml exec db_prod mysqldump -u $prod_db_user -p\"$prod_db_pass\" $prod_db_name > $dir/backup/db-prod-dump-\$(date +"%Y%m%d%H%M%S").sql"
 DELETE_OLD_DUMPS="bash $dir/.deploy/scripts/delete_old_files.sh $dir/backup"
 DELETE_OLD_FASTIFY_IMAGES="bash $dir/.deploy/scripts/delete_old_docker_images.sh medbot/fastify"
 
-echo "" > jobs.$env.txt
+echo "" > jobs.txt
 
-echo "0 0 * * * $DB_DUMP_CMD" >> jobs.$env.txt
-echo "0 0 * * 0 $DELETE_OLD_DUMPS" >> jobs.$env.txt
-echo "0 0 * * 0 $DELETE_OLD_FASTIFY_IMAGES" >> jobs.$env.txt
+echo "0 0 * * * $STAGE_DB_DUMP_CMD" >> jobs.txt
+echo "0 0 * * * $PROD_DB_DUMP_CMD" >> jobs.txt
+echo "0 0 * * 0 $DELETE_OLD_DUMPS" >> jobs.txt
+echo "0 0 * * 0 $DELETE_OLD_FASTIFY_IMAGES" >> jobs.txt
 
-crontab jobs.$env.txt
+crontab jobs.txt
 
-echo "Cron job for $env env added successfully."
+echo "Cron job for added successfully."
 
