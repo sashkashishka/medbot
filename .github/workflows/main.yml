@@ -12,7 +12,6 @@ on:
 env:
   NODE_VERSION: 21.7.2
   NODE_ENV: production
-  NGINX_IMAGE: medbot/nginx:${{github.sha}}
   FASTIFY_IMAGE: medbot/fastify:${{github.sha}}
   ENV: ${{ github.event_name == 'workflow_dispatch' && 'prod' || 'stage' }}
 
