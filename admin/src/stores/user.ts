@@ -1,5 +1,4 @@
 import { type DescriptionsProps } from 'antd';
-import { generatePath } from 'react-router-dom';
 import { atom, computed } from 'nanostores';
 import { createFetcherStore } from './_query';
 import type { iPaginatorResp, iUser } from '../types';
