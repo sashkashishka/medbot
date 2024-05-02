@@ -7,6 +7,15 @@ interface iParams {
 export const teardownUserDataRoute: RouteOptions = {
   method: 'GET',
   url: '/teardown-user-data/:userId',
+  schema: {
+    params: {
+      type: 'object',
+      properties: {
+        userId: { type: 'number' },
+      },
+      required: ['userId'],
+    },
+  },
   async handler(req) {
     const params = req.params as iParams;
     const { userId } = params;

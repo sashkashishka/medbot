@@ -9,6 +9,15 @@ interface iParams {
 export const deleteAppointmentRoute: RouteOptions = {
   method: 'DELETE',
   url: '/appointment/:appointmentId',
+  schema: {
+    params: {
+      type: 'object',
+      properties: {
+        appointmentId: { type: 'number' },
+      },
+      required: ['appointmentId'],
+    },
+  },
   preHandler: [checkIfAppointmentActive, decorateWithGoogleCalendarEventId],
   async handler(request) {
     const params = request.params as iParams;

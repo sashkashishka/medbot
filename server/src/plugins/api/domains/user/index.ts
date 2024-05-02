@@ -7,6 +7,15 @@ interface iParams {
 export const userRoute: RouteOptions = {
   method: 'GET',
   url: '/user/:userId',
+  schema: {
+    params: {
+      type: 'object',
+      properties: {
+        userId: { type: 'number' },
+      },
+      required: ['userId'],
+    },
+  },
   handler(req) {
     const { userId } = req.params as iParams;
 

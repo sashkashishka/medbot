@@ -25,6 +25,13 @@ export const updateUserRoute: RouteOptions = {
       },
       required: ['name', 'surname', 'birthDate', 'phone', 'email'],
     },
+    params: {
+      type: 'object',
+      properties: {
+        userId: { type: 'number' },
+      },
+      required: ['userId'],
+    },
   },
   preHandler: [checkIsUserExists],
   handler(req) {

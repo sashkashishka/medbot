@@ -7,6 +7,15 @@ interface iParams {
 export const botChatIdRoute: RouteOptions = {
   method: 'GET',
   url: '/bot-chat-id/:messageThreadId',
+  schema: {
+    params: {
+      type: 'object',
+      properties: {
+        messageThreadId: { type: 'number' },
+      },
+      required: ['messageThreadId'],
+    },
+  },
   handler(req) {
     const params = req.params as iParams;
     const { messageThreadId } = params;

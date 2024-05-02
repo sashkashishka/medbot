@@ -46,6 +46,13 @@ export const updateAppointmentRoute: RouteOptions = {
         'userId',
       ],
     },
+    params: {
+      type: 'object',
+      properties: {
+        appointmentId: { type: 'number' },
+      },
+      required: ['appointmentId'],
+    },
   },
   preHandler: [
     transformAppointmentTimeToStartOfHour,

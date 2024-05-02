@@ -19,6 +19,13 @@ export const createByCode: RouteOptions = {
       },
       required: ['userId'],
     },
+    params: {
+      type: 'object',
+      properties: {
+        code: { type: 'number' },
+      },
+      required: ['code'],
+    },
   },
   preHandler: [
     checkIfBlockedByRateLimiter,

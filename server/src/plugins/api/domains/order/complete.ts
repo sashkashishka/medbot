@@ -12,6 +12,15 @@ interface iParams {
 export const completeOrderRoute: RouteOptions = {
   method: 'PATCH',
   url: '/order/complete/:orderId',
+  schema: {
+    params: {
+      type: 'object',
+      properties: {
+        orderId: { type: 'number' },
+      },
+      required: ['orderId'],
+    },
+  },
   preHandler: [
     createDecorateWithOrder('params'),
     checkIsDoneOrder,
