@@ -2,7 +2,7 @@
 
 tag=$TAG
 imagesDir=$IMAGES_DIR
-dir=$dir/$env
+dir=$DIR
 env=$ENV
 
 echo 'Load images';
