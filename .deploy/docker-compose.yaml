@@ -1,5 +1,30 @@
 version: "3.8"
 services:
+  fastify_stage:
+    container_name: fastify_stage
+    image: medbot/fastify:$TAG
+    healthcheck:
+      test: ["CMD", "curl", "-sS", "http://127.0.0.1:3000/api/healthcheck"]
+      interval: 5s
+      timeout: 5s
+      retries: 6
+      start_period: 10s
+    volumes:
+      - type: bind
+        source: ./logs/fastify
+        target: /usr/app/logs/fastify
+        read_only: false
+    ports:
+      - '3000:3000'
+    expose:
+      - 3000
+    env_file:
+      - ".env.stage"
+    networks:
+      - medbot_bridge_stage
+    depends_on:
+      - db_stage
+
   fastify_prod:
     container_name: fastify_prod
     image: medbot/fastify:$TAG
@@ -25,6 +50,16 @@ services:
     depends_on:
       - db_prod
 
+  adminer_stage:
+    container_name: adminer_stage
+    image: adminer
+    ports:
+      - 8080:8080
+    networks:
+      - medbot_bridge_stage
+    depends_on:
+      - db_stage
+
   adminer_prod:
     container_name: adminer_prod
     image: adminer
@@ -34,6 +69,21 @@ services:
       - medbot_bridge_prod
     depends_on:
       - db_prod
+
+  db_stage:
+    container_name: mysql_db_stage
+    platform: linux/amd64
+    image: mysql:8.2.0
+    ports:
+      - "3306:3306"
+    expose:
+      - 3306
+    volumes:
+      - "./volume/db:/var/lib/mysql"
+    env_file:
+      - ".env.stage"
+    networks:
+      - medbot_bridge_stage
 
   db_prod:
     container_name: mysql_db_prod
@@ -52,3 +102,4 @@ services:
 
 networks:
   medbot_bridge_prod:
+  medbot_bridge_stage:
