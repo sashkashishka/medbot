@@ -56,9 +56,7 @@ export const $tgLink = computed([$user, $adminConfig], (user, adminConfig) => {
     return '';
 
   try {
-    return generatePath(adminConfig.data?.forumUrlTemplate!, {
-      id: user.data?.messageThreadId,
-    });
+    return `${adminConfig.data?.forumUrlTemplate}/${user.data?.messageThreadId}`;
   } catch (e) {
     console.error(e);
     return '';
