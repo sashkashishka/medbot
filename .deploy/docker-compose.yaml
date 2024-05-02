@@ -11,7 +11,7 @@ services:
       start_period: 10s
     volumes:
       - type: bind
-        source: ./logs/fastify
+        source: ./stage/logs/fastify
         target: /usr/app/logs/fastify
         read_only: false
     ports:
@@ -19,7 +19,7 @@ services:
     expose:
       - 3000
     env_file:
-      - ".env.stage"
+      - "./stage/.env"
     networks:
       - medbot_bridge_stage
     depends_on:
@@ -36,7 +36,7 @@ services:
       start_period: 10s
     volumes:
       - type: bind
-        source: ./logs/fastify
+        source: ./prod/logs/fastify
         target: /usr/app/logs/fastify
         read_only: false
     ports:
@@ -44,7 +44,7 @@ services:
     expose:
       - 8000
     env_file:
-      - ".env.prod"
+      - "./prod/.env"
     networks:
       - medbot_bridge_prod
     depends_on:
@@ -75,9 +75,9 @@ services:
     platform: linux/amd64
     image: mysql:8.2.0
     volumes:
-      - "./volume/db/stage:/var/lib/mysql"
+      - "./stage/volume/db:/var/lib/mysql"
     env_file:
-      - ".env.stage"
+      - "./stage/.env"
     networks:
       - medbot_bridge_stage
 
@@ -86,9 +86,9 @@ services:
     platform: linux/amd64
     image: mysql:8.2.0
     volumes:
-      - "./volume/db/prod:/var/lib/mysql"
+      - "./prod/volume/db:/var/lib/mysql"
     env_file:
-      - ".env.prod"
+      - "./prod/.env"
     networks:
       - medbot_bridge_prod
 
