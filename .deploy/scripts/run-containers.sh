@@ -9,13 +9,13 @@ echo 'Load images';
 docker load -i $imagesDir/fastify.tar
 
 echo 'Stop previous';
-docker compose -f $dir/.deploy/docker-compose.$env.yaml stop 
+docker compose -f $dir/.deploy/docker-compose.$env.yaml stop db_$env adminer_$env fastify_$env
 
 echo 'Start db';
-docker compose -f $dir/.deploy/docker-compose.$env.yaml up db -d --wait
+docker compose -f $dir/.deploy/docker-compose.$env.yaml up db_$env -d --wait
 
 echo 'Start adminer';
-docker compose -f $dir/.deploy/docker-compose.$env.yaml up adminer -d --wait
+docker compose -f $dir/.deploy/docker-compose.$env.yaml up adminer_$env -d --wait
 
 echo 'Start fastify';
-docker compose -f $dir/.deploy/docker-compose.$env.yaml up fastify -d --wait
+docker compose -f $dir/.deploy/docker-compose.$env.yaml up fastify_$env -d --wait

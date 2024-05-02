@@ -1,6 +1,6 @@
 version: "3.8"
 services:
-  fastify:
+  fastify_stage:
     container_name: fastify_stage
     image: medbot/fastify:$TAG
     healthcheck:
@@ -25,7 +25,7 @@ services:
     depends_on:
       - db
 
-  adminer:
+  adminer_stage:
     container_name: adminer_stage
     image: adminer
     ports:
@@ -35,7 +35,7 @@ services:
     depends_on:
       - db
 
-  db:
+  db_stage:
     container_name: mysql_db_stage
     platform: linux/amd64
     image: mysql:8.2.0

@@ -1,6 +1,6 @@
 version: "3.8"
 services:
-  fastify:
+  fastify_prod:
     container_name: fastify_prod
     image: medbot/fastify:$TAG
     healthcheck:
@@ -25,7 +25,7 @@ services:
     depends_on:
       - db
 
-  adminer:
+  adminer_prod:
     container_name: adminer_prod
     image: adminer
     ports:
@@ -35,7 +35,7 @@ services:
     depends_on:
       - db
 
-  db:
+  db_prod:
     container_name: mysql_db_prod
     platform: linux/amd64
     image: mysql:8.2.0
