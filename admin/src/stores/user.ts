@@ -1,5 +1,4 @@
 import { type DescriptionsProps } from 'antd';
-import { generatePath } from 'react-router-dom';
 import { atom, computed } from 'nanostores';
 import { createFetcherStore } from './_query';
 import type { iPaginatorResp, iUser } from '../types';
@@ -56,9 +55,7 @@ export const $tgLink = computed([$user, $adminConfig], (user, adminConfig) => {
     return '';
 
   try {
-    return generatePath(adminConfig.data?.forumUrlTemplate!, {
-      id: user.data?.messageThreadId,
-    });
+    return `${adminConfig.data?.forumUrlTemplate}/${user.data?.messageThreadId}`;
   } catch (e) {
     console.error(e);
     return '';

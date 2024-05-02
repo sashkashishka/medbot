@@ -7,13 +7,13 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 env:
   NODE_VERSION: 21.7.2
   NODE_ENV: production
-  NGINX_IMAGE: medbot/nginx:${{github.sha}}
   FASTIFY_IMAGE: medbot/fastify:${{github.sha}}
-  ENV: ${{ github.event_name == 'pull_request' && 'stage' || 'prod' }}
+  ENV: ${{ github.event_name == 'workflow_dispatch' && 'prod' || 'stage' }}
 
 jobs:
   deploy:
@@ -27,19 +27,19 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: Install and build admin dependencies
+      - name: Install deps and build admin
         working-directory: ./admin
         run: |
           npm ci --include=dev
           npm run build
 
-      - name: Install and build server dependencies
+      - name: Install deps and build server
         working-directory: ./server
         run: |
           npm ci --include=dev
           npm run build
 
-      - name: Install and build webapp dependencies
+      - name: Install deps and build webapp
         working-directory: ./webapp
         run: |
           npm ci --include=dev
@@ -62,7 +62,7 @@ jobs:
           username: ${{ secrets.USER }}
           password: ${{ secrets.PASSWORD }}
           port: ${{ secrets.PORT }}
-          source: "nginx.tar,fastify.tar"
+          source: "fastify.tar"
           target: ${{ secrets.IMAGES_DIR }}
 
       - name: Copy deploy dir
@@ -74,6 +74,7 @@ jobs:
           port: ${{ secrets.PORT }}
           source: ".deploy/*"
           target: ${{ secrets.DIR }}
+          strip_components: 1
 
       - name: Copy admin dir
         uses: appleboy/scp-action@v0.1.6
@@ -83,7 +84,7 @@ jobs:
           password: ${{ secrets.PASSWORD }}
           port: ${{ secrets.PORT }}
           source: "admin/build/*"
-          target: ${{ secrets.DIR }}/static/admin/${{ env.ENV }}
+          target: ${{ secrets.DIR }}/${{ env.ENV }}/static/admin/
           strip_components: 2
 
       - name: Copy webapp dir
@@ -94,7 +95,7 @@ jobs:
           password: ${{ secrets.PASSWORD }}
           port: ${{ secrets.PORT }}
           source: "webapp/build/*"
-          target: ${{ secrets.DIR }}/static/webapp/${{ env.ENV }}
+          target: ${{ secrets.DIR }}/${{ env.ENV }}/static/webapp/
           strip_components: 2
 
       - name: Start containers
@@ -112,8 +113,8 @@ jobs:
           envs: TAG,DIR,ENV,IMAGES_DIR
           script_stop: true
           script: |
-            bash ${{ secrets.DIR }}/.deploy/scripts/run-containers.sh
-            bash ${{ secrets.DIR }}/.deploy/scripts/migrate.sh
+            bash ${{ secrets.DIR }}/scripts/run-containers.sh
+            bash ${{ secrets.DIR }}/scripts/migrate.sh
 
       - name: Setup cron jobs
         uses: appleboy/ssh-action@v1.0.1
@@ -128,4 +129,4 @@ jobs:
           envs: DIR
           script_stop: true
           script: |
-            bash ${{ secrets.DIR }}/.deploy/scripts/setup-crontab.sh
+            bash ${{ secrets.DIR }}/scripts/setup-crontab.sh
