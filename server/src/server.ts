@@ -13,8 +13,6 @@ import { serviceApiSdk } from './plugins/serviceApiSdk/index.js';
 
 process.env.TZ = 'Etc/Universal';
 
-// TODO serve static for webapp
-
 interface iOptions {
   plugins?: {
     medbot?: FastifyPluginAsync;
@@ -51,7 +49,7 @@ export async function main({
 
     await fastify.listen({
       port: fastify.config.PORT,
-      host: fastify.config.HOST,
+      host: '0.0.0.0',
     });
 
     return fastify;

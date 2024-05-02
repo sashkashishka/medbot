@@ -81,11 +81,22 @@ export const medbotPlugin: FastifyPluginAsync = fp(async (fastify) => {
     }),
   );
 
-  fastify.addHook('onListen', async () => {
-    bot.launch();
-  });
+  if (fastify.config.NODE_ENV === 'production') {
+    const webhookHandler = await bot.createWebhook({
+      domain: fastify.config.HOST,
+    });
 
-  fastify.addHook('onClose', async () => {
-    bot.stop();
-  });
+    fastify.post(
+      `/telegraf/${bot.secretPathComponent()}`,
+      // @ts-ignore
+      webhookHandler,
+    );
+  } else {
+    fastify.addHook('onListen', async () => {
+      bot.launch();
+    });
+    fastify.addHook('onClose', async () => {
+      bot.stop();
+    });
+  }
 });

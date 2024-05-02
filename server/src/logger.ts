@@ -1,3 +1,4 @@
+import path from 'node:path';
 import { pino, type LoggerOptions } from 'pino';
 
 function getLogger() {
@@ -8,7 +9,7 @@ function getLogger() {
     options.transport = {
       target: 'pino/file',
       options: {
-        destination: './logs/runtime.log',
+        destination: path.resolve(import.meta.dirname, `logs/fastify/runtime-${process.env.ENV}.log`),
       },
     };
   }

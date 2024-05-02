@@ -34,12 +34,6 @@ export const tgCompleteOrderRoute: RouteOptions = {
     const params = req.params as iParams;
     const body = req.body as iBody;
 
-    let tgAction = this.medbotSdk.completeOneTimeOrder;
-
-    if (params.orderType === 'subscription') {
-      tgAction = this.medbotSdk.completeSubscriptionOrder;
-    }
-
     await Promise.all([
       this.prisma.telegrafSessions.deleteMany({
         where: {

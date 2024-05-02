@@ -2,6 +2,7 @@ import { useStore } from '@nanostores/react';
 
 import { $activeAppointment } from '../../stores/appointment';
 import { $activeOrder } from '../../stores/order';
+import { type iAppointment } from '../../types';
 
 import { CreateAppointmentForm } from './components/Form';
 
@@ -11,7 +12,7 @@ export function CreateAppointmentPage() {
 
   return (
     <CreateAppointmentForm
-      activeAppointment={activeAppointment}
+      activeAppointment={activeAppointment! as iAppointment}
       activeOrder={activeOrder!}
     />
   );

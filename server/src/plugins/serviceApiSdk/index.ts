@@ -15,7 +15,7 @@ export const serviceApiSdk: FastifyPluginAsync = fp(async (fastify) => {
     'serviceApiSdk',
     new ServiceApiSdk(
       fastify.log,
-      `http://${fastify.config.HOST}:${fastify.config.PORT}`,
+      `http://0.0.0.0:${fastify.config.PORT}`,
       fastify.config.TG_BOT_TOKEN,
     ),
   );

@@ -4,7 +4,7 @@ import type { Update } from 'telegraf/types';
 
 export const checkIfHasActiveOrder: MiddlewareFn<iMedbotContext> =
   async function checkIfHasActiveOrder(ctx, next) {
-    const { session, serviceApiSdk } = ctx;
+    const { serviceApiSdk } = ctx;
 
     try {
       const messageThreadId = (ctx.update as Update.MessageUpdate).message
@@ -20,7 +20,7 @@ export const checkIfHasActiveOrder: MiddlewareFn<iMedbotContext> =
     } catch (e) {
       ctx.logger.error(e, 'checkIfHasActiveOrder');
 
-      return ctx.reply('Error occured in checkIfHasActiveOrder middleware');;
+      return ctx.reply('Error occured in checkIfHasActiveOrder middleware');
     }
 
     return next();

@@ -10,7 +10,7 @@ interface iProps {
 export function SubscriptionExpiredGuard({ children }: iProps) {
   const { data } = useStore($activeAppointment);
 
-  if ('message' in data!) {
+  if ('message' in (data || {})) {
     return <ErrorOrderExpired />;
   }
 
