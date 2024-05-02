@@ -110,6 +110,7 @@ jobs:
           password: ${{ secrets.PASSWORD }}
           port: ${{ secrets.PORT }}
           envs: TAG,DIR,ENV,IMAGES_DIR
+          script_stop: true
           script: |
             bash ${{ secrets.DIR }}/.deploy/scripts/run-containers.sh
             bash ${{ secrets.DIR }}/.deploy/scripts/migrate.sh
