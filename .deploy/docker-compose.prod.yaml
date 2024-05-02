@@ -23,7 +23,7 @@ services:
     networks:
       - medbot_bridge_prod
     depends_on:
-      - db
+      - db_prod
 
   adminer_prod:
     container_name: adminer_prod
@@ -33,7 +33,7 @@ services:
     networks:
       - medbot_bridge_prod
     depends_on:
-      - db
+      - db_prod
 
   db_prod:
     container_name: mysql_db_prod
