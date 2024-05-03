@@ -33,10 +33,7 @@ export function createGoogleCalendarEvent(options: iOptions) {
         dateTime: addHours(new Date(appointment.time), 1).toISOString(),
         timeZone: 'Etc/Universal',
       },
-      description: `Link to tg chat: ${tgForumUrlTemplate.replace(
-        ':id',
-        String(user.messageThreadId),
-      )}
+      description: `Link to tg chat: ${tgForumUrlTemplate}/${user.messageThreadId}
 User info: ${adminAreaUrl}/user/${user.id}`,
       reminders: {
         useDefault: true,
