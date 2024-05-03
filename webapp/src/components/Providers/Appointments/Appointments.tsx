@@ -30,7 +30,7 @@ export function AppointmentProvider({ children }: iProps) {
 
   return (
     <SubscriptionExpiredGuard>
-      <NoActiveOrderGuard>{children}</NoActiveOrderGuard>;
+      <NoActiveOrderGuard>{children}</NoActiveOrderGuard>
     </SubscriptionExpiredGuard>
   );
 }
