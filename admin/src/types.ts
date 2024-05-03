@@ -12,7 +12,7 @@ export interface iRegister extends iLogin {}
 
 export interface iAdminConfig {
   forumUrlTemplate: string;
-  googleEmail: string;
+  calendarId: string;
 }
 
 export interface iPaginatorResp<T> {
