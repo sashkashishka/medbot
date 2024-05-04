@@ -78,6 +78,7 @@ model Appointment {
   calendarEventId   String?
   report            String?           @db.MediumText
   treatment         String?           @db.MediumText
+  notes             String?           @db.MediumText
 }
 
 model ActivationCode {
@@ -92,7 +93,7 @@ model ActivationCode {
 
 model TelegrafSessions {
   key     String @id
-  session String
+  session String @db.MediumText
 }
 
 model Admin {

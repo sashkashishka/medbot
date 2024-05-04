@@ -3,7 +3,7 @@ import type { Update } from 'telegraf/types';
 import type { iMedbotContext } from '../../../types.js';
 
 export const putOrderAndUserToSession: MiddlewareFn<iMedbotContext> =
-  async function putOrderAndUserToSession(ctx) {
+  async function putOrderAndUserToSession(ctx, next) {
     const { serviceApiSdk } = ctx;
 
     const userId = (ctx.update as Update.MessageUpdate).message.from.id;
@@ -26,4 +26,6 @@ export const putOrderAndUserToSession: MiddlewareFn<iMedbotContext> =
     } catch (e) {
       ctx.logger.error(e, 'putOrderAndUserToSession');
     }
+
+    return next();
   };

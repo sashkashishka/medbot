@@ -1,6 +1,6 @@
 import { isBefore } from 'date-fns';
 import type { MiddlewareFn } from 'telegraf';
-import type { iMedbotContext } from '../types.js';
+import type { iMedbotContext } from '../../../types.js';
 
 export function createCheckSubscription(
   fns: Array<(ctx: iMedbotContext) => Promise<iMedbotContext>>,
