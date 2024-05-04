@@ -30,8 +30,6 @@ export const updateAppointmentRoute: RouteOptions = {
         status: { type: 'string' },
         orderId: { type: 'number' },
         userId: { type: 'number' },
-        report: { type: 'string' },
-        treatment: { type: 'string' },
       },
       required: [
         'complaints',
@@ -64,7 +62,14 @@ export const updateAppointmentRoute: RouteOptions = {
   ],
   async handler(request) {
     const params = request.params as iParams;
-    const body = request.body as Prisma.AppointmentUncheckedCreateInput;
+    const {
+      complaints,
+      complaintsStarted,
+      medicine,
+      chronicDiseases,
+      time,
+      status,
+    } = request.body as Prisma.AppointmentUncheckedCreateInput;
 
     const { appointmentId } = params;
 
@@ -73,7 +78,14 @@ export const updateAppointmentRoute: RouteOptions = {
         id: Number(appointmentId),
         status: 'ACTIVE',
       },
-      data: body,
+      data: {
+        complaints,
+        complaintsStarted,
+        medicine,
+        chronicDiseases,
+        time,
+        status,
+      },
       select: {
         id: true,
         orderId: true,

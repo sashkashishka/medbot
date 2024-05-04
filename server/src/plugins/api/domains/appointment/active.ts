@@ -29,6 +29,7 @@ export const activeAppointmentRoute: RouteOptions = {
         status: 'ACTIVE',
       },
       select: {
+        id: true,
         orderId: true,
         userId: true,
         chronicDiseases: true,

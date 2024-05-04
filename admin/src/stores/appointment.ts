@@ -110,6 +110,18 @@ export const $editAppointment = createMutatorStore<iAppointment>(
   },
 );
 
+export const $prescriptAppointment = createMutatorStore<iAppointment>(
+  ({ data, invalidate }) => {
+    invalidate((k) => Boolean(k.match(APPOINTMENT_KEYS.list)));
+
+    return fetch(`/api/admin/appointment/prescript/${data.id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+      headers: { 'content-type': 'application/json' },
+    });
+  },
+);
+
 export const $deleteAppointment = createMutatorStore<iAppointment>(
   ({ data, invalidate }) => {
     invalidate((k) => Boolean(k.match(APPOINTMENT_KEYS.list)));

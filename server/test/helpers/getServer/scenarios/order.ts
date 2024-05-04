@@ -6,7 +6,7 @@ export interface iOrderMock {
   userId: number;
   type: 'none' | 'one-time' | 'subscription';
   status: Prisma.OrderUncheckedCreateInput['status'];
-  appointment: 'none' | 'active' | 'done';
+  appointment: 'none' | 'deleted' | 'active' | 'done';
 }
 
 export async function order(
@@ -40,7 +40,12 @@ export async function order(
     },
   });
 
-  const appointmentStatus = appointment === 'active' ? 'ACTIVE' : 'DONE';
+  const appointmentStatus =
+    appointment === 'active'
+      ? 'ACTIVE'
+      : appointment === 'deleted'
+      ? 'DELETED'
+      : 'DONE';
 
   if (appointment === 'none') return;
 

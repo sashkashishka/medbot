@@ -33,6 +33,17 @@ export const deleteAppointmentRoute: RouteOptions = {
         status: 'DELETED',
         calendarEventId: null,
       },
+      select: {
+        id: true,
+        orderId: true,
+        userId: true,
+        chronicDiseases: true,
+        medicine: true,
+        complaints: true,
+        complaintsStarted: true,
+        time: true,
+        status: true,
+      },
     });
 
     await this.googleCalendar.events.delete({

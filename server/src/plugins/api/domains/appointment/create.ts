@@ -28,8 +28,6 @@ export const createAppointmentRoute: RouteOptions = {
         status: { type: 'string' },
         orderId: { type: 'number' },
         userId: { type: 'number' },
-        report: { type: 'string' },
-        treatment: { type: 'string' },
       },
       required: [
         'complaints',
@@ -56,10 +54,28 @@ export const createAppointmentRoute: RouteOptions = {
     checkIfTimeSlotFree,
   ],
   async handler(req) {
-    const body = req.body as Prisma.AppointmentUncheckedCreateInput;
+    const {
+      complaints,
+      complaintsStarted,
+      medicine,
+      chronicDiseases,
+      time,
+      status,
+      orderId,
+      userId,
+    } = req.body as Prisma.AppointmentUncheckedCreateInput;
 
     const appointment = await this.prisma.appointment.create({
-      data: body,
+      data: {
+        complaints,
+        complaintsStarted,
+        medicine,
+        chronicDiseases,
+        time,
+        status,
+        orderId,
+        userId,
+      },
       select: {
         id: true,
         orderId: true,
@@ -91,6 +107,17 @@ export const createAppointmentRoute: RouteOptions = {
       data: {
         calendarEventId: event.data.id,
       },
+      select: {
+        id: true,
+        orderId: true,
+        userId: true,
+        complaints: true,
+        complaintsStarted: true,
+        medicine: true,
+        chronicDiseases: true,
+        time: true,
+        status: true,
+      }
     });
   },
 };

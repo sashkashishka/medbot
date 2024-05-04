@@ -39,6 +39,7 @@ import { activeAppointmentRoute } from './domains/appointment/active.js';
 import { updateAppointmentRoute } from './domains/appointment/update.js';
 import { deleteAppointmentRoute } from './domains/appointment/delete.js';
 import { appointmentListRoute } from './domains/appointment/list.js';
+import { prescriptAppointmentRoute } from './domains/appointment/prescript.js';
 
 import { registerAdminRoute } from './domains/admin/register.js';
 import { loginAdminRoute } from './domains/admin/login.js';
@@ -118,6 +119,7 @@ const adminApi: FastifyPluginCallback = (fastify, _opts, done) => {
   fastify.route(orderListRoute);
   fastify.route(adminRoute);
   fastify.route(appointmentListRoute);
+  fastify.route(prescriptAppointmentRoute);
   fastify.route(adminConfigRoute);
   fastify.route(userRoute);
   fastify.route(updateAppointmentRoute);

@@ -66,6 +66,7 @@ export interface iAppointment {
   calendarEventId: string;
   report: string;
   treatment: string;
+  notes: string;
 }
 
 export interface iFreeSlot {
