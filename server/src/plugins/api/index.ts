@@ -30,6 +30,8 @@ import { ordersProductRoute } from './domains/medbot/ordersProduct.js';
 import { tgCompleteOrderRoute } from './domains/medbot/tgCompleteOrder.js';
 import { tgDeleteAppointmentRoute } from './domains/medbot/tgDeleteAppointment.js';
 import { tgCompleteAppointmentRoute } from './domains/medbot/tgCompleteAppointment.js';
+import { tgUpdateAppointmentRoute } from './domains/medbot/tgUpdateAppointment.js';
+import { tgCreateAppointmentRoute } from './domains/medbot/tgCreateAppointment.js';
 
 import { freeSlotsRoute } from './domains/appointment/freeSlots.js';
 import { createAppointmentRoute } from './domains/appointment/create.js';
@@ -125,6 +127,8 @@ const adminApi: FastifyPluginCallback = (fastify, _opts, done) => {
   fastify.route(deleteAppointmentRoute);
   fastify.route(completeOrderRoute);
   fastify.route(tgCompleteOrderRoute);
+  fastify.route(tgCreateAppointmentRoute);
+  fastify.route(tgUpdateAppointmentRoute);
   fastify.route(tgCompleteAppointmentRoute);
   fastify.route(tgDeleteAppointmentRoute);
 

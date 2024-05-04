@@ -5,11 +5,14 @@ import {
   type iPaginatorResp,
   type iAppointment,
   type iUser,
-  type iOrder,
   type iFreeSlot,
 } from '../types';
 import { createListFilters, type iPagination } from './_list-filters';
-import { $tgCompleteAppointment, $tgDeleteAppointment } from './bot';
+import {
+  $tgCompleteAppointment,
+  $tgDeleteAppointment,
+  $tgUpdateAppointment,
+} from './bot';
 
 export const APPOINTMENT_PAGE_SIZE = 20;
 
@@ -47,6 +50,13 @@ export const $appointments = createFetcherStore<iPaginatorResp<iAppointment>>(
   APPOINTMENT_KEYS.filteredList(),
 );
 
+// NOTE:
+// there is an issue with switching between timezones
+// the task is simple - just format date to specific timezone
+// but date-fns cannot receive timezone as argument (instead of native Intl obj)
+// and ReactScheduleMeeting hugely depends on date-fns
+// providing custom locale will not help because it just
+// provides templates for formatting
 export const $appointmentFreeSlots = createFetcherStore<iFreeSlot[]>(
   APPOINTMENT_KEYS.freeSlots,
 );
@@ -158,26 +168,21 @@ export async function completeAppointment({
   }
 }
 
-/**
- * @deprecated
- */
 export async function changeAppointmentTime({
   appointment,
-  // user,
-  // activeOrder,
+  user,
 }: {
   appointment: iAppointment;
   user: iUser;
-  activeOrder: iOrder;
 }) {
   try {
     const resp = (await $editAppointment.mutate(appointment)) as Response;
 
     if (resp.ok) {
-      // await $sendMessage.mutate({
-      //   botChatId: user?.botChatId,
-      //   text: getAppointmentCompleteMessage({ activeOrder }),
-      // });
+      await $tgUpdateAppointment.mutate({
+        botChatId: user?.botChatId!,
+        userId: user?.id!,
+      });
       notification.success({ message: 'Appointment time changed!' });
       return true;
     }

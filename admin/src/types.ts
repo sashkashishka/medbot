@@ -31,6 +31,8 @@ export interface iUser {
   botChatId?: number;
   phone?: string;
   email?: string;
+  timezoneOffset?: number;
+  timeZone?: string;
 }
 
 export interface iProduct {
@@ -60,8 +62,6 @@ export interface iAppointment {
   medicine: string;
   chronicDiseases: string;
   time: string;
-  timezoneOffset: number;
-  timeZone: string;
   status: 'ACTIVE' | 'DONE' | 'DELETED';
   calendarEventId: string;
   report: string;

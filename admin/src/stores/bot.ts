@@ -20,6 +20,26 @@ export const $tgCompleteOrder = createMutatorStore<iTgCompleteOrder>(
   },
 );
 
+export const $tgCreateAppointment = createMutatorStore<iUserdata>(
+  ({ data }) => {
+    return fetch('/api/admin/bot/appointment/create', {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+      headers: { 'content-type': 'application/json' },
+    });
+  },
+);
+
+export const $tgUpdateAppointment = createMutatorStore<iUserdata>(
+  ({ data }) => {
+    return fetch('/api/admin/bot/appointment/update', {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+      headers: { 'content-type': 'application/json' },
+    });
+  },
+);
+
 export const $tgCompleteAppointment = createMutatorStore<iUserdata>(
   ({ data }) => {
     return fetch('/api/admin/bot/appointment/complete', {

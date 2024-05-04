@@ -465,3 +465,75 @@ test('delete appointment', async (t) => {
   const results = sdkMethod();
   t.equal(results.length, 1);
 });
+
+test('update appointment', async (t) => {
+  const { fastify, request, adminCookie, getUsers } = await getServer({
+    t,
+    scenarios: {
+      product: true,
+      admin: true,
+      user: [
+        {
+          order: { type: 'one-time', status: 'ACTIVE', appointment: 'active' },
+          session: true,
+        },
+      ],
+    },
+  });
+
+  const sdkMethod = t.capture(fastify.medbotSdk, 'updateAppointment', () =>
+    Promise.resolve(),
+  );
+
+  const [user] = await getUsers();
+
+  const resp = await request('/api/admin/bot/appointment/update', {
+    method: 'PATCH',
+    cookie: await adminCookie(),
+    body: { userId: user.id, botChatId: user.botChatId },
+  });
+
+  const data = (await resp.json()) as { error: string };
+  t.match(resp, { status: 200 });
+  t.match(data, { done: true });
+
+  const results = sdkMethod();
+  t.equal(results.length, 1);
+  t.equal(results[0].args.length, 3);
+});
+
+test('create appointment', async (t) => {
+  const { fastify, request, adminCookie, getUsers } = await getServer({
+    t,
+    scenarios: {
+      product: true,
+      admin: true,
+      user: [
+        {
+          order: { type: 'one-time', status: 'ACTIVE', appointment: 'active' },
+          session: true,
+        },
+      ],
+    },
+  });
+
+  const sdkMethod = t.capture(fastify.medbotSdk, 'createAppointment', () =>
+    Promise.resolve(),
+  );
+
+  const [user] = await getUsers();
+
+  const resp = await request('/api/admin/bot/appointment/create', {
+    method: 'PATCH',
+    cookie: await adminCookie(),
+    body: { userId: user.id, botChatId: user.botChatId },
+  });
+
+  const data = (await resp.json()) as { error: string };
+  t.match(resp, { status: 200 });
+  t.match(data, { done: true });
+
+  const results = sdkMethod();
+  t.equal(results.length, 1);
+  t.equal(results[0].args.length, 3);
+});
