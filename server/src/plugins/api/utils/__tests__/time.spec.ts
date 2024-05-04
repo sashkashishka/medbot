@@ -5,14 +5,12 @@ import {
   addMinutes,
   setHours,
   startOfDay,
-  startOfHour,
 } from 'date-fns';
 import { type Prisma } from '@prisma/client';
 import fakeTimer from '@sinonjs/fake-timers';
 import {
   getFreeSlots,
   isEarly,
-  isOccupied,
   isWithinWorkingHours,
 } from '../time.js';
 
@@ -91,49 +89,6 @@ test('time utilities', (t) => {
 
     cases.forEach(([time, result]) => {
       t.equal(isWithinWorkingHours(time), result);
-    });
-    t.end();
-  });
-
-  test('isOccupied', (t) => {
-    const date = new Date();
-    const startHourDate = startOfHour(date);
-    const cases = [
-      [date.toISOString(), date.toISOString(), true],
-      [
-        addHours(startHourDate, -1).toISOString(),
-        startHourDate.toISOString(),
-        false,
-      ],
-      [
-        addMinutes(startHourDate, 30).toISOString(),
-        startHourDate.toISOString(),
-        true,
-      ],
-      [
-        addMinutes(startHourDate, -1).toISOString(),
-        startHourDate.toISOString(),
-        false,
-      ],
-      [
-        addMinutes(startHourDate, 59).toISOString(),
-        startHourDate.toISOString(),
-        true,
-      ],
-      [
-        addMinutes(startHourDate, 60).toISOString(),
-        startHourDate.toISOString(),
-        false,
-      ],
-      [
-        addMinutes(startHourDate, 61).toISOString(),
-        startHourDate.toISOString(),
-        false,
-      ],
-    ] as const;
-
-    cases.forEach(([time, appointmentTime, result]) => {
-      t.equal(isOccupied(time, appointmentTime), result);
     });
     t.end();
   });

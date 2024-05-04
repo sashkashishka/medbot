@@ -1,15 +1,6 @@
 import { Prisma } from '@prisma/client';
 import { addDays, setHours } from 'date-fns/fp';
-import {
-  getHours,
-  isAfter,
-  isEqual,
-  startOfHour,
-  startOfDay,
-  addHours,
-  isBefore,
-  addMinutes,
-} from 'date-fns';
+import { getHours, startOfDay, addHours, isBefore, addMinutes } from 'date-fns';
 
 // TODO: move to env variables
 const startHour = 10;
@@ -23,23 +14,6 @@ export function isWithinWorkingHours(time: string | Date): boolean {
   const hour = getHours(time);
 
   return hour >= startHour && hour < lastHour;
-}
-
-/**
- * @deprecated
- */
-export function isOccupied(
-  time: string | Date,
-  appointmentTime: string | Date,
-): boolean {
-  const timeDate = new Date(time);
-  const startDate = startOfHour(new Date(appointmentTime));
-  const endDate = addHours(startDate, 1);
-
-  return (
-    (isEqual(timeDate, startDate) || isAfter(timeDate, startDate)) &&
-    isBefore(timeDate, endDate)
-  );
 }
 
 interface iFreeSlot {
