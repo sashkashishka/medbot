@@ -8,6 +8,8 @@ export interface iFormValues {
   birthDate: iUser['birthDate'];
   phone: iUser['phone'];
   email: iUser['email'];
+  timezoneOffset: iUser['timezoneOffset'];
+  timeZone: iUser['timeZone'];
 
   productId: iProduct['id'];
 

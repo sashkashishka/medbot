@@ -89,6 +89,6 @@ export function formatDate(
   return new Intl.DateTimeFormat(locale, {
     dateStyle,
     timeStyle,
-    timeZone,
+    timeZone: timeZone || undefined,
   }).format(d);
 }
