@@ -54,7 +54,6 @@ export async function order(
       complaintsStarted: '1',
       chronicDiseases: 'test',
       medicine: 'test',
-      timezoneOffset: 0,
     },
   });
 }

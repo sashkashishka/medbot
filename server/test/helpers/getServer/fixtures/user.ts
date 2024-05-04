@@ -13,7 +13,7 @@ export const user: Prisma.UserUncheckedCreateInput = {
   timeZone: 'Etc',
 };
 
-export const user2: Prisma.UserUncheckedUpdateInput = {
+export const user2: Prisma.UserUncheckedCreateInput = {
   id: 2,
   name: 'David',
   surname: 'Owen',

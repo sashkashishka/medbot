@@ -1,4 +1,3 @@
-import type { Update } from 'telegraf/types';
 import { Scenes } from 'telegraf';
 import { SCENES } from '../../constants/scenes.js';
 import type { iMedbotContext } from '../../types.js';

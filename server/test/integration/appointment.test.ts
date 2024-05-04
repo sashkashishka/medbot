@@ -11,7 +11,6 @@ const appointment = {
   complaintsStarted: 'complaintsStarted',
   medicine: 'medicine',
   chronicDiseases: 'chronicDiseases',
-  timezoneOffset: 0,
   status: 'ACTIVE',
 };
 
@@ -538,7 +537,6 @@ test('active appointment', async (t) => {
     t.match(resp, { status: 200 }, 'should return 200 status');
     t.match(data, { status: 'ACTIVE', userId: user.id });
     t.ok(data.time);
-    t.ok(data.timezoneOffset === 0);
     t.ok(data.complaints);
     t.ok(data.medicine);
     t.ok(data.complaintsStarted);
