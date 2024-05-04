@@ -5,9 +5,10 @@ import { getHours, startOfDay, addHours, isBefore, addMinutes } from 'date-fns';
 // TODO: move to env variables
 const startHour = 10;
 const lastHour = 22;
+const minLeadHours = 2;
 
 export function isEarly(time: string | Date): boolean {
-  return isBefore(time, addHours(new Date(), 2));
+  return isBefore(time, addHours(new Date(), minLeadHours));
 }
 
 export function isWithinWorkingHours(time: string | Date): boolean {

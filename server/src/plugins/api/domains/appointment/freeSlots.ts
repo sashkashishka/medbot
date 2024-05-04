@@ -1,6 +1,6 @@
 import { addWeeks, startOfDay } from 'date-fns';
 import type { RouteOptions } from 'fastify';
-import { getFreeSlots } from '../../utils/time.js';
+import { getFreeSlots } from '../../../../utils/time.js';
 
 export const freeSlotsRoute: RouteOptions = {
   method: 'GET',

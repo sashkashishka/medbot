@@ -1,6 +1,6 @@
 import type { Prisma } from '@prisma/client';
 import type { preHandlerAsyncHookHandler } from 'fastify';
-import { isEarly } from '../utils/time.js';
+import { isEarly } from '../../../utils/time.js';
 import { AppointmentError } from '../utils/errors.js';
 
 export const checkIsAppointmentTooEarly: preHandlerAsyncHookHandler =
