@@ -19,12 +19,6 @@ export class ServiceApiSdk {
     );
   }
 
-  public async getMessageThreadId(botChatId: number) {
-    return this.request<{ messageThreadId: number }>(
-      `/message-thread-id/${botChatId}`,
-    );
-  }
-
   public async activeOrder(userId: number) {
     return this.request<Prisma.OrderUncheckedCreateInput>(
       `/order/active/${userId}`,

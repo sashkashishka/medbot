@@ -1,17 +1,16 @@
 import { Scenes } from 'telegraf';
 import { SCENES } from '../../constants/scenes.js';
-import type { Update } from 'telegraf/types';
 import type { iMedbotContext } from '../../types.js';
 import { checkIfViaBot } from '../../middlewares/checkIfViaBot.js';
-import { setMessageThreadId } from './middlewares/setMessageThreadId.js';
 import { chatEnter } from './middlewares/chatEnter.js';
 import { APPOINTMENT_STATUS_MESSAGES } from './messages/appointmentStatus.js';
-import { createOrderChecker } from '../../middlewares/createOrderChecker.js';
 import { teardownUserData } from './utils.js';
+import { putOrderAndUserToSession } from './middlewares/putOrderAndUserToSession.js';
+import { createCheckSubscription } from './middlewares/checkSubscription.js';
 
 export const chatScene = new Scenes.BaseScene<iMedbotContext>(SCENES.CHAT);
 
-chatScene.enter(chatEnter);
+chatScene.enter(putOrderAndUserToSession, chatEnter);
 
 const APPOINTMENT_COMMANDS = [
   'appointmentCreated',
@@ -30,10 +29,11 @@ chatScene.command(
     return next();
   },
   async (ctx) => {
-    const { update, serviceApiSdk } = ctx;
+    const { update, serviceApiSdk, session } = ctx;
+    const { user } = session;
 
     try {
-      const [activeAppointment, err] = await serviceApiSdk.activeAppointment(
+      const [appointment, err] = await serviceApiSdk.activeAppointment(
         update.message.from.id,
       );
 
@@ -42,11 +42,13 @@ chatScene.command(
       }
 
       const message =
-        APPOINTMENT_STATUS_MESSAGES[update.message.text](activeAppointment);
+        APPOINTMENT_STATUS_MESSAGES[update.message.text]({ appointment, user });
 
       await Promise.all([
         ctx.deleteMessage(update.message.message_id),
-        message ? ctx.reply(message) : Promise.resolve(),
+        message
+          ? ctx.reply(message, { parse_mode: 'Markdown' })
+          : Promise.resolve(),
       ]);
     } catch (e) {
       ctx.logger.error(e, 'chatScene--command--send-appointment-status');
@@ -54,28 +56,15 @@ chatScene.command(
   },
 );
 
-chatScene.use(
-  setMessageThreadId,
-  // TODO: think about solution where order is saved
-  // to session object
-  // setOrderDetails,
-  createOrderChecker(
-    (ctx) => ({
-      id: (ctx.update as Update.MessageUpdate).message.chat.id,
-      idType: 'botChatId',
-    }),
-    [teardownUserData],
-  ),
-  async (ctx) => {
-    try {
-      await ctx.telegram.copyMessage(
-        ctx.forumId,
-        ctx.message.chat.id,
-        ctx.message.message_id,
-        { message_thread_id: ctx.session.messageThreadId },
-      );
-    } catch (e) {
-      ctx.logger.error(e, 'chatScene');
-    }
-  },
-);
+chatScene.use(createCheckSubscription([teardownUserData]), async (ctx) => {
+  try {
+    await ctx.telegram.copyMessage(
+      ctx.forumId,
+      ctx.message.chat.id,
+      ctx.message.message_id,
+      { message_thread_id: ctx.session.user.messageThreadId },
+    );
+  } catch (e) {
+    ctx.logger.error(e, 'chatScene');
+  }
+});

@@ -5,27 +5,23 @@ import type { iMedbotContext } from '../../types.js';
 import { replyOrderNotActive } from './utils.js';
 import { ignoreGeneralTopicUpdates } from './middlewares/ignoreGeneralTopicUpdates.js';
 import { setBotChatId } from './middlewares/setBotChatId.js';
-import { createOrderChecker } from '../../middlewares/createOrderChecker.js';
 import { ignoreForumTopicCreated } from './middlewares/ignoreForumTopicCreated.js';
 import { ignorePinnedMessage } from './middlewares/ignorePinnedMessage.js';
+import { createCheckOrderActive } from './middlewares/checkOrderActive.js';
 
 export const forumScene = new Scenes.BaseScene<iMedbotContext>(SCENES.FORUM);
 
 forumScene.use(
+  // TODO: ignore reply message updates
   ignoreGeneralTopicUpdates,
   ignoreForumTopicCreated,
   ignorePinnedMessage,
   setBotChatId,
-  createOrderChecker(
-    (ctx) => ({
-      id: (ctx.update as Update.MessageUpdate).message.message_thread_id,
-      idType: 'messageThreadId',
-    }),
-
+  createCheckOrderActive(
     // TODO: do we need to teardown user here?
+    // teardown through messageThreadId, not userId as in chat scene
     [replyOrderNotActive],
   ),
-
   async (ctx) => {
     try {
       await ctx.telegram.copyMessage(
