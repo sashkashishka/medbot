@@ -28,7 +28,7 @@ interface iProps {
   activeOrder: iOrder;
 }
 
-const focusOnErrors = createDecorator();
+const focusOnErrors = createDecorator<iFormValues>();
 const persist = createPersistDecorator<iFormValues>({
   lsKey: 'create-appointment',
   exclude: ['time'],
