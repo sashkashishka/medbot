@@ -11,7 +11,6 @@ const appointment = {
   complaintsStarted: 'complaintsStarted',
   medicine: 'medicine',
   chronicDiseases: 'chronicDiseases',
-  timezoneOffset: 0,
   status: 'ACTIVE',
 };
 
@@ -424,11 +423,28 @@ test('appointment creation', async (t) => {
         userId: user.id,
         status: 'ACTIVE',
         time: addHours(new Date(), 3).toISOString(),
+        treatment: 'blue pills',
+        report: 'lupus',
+        notes: 'this is easy',
       },
     });
 
+    const data = (await resp.json()) as Prisma.AppointmentUncheckedCreateInput;
+
     t.match(resp, { status: 200 }, 'should return 200 status');
-    t.matchStrict(await resp.json(), { status: 'ACTIVE' });
+    t.equal(data.status, 'ACTIVE');
+    t.ok(data.id);
+    t.ok(data.userId);
+    t.ok(data.orderId);
+    t.ok(data.chronicDiseases);
+    t.ok(data.complaintsStarted);
+    t.ok(data.complaints);
+    t.ok(data.medicine);
+    t.ok(data.time);
+
+    t.equal(data.treatment, undefined, 'should not save treatment');
+    t.equal(data.report, undefined, 'should not save report');
+    t.equal(data.notes, undefined, 'should not save notes');
 
     const results = gcInsert();
     t.equal(results.length, 1);
@@ -499,8 +515,22 @@ test('delete appointment', async (t) => {
       body: {},
     });
 
+    const data = (await resp.json()) as Prisma.AppointmentUncheckedCreateInput;
+
     t.match(resp, { status: 200 }, 'should return 200 status');
-    t.matchStrict(await resp.json(), { status: 'DELETED' });
+    t.equal(data.status, 'DELETED');
+    t.ok(data.id);
+    t.ok(data.userId);
+    t.ok(data.orderId);
+    t.ok(data.chronicDiseases);
+    t.ok(data.complaintsStarted);
+    t.ok(data.complaints);
+    t.ok(data.medicine);
+    t.ok(data.time);
+
+    t.equal(data.treatment, undefined);
+    t.equal(data.report, undefined);
+    t.equal(data.notes, undefined);
 
     const results = gcDelete();
     t.equal(results.length, 1);
@@ -537,11 +567,18 @@ test('active appointment', async (t) => {
 
     t.match(resp, { status: 200 }, 'should return 200 status');
     t.match(data, { status: 'ACTIVE', userId: user.id });
+    t.ok(data.id);
     t.ok(data.time);
-    t.ok(data.timezoneOffset === 0);
     t.ok(data.complaints);
     t.ok(data.medicine);
     t.ok(data.complaintsStarted);
+    t.ok(data.chronicDiseases);
+    t.ok(data.orderId);
+    t.ok(data.userId);
+    t.ok(data.status);
+    t.equal(data.treatment, undefined);
+    t.equal(data.report, undefined);
+    t.equal(data.notes, undefined);
   });
 
   t.test('should return null if no active appointment', async (t) => {
@@ -925,14 +962,27 @@ test('update appointment', async (t) => {
         ...appointment,
         chronicDiseases: 'lupus',
         time: addHours(new Date(), 24).toISOString(),
+        treatment: 'red pills',
+        report: 'lupus',
+        notes: 'this is obvious',
       },
     });
 
+    const data = (await resp.json()) as Prisma.AppointmentUncheckedCreateInput;
+
     t.match(resp, { status: 200 }, 'should return 200 status');
-    t.matchStrict(await resp.json(), {
-      status: 'ACTIVE',
-      chronicDiseases: 'lupus',
-    });
+    t.equal(data.status, 'ACTIVE');
+    t.ok(data.id);
+    t.ok(data.userId);
+    t.ok(data.orderId);
+    t.ok(data.medicine);
+    t.ok(data.chronicDiseases);
+    t.ok(data.complaints);
+    t.ok(data.complaintsStarted);
+    t.ok(data.time);
+    t.equal(data.treatment, undefined, 'should not save treatment');
+    t.equal(data.report, undefined, 'should not save report');
+    t.equal(data.notes, undefined, 'should not save notes');
 
     const results = gcUpdate();
     t.equal(results.length, 1);
@@ -987,6 +1037,7 @@ test('update appointment', async (t) => {
       });
 
       t.equal(data.treatment, undefined, 'should not exist in response');
+      t.equal(data.report, undefined, 'should not exist in response');
       t.equal(data.report, undefined, 'should not exist in response');
 
       const results = gcUpdate();
@@ -1251,5 +1302,136 @@ test('complete expired order when CRUD appointment', async (t) => {
     t.equal((await getTelegrafSessions()).length, 0, 'should clear session');
 
     t.teardown(clock.uninstall);
+  });
+});
+
+test('make prescriptions', async (t) => {
+  const appointmentStatuses = ['active', 'done', 'deleted'] as const;
+
+  appointmentStatuses.forEach((appointmentStatus) => {
+    t.test(
+      `should update only specific fields of appointment with status ${appointmentStatus}`,
+      async (t) => {
+        const { request, adminCookie, findAppointment } = await getServer({
+          t,
+          scenarios: {
+            product: true,
+            admin: true,
+            user: [
+              {
+                order: {
+                  type: 'subscription',
+                  status: 'ACTIVE',
+                  appointment: appointmentStatus,
+                },
+                session: true,
+              },
+            ],
+          },
+        });
+
+        const appointment = await findAppointment(() => true);
+        const cookieHeader: string = await adminCookie();
+
+        const newAppointment: Prisma.AppointmentUncheckedCreateInput = {
+          orderId: 1,
+          userId: 2,
+          treatment: 'blue pills',
+          report: 'lupus',
+          notes: 'this is easy',
+          time: '123',
+          status: 'DONE',
+          complaintsStarted: '123',
+          complaints: 'vsd',
+          medicine: 'green pills',
+          chronicDiseases: '1234',
+        };
+
+        const resp = await request(
+          `/api/admin/appointment/prescript/${appointment.id}`,
+          {
+            method: 'PATCH',
+            cookie: cookieHeader!,
+            body: newAppointment,
+          },
+        );
+
+        const data =
+          (await resp.json()) as Prisma.AppointmentUncheckedCreateInput;
+
+        t.match(resp, { status: 200 }, 'should return 200 status');
+        t.equal(data.orderId, appointment.orderId, 'should not be changed');
+        t.equal(data.userId, appointment.userId, 'should not be changed');
+        t.equal(data.status, appointment.status, 'should not be changed');
+        t.equal(data.time, appointment.time, 'should not be changed');
+        t.equal(
+          data.chronicDiseases,
+          appointment.chronicDiseases,
+          'should not be changed',
+        );
+        t.equal(
+          data.complaints,
+          appointment.complaints,
+          'should not be changed',
+        );
+        t.equal(
+          data.complaintsStarted,
+          appointment.complaintsStarted,
+          'should not be changed',
+        );
+        t.equal(data.medicine, appointment.medicine, 'should not be changed');
+
+        t.equal(data.treatment, newAppointment.treatment, 'should be changed');
+        t.equal(data.report, newAppointment.report, 'should be changed');
+        t.equal(data.notes, newAppointment.notes, 'should be changed');
+      },
+    );
+  });
+
+  t.test('should not update non existent appointment', async (t) => {
+    const { request, adminCookie } = await getServer({
+      t,
+      scenarios: {
+        product: true,
+        admin: true,
+        user: [
+          {
+            order: {
+              type: 'subscription',
+              status: 'ACTIVE',
+              appointment: 'none',
+            },
+            session: true,
+          },
+        ],
+      },
+    });
+
+    const cookieHeader: string = await adminCookie();
+
+    const newAppointment: Prisma.AppointmentUncheckedCreateInput = {
+      orderId: 1,
+      userId: 2,
+      treatment: 'blue pills',
+      report: 'lupus',
+      notes: 'this is easy',
+      time: '123',
+      status: 'DONE',
+      complaintsStarted: '123',
+      complaints: 'vsd',
+      medicine: 'green pills',
+      chronicDiseases: '1234',
+    };
+
+    const resp = await request(`/api/admin/appointment/prescript/0`, {
+      method: 'PATCH',
+      cookie: cookieHeader!,
+      body: newAppointment,
+    });
+
+    const data = (await resp.json()) as Prisma.AppointmentUncheckedCreateInput;
+
+    t.match(resp, { status: 400 }, 'should return 200 status');
+    t.match(data, { error: 'no-such-appointment' });
   });
 });

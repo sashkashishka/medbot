@@ -1,6 +1,6 @@
 import { Component, createRef } from 'react';
 import { FORM_ERROR } from 'final-form';
-import { Form } from 'react-final-form';
+import { Field, Form } from 'react-final-form';
 import { generatePath } from 'react-router-dom';
 
 import { TgBackButton } from '../../../../components/TgBackButton';
@@ -22,6 +22,7 @@ import { SubmitButton } from './SubmitButton';
 import { getPersistDecorator } from './decorators/persist';
 import { BLOCK_REASON, ORDER_ERRORS } from './constants';
 import type { iFormValues } from './types';
+import { getTimeZone, getTimezoneOffset } from '../../../../utils/date';
 
 import styles from './Form.module.css';
 
@@ -56,6 +57,20 @@ export class ProductActivateCodeForm extends Component<iProps> {
           {({ handleSubmit }) => {
             return (
               <form onSubmit={handleSubmit} className={styles.container}>
+                <Field
+                  name="timeZone"
+                  initialValue={getTimeZone()}
+                  type="hidden"
+                  component="input"
+                />
+
+                <Field
+                  name="timezoneOffset"
+                  initialValue={getTimezoneOffset()}
+                  type="hidden"
+                  component="input"
+                />
+
                 <Input
                   data-testid={TIDS.INPUT_CODE}
                   labelName="Код активації"
@@ -184,6 +199,8 @@ export class ProductActivateCodeForm extends Component<iProps> {
       birthDate: values.birthDate,
       email: values.email,
       phone: values.phone,
+      timezoneOffset: values.timezoneOffset,
+      timeZone: values.timeZone,
     };
 
     return createApi(endpoint, {

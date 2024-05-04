@@ -7,10 +7,8 @@ import type { ServiceApiSdk } from '../serviceApiSdk/sdk.js';
 export interface iMedbotSession extends Scenes.WizardSession {
   messageThreadId?: number;
   botChatId?: number;
-  order?: Pick<
-    Prisma.OrderUncheckedCreateInput,
-    'subscriptionEndsAt' | 'id'
-  >;
+  user?: Prisma.UserUncheckedCreateInput;
+  order?: Prisma.OrderUncheckedCreateInput;
 }
 
 export interface iMedbotContext extends Context {

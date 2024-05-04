@@ -12,6 +12,8 @@ export interface iUser {
   topicForumId?: number;
   phone?: string;
   email?: string;
+  timezoneOffset?: number;
+  timeZone?: string;
 }
 
 export interface iProduct {
@@ -41,7 +43,6 @@ export interface iAppointment {
   medicine: string;
   chronicDiseases: string;
   time: string;
-  timezoneOffset: number;
   status: 'ACTIVE' | 'DONE' | 'DELETED';
 }
 

@@ -1,3 +1,12 @@
+.wrapper {
+  position: relative;
+}
+
 .container {
   padding: 0 16px;
+}
+
+.error {
+  position: static;
+  padding: 0px 32px;
 }

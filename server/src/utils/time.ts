@@ -1,46 +1,20 @@
 import { Prisma } from '@prisma/client';
 import { addDays, setHours } from 'date-fns/fp';
-import {
-  format,
-  getHours,
-  isAfter,
-  isEqual,
-  startOfHour,
-  startOfDay,
-  addHours,
-  isBefore,
-} from 'date-fns';
-import { uk } from 'date-fns/locale';
+import { getHours, startOfDay, addHours, isBefore, addMinutes } from 'date-fns';
 
 // TODO: move to env variables
 const startHour = 10;
 const lastHour = 22;
+const minLeadHours = 2;
 
 export function isEarly(time: string | Date): boolean {
-  return isBefore(time, addHours(new Date(), 2));
+  return isBefore(time, addHours(new Date(), minLeadHours));
 }
 
 export function isWithinWorkingHours(time: string | Date): boolean {
   const hour = getHours(time);
 
   return hour >= startHour && hour < lastHour;
-}
-
-/**
- * @deprecated
- */
-export function isOccupied(
-  time: string | Date,
-  appointmentTime: string | Date,
-): boolean {
-  const timeDate = new Date(time);
-  const startDate = startOfHour(new Date(appointmentTime));
-  const endDate = addHours(startDate, 1);
-
-  return (
-    (isEqual(timeDate, startDate) || isAfter(timeDate, startDate)) &&
-    isBefore(timeDate, endDate)
-  );
 }
 
 interface iFreeSlot {
@@ -88,17 +62,33 @@ export function getFreeSlots(
     });
 }
 
-interface iFormatDateOptions {
-  formatStr: 'hour-day-date-month-year';
+interface iFormatDateOptions extends Intl.DateTimeFormatOptions {
+  locale?: string;
+  timeZone?: string;
+  timezoneOffset?: number;
 }
-
-const FORMAT_STR: Record<iFormatDateOptions['formatStr'], string> = {
-  'hour-day-date-month-year': 'HH:mm eeee, dd.LL.yyyy',
-};
 
 export function formatDate(
   date: string | Date,
-  options: iFormatDateOptions,
+  options: iFormatDateOptions = {},
 ): string {
-  return format(new Date(date), FORMAT_STR[options.formatStr], { locale: uk });
+  const {
+    locale = 'uk-UA',
+    timeZone,
+    timezoneOffset,
+    dateStyle = 'medium',
+    timeStyle = 'short',
+  } = options;
+
+  let d = new Date(date);
+
+  if (!timeZone) {
+    d = addMinutes(d, -timezoneOffset);
+  }
+
+  return new Intl.DateTimeFormat(locale, {
+    dateStyle,
+    timeStyle,
+    timeZone: timeZone || undefined,
+  }).format(d);
 }

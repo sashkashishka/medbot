@@ -1,6 +1,6 @@
 import { Component, createRef } from 'react';
 import { FORM_ERROR } from 'final-form';
-import { Form } from 'react-final-form';
+import { Form, Field } from 'react-final-form';
 import { generatePath } from 'react-router-dom';
 
 import { TgBackButton } from '../../../../components/TgBackButton';
@@ -20,11 +20,12 @@ import { $user } from '../../../../stores/user';
 import { SubmitButton } from './SubmitButton';
 import { getPersistDecorator } from './decorators/persist';
 import type { iFormValues } from './types';
-
-import styles from './Form.module.css';
 import { tg } from '../../../../utils/tg';
 import { ORDER_ERRORS } from './constants';
 import { setLastProductId } from '../../../../stores/product';
+import { getTimeZone, getTimezoneOffset } from '../../../../utils/date';
+
+import styles from './Form.module.css';
 
 interface iProps {
   waitingForPaymentOrder?: iOrder;
@@ -71,6 +72,20 @@ export class ProductCheckoutForm extends Component<iProps> {
                   <div>₴{this.props.product?.price}</div>
                 </div>
                 <form onSubmit={handleSubmit} className={styles.container}>
+                  <Field
+                    name="timeZone"
+                    initialValue={getTimeZone()}
+                    type="hidden"
+                    component="input"
+                  />
+
+                  <Field
+                    name="timezoneOffset"
+                    initialValue={getTimezoneOffset()}
+                    type="hidden"
+                    component="input"
+                  />
+
                   <Input
                     data-testid={TIDS.INPUT_SURNAME}
                     labelName="Прізвище"
@@ -185,6 +200,8 @@ export class ProductCheckoutForm extends Component<iProps> {
       birthDate: values.birthDate,
       email: values.email,
       phone: values.phone,
+      timezoneOffset: values.timezoneOffset,
+      timeZone: values.timeZone,
     };
 
     return createApi(endpoint, {

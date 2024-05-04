@@ -6,5 +6,5 @@ interface iOptions {
 export function googleCalendarEventLink({ id, email }: iOptions) {
   const [name] = email.split('@');
 
-  return `https://www.google.com/calendar/event?eid=${btoa(`${id} ${name}@g`)}`;
+  return `https://calendar.google.com/u/0/r/eventedit/${btoa(`${id} ${name}@g`)}`;
 }

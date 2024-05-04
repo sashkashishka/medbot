@@ -5,6 +5,7 @@ export type tAppointmentErrorReason =
   | 'occupied'
   | 'has-active'
   | 'out-of-working-hours'
+  | 'no-such-appointment'
   | 'cannot-delete-not-active-appointment'
   | 'cannot-update-not-active-appointment'
   | 'cannot-create-appointment-behind-order-expiration-date'
@@ -33,6 +34,7 @@ export class AppointmentError {
       case 'cannot-update-not-active-appointment':
       case 'one-time-order-cannot-create-twice':
       case 'has-active':
+      case 'no-such-appointment':
       default: {
         return create400Response(this.reason);
       }

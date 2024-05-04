@@ -23,6 +23,13 @@ export const updateOrderRoute: RouteOptions = {
       },
       required: ['status', 'productId', 'userId'],
     },
+    params: {
+      type: 'object',
+      properties: {
+        orderId: { type: 'number' },
+      },
+      required: ['orderId'],
+    },
   },
   preHandler: [createDecorateWithOrder('params'), checkIsDoneOrder],
   async handler(req) {

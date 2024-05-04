@@ -8,6 +8,16 @@ interface iParams {
 export const waitingForPaymentOrderRoute: RouteOptions = {
   method: 'GET',
   url: '/order/waiting-for-payment/:userId/:productId',
+  schema: {
+    params: {
+      type: 'object',
+      properties: {
+        productId: { type: 'number' },
+        userId: { type: 'number' },
+      },
+      required: ['productId', 'userId'],
+    },
+  },
   handler(req) {
     const { userId, productId } = req.params as iParams;
 

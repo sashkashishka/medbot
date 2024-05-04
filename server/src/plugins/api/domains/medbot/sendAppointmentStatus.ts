@@ -8,6 +8,8 @@ interface iBody {
   status: tStatuses;
 }
 
+// TODO rename method to point that it relates 
+// to webapp answerQuery
 export const sendAppointmentStatusRoute: RouteOptions = {
   method: 'POST',
   url: '/send-appointment-status',

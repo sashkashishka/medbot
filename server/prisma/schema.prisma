@@ -23,6 +23,8 @@ model User {
   email           String?
   order           Order[]
   appointment     Appointment[]
+  timezoneOffset  Int           @default(0)
+  timeZone        String?
 }
 
 model Product {
@@ -72,11 +74,11 @@ model Appointment {
   medicine          String            @db.MediumText
   chronicDiseases   String            @db.MediumText
   time              DateTime
-  timezoneOffset    Int               @default(0)
   status            AppointmentStatus
   calendarEventId   String?
   report            String?           @db.MediumText
   treatment         String?           @db.MediumText
+  notes             String?           @db.MediumText
 }
 
 model ActivationCode {
@@ -91,7 +93,7 @@ model ActivationCode {
 
 model TelegrafSessions {
   key     String @id
-  session String
+  session String @db.MediumText
 }
 
 model Admin {

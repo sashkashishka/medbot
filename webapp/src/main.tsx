@@ -7,7 +7,9 @@ import { routes } from './pages/routes.tsx';
 import './index.css';
 import './global.css';
 
-const router = createBrowserRouter(routes, { basename: '/webapp' });
+const router = createBrowserRouter(routes, {
+  basename: import.meta.env.PROD ? '/webapp' : '/',
+});
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

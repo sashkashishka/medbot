@@ -11,7 +11,7 @@ import { EditableCell } from './EditableCell';
 import { useState } from 'react';
 import { useStore } from '@nanostores/react';
 import {
-  $editAppointment,
+  $prescriptAppointment,
   createAppointmentDetailsFormPersister,
 } from '../../../../stores/appointment';
 
@@ -25,7 +25,7 @@ export function ExpandableAppointmentDetails({ appointment }: iProps) {
     createAppointmentDetailsFormPersister(appointment),
   );
   const persistedAppointment = useStore($persistedAppointment);
-  const { mutate } = useStore($editAppointment);
+  const { mutate } = useStore($prescriptAppointment);
 
   const items: DescriptionsProps['items'] = [
     {
@@ -66,6 +66,17 @@ export function ExpandableAppointmentDetails({ appointment }: iProps) {
         <EditableCell
           name="treatment"
           value={appointment.treatment}
+          editing={editing}
+        />
+      ),
+    },
+    {
+      key: 'notes',
+      label: 'Notes',
+      children: (
+        <EditableCell
+          name="notes"
+          value={appointment.notes}
           editing={editing}
         />
       ),

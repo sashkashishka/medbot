@@ -27,12 +27,9 @@ export const updateAppointmentRoute: RouteOptions = {
         medicine: { type: 'string' },
         chronicDiseases: { type: 'string' },
         time: { type: 'string' },
-        timezoneOffset: { type: 'number' },
         status: { type: 'string' },
         orderId: { type: 'number' },
         userId: { type: 'number' },
-        report: { type: 'string' },
-        treatment: { type: 'string' },
       },
       required: [
         'complaints',
@@ -40,11 +37,17 @@ export const updateAppointmentRoute: RouteOptions = {
         'medicine',
         'chronicDiseases',
         'time',
-        'timezoneOffset',
         'status',
         'orderId',
         'userId',
       ],
+    },
+    params: {
+      type: 'object',
+      properties: {
+        appointmentId: { type: 'number' },
+      },
+      required: ['appointmentId'],
     },
   },
   preHandler: [
@@ -59,7 +62,14 @@ export const updateAppointmentRoute: RouteOptions = {
   ],
   async handler(request) {
     const params = request.params as iParams;
-    const body = request.body as Prisma.AppointmentUncheckedCreateInput;
+    const {
+      complaints,
+      complaintsStarted,
+      medicine,
+      chronicDiseases,
+      time,
+      status,
+    } = request.body as Prisma.AppointmentUncheckedCreateInput;
 
     const { appointmentId } = params;
 
@@ -68,7 +78,14 @@ export const updateAppointmentRoute: RouteOptions = {
         id: Number(appointmentId),
         status: 'ACTIVE',
       },
-      data: body,
+      data: {
+        complaints,
+        complaintsStarted,
+        medicine,
+        chronicDiseases,
+        time,
+        status,
+      },
       select: {
         id: true,
         orderId: true,
@@ -78,7 +95,6 @@ export const updateAppointmentRoute: RouteOptions = {
         medicine: true,
         chronicDiseases: true,
         time: true,
-        timezoneOffset: true,
         status: true,
         calendarEventId: true,
         user: true,

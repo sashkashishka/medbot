@@ -26,6 +26,13 @@ export const editProductRoute: RouteOptions = {
         'subscriptionDuration',
       ],
     },
+    params: {
+      type: 'object',
+      properties: {
+        productId: { type: 'number' },
+      },
+      required: ['productId'],
+    },
   },
   handler(req) {
     const params = req.params as iParams;

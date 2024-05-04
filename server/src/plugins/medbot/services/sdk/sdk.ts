@@ -5,6 +5,7 @@ import type { iMedbotContext } from '../../types.js';
 import { oneTimeOrderCompleteMsg } from '../../scenes/chat/messages/oneTimeOrderComplete.js';
 import { menuButton } from '../../buttons/menu.js';
 import {
+  APPOINTMENT_STATUS_MESSAGES,
   completeAppointmentByDoctorMsg,
   deleteAppointmentByDoctorMsg,
 } from '../../scenes/chat/messages/appointmentStatus.js';
@@ -66,6 +67,48 @@ export class MedbotSdk {
       });
     } catch (e) {
       this.logger.error(e, 'medbotSdk:completeOneTimeOrder');
+    }
+  }
+
+  public async createAppointment(
+    botChatId: number,
+    user: Prisma.UserUncheckedCreateInput,
+    appointment: Prisma.AppointmentUncheckedCreateInput,
+  ) {
+    try {
+      await this.telegram.sendMessage(
+        botChatId,
+        APPOINTMENT_STATUS_MESSAGES['/appointmentCreated']({
+          appointment,
+          user,
+        }),
+        {
+          parse_mode: 'Markdown',
+        },
+      );
+    } catch (e) {
+      this.logger.error(e, 'medbotSdk:createAppointment');
+    }
+  }
+
+  public async updateAppointment(
+    botChatId: number,
+    user: Prisma.UserUncheckedCreateInput,
+    appointment: Prisma.AppointmentUncheckedCreateInput,
+  ) {
+    try {
+      await this.telegram.sendMessage(
+        botChatId,
+        APPOINTMENT_STATUS_MESSAGES['/appointmentUpdated']({
+          appointment,
+          user,
+        }),
+        {
+          parse_mode: 'Markdown',
+        },
+      );
+    } catch (e) {
+      this.logger.error(e, 'medbotSdk:updateAppointment');
     }
   }
 

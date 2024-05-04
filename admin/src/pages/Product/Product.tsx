@@ -104,6 +104,10 @@ export function ProductPage() {
         autoComplete="off"
         layout="vertical"
       >
+        <Form.Item<iProduct> name="id" hidden>
+          <Input type="hidden" />
+        </Form.Item>
+
         <Form.Item<iProduct>
           label="Name"
           name="name"
@@ -133,7 +137,7 @@ export function ProductPage() {
           name="memberQty"
           rules={[{ required: true, message: 'Please input member quantity' }]}
         >
-          <InputNumber />
+          <InputNumber min={1} max={100} />
         </Form.Item>
 
         <Form.Item<iProduct>
@@ -143,7 +147,7 @@ export function ProductPage() {
             { required: true, message: 'Please input subscription duration' },
           ]}
         >
-          <InputNumber />
+          <InputNumber min={0} max={100} />
         </Form.Item>
 
         <Form.Item>

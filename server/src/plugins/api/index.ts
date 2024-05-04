@@ -24,13 +24,14 @@ import { completeOrderRoute } from './domains/order/complete.js';
 import { sendAppointmentStatusRoute } from './domains/medbot/sendAppointmentStatus.js';
 import { proceedToChatRoute } from './domains/medbot/proceedToChat.js';
 import { botChatIdRoute } from './domains/medbot/botChatId.js';
-import { messageThreadIdRoute } from './domains/medbot/messageThreadId.js';
 import { teardownUserDataRoute } from './domains/medbot/teardownUserData.js';
 import { checkOrderActiveRoute } from './domains/medbot/checkOrderActive.js';
 import { ordersProductRoute } from './domains/medbot/ordersProduct.js';
 import { tgCompleteOrderRoute } from './domains/medbot/tgCompleteOrder.js';
 import { tgDeleteAppointmentRoute } from './domains/medbot/tgDeleteAppointment.js';
 import { tgCompleteAppointmentRoute } from './domains/medbot/tgCompleteAppointment.js';
+import { tgUpdateAppointmentRoute } from './domains/medbot/tgUpdateAppointment.js';
+import { tgCreateAppointmentRoute } from './domains/medbot/tgCreateAppointment.js';
 
 import { freeSlotsRoute } from './domains/appointment/freeSlots.js';
 import { createAppointmentRoute } from './domains/appointment/create.js';
@@ -38,6 +39,7 @@ import { activeAppointmentRoute } from './domains/appointment/active.js';
 import { updateAppointmentRoute } from './domains/appointment/update.js';
 import { deleteAppointmentRoute } from './domains/appointment/delete.js';
 import { appointmentListRoute } from './domains/appointment/list.js';
+import { prescriptAppointmentRoute } from './domains/appointment/prescript.js';
 
 import { registerAdminRoute } from './domains/admin/register.js';
 import { loginAdminRoute } from './domains/admin/login.js';
@@ -86,7 +88,6 @@ const serviceApi: FastifyPluginCallback = (fastify, _opts, done) => {
   fastify.addHook('onRequest', validateIsMedbot);
   fastify.route(teardownUserDataRoute);
   fastify.route(botChatIdRoute);
-  fastify.route(messageThreadIdRoute);
   fastify.route(activeOrderRoute);
   fastify.route(activeAppointmentRoute);
   fastify.route(userRoute);
@@ -118,6 +119,7 @@ const adminApi: FastifyPluginCallback = (fastify, _opts, done) => {
   fastify.route(orderListRoute);
   fastify.route(adminRoute);
   fastify.route(appointmentListRoute);
+  fastify.route(prescriptAppointmentRoute);
   fastify.route(adminConfigRoute);
   fastify.route(userRoute);
   fastify.route(updateAppointmentRoute);
@@ -127,6 +129,8 @@ const adminApi: FastifyPluginCallback = (fastify, _opts, done) => {
   fastify.route(deleteAppointmentRoute);
   fastify.route(completeOrderRoute);
   fastify.route(tgCompleteOrderRoute);
+  fastify.route(tgCreateAppointmentRoute);
+  fastify.route(tgUpdateAppointmentRoute);
   fastify.route(tgCompleteAppointmentRoute);
   fastify.route(tgDeleteAppointmentRoute);
 

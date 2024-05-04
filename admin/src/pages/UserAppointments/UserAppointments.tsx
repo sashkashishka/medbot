@@ -55,9 +55,10 @@ export function UserAppointmentsPage() {
       dataIndex: 'calendarEventId',
       render: (calendarId) => (
         <a
+          target="_blank"
           href={googleCalendarEventLink({
             id: calendarId,
-            email: adminConfig?.googleEmail!,
+            email: adminConfig?.calendarId!,
           })}
         >
           go to calendar

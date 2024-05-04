@@ -2,6 +2,7 @@ import { Component, createRef } from 'react';
 import { FORM_ERROR } from 'final-form';
 import { Form } from 'react-final-form';
 import { generatePath } from 'react-router-dom';
+import createDecorator from 'final-form-focus';
 
 import { API } from '../../../../constants/api';
 import { APPOINTMENT_ERRORS } from './constants';
@@ -15,7 +16,7 @@ import { refetchFreeSlots } from '../../../../stores/appointment';
 
 import { createApi } from '../../../../utils/api';
 import { getUserId, tg } from '../../../../utils/tg';
-import { required } from '../../../../utils/final-form';
+import { createPersistDecorator, required } from '../../../../utils/final-form';
 
 import { iAppointment, iOrder } from '../../../../types';
 import type { iFormValues } from './types';
@@ -26,6 +27,12 @@ interface iProps {
   activeAppointment?: iAppointment;
   activeOrder: iOrder;
 }
+
+const focusOnErrors = createDecorator<iFormValues>();
+const persist = createPersistDecorator<iFormValues>({
+  lsKey: 'create-appointment',
+  exclude: ['time'],
+});
 
 export class CreateAppointmentForm extends Component<iProps> {
   realSubmitButtonRef;
@@ -46,6 +53,8 @@ export class CreateAppointmentForm extends Component<iProps> {
 
     return 'Назначити зустріч';
   }
+
+  private decorators = [focusOnErrors, persist];
 
   get title() {
     const { activeAppointment } = this.props;
@@ -70,6 +79,7 @@ export class CreateAppointmentForm extends Component<iProps> {
           onSubmit={this.handleSubmit}
           initialValues={activeAppointment}
           subscription={{}}
+          decorators={this.decorators}
         >
           {({ handleSubmit }) => {
             return (
@@ -139,7 +149,6 @@ export class CreateAppointmentForm extends Component<iProps> {
       method,
       body: JSON.stringify({
         ...values,
-        timezoneOffset: new Date().getTimezoneOffset(),
         status: 'ACTIVE',
         orderId: activeOrder.id,
         userId: getUserId(),

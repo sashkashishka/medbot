@@ -3,23 +3,25 @@ import react from '@vitejs/plugin-react';
 import legacy from '@vitejs/plugin-legacy';
 
 // https://vitejs.dev/config/
-export default defineConfig({
-  base: '/webapp/',
-  build: {
-    outDir: 'build',
-  },
-  plugins: [react(), legacy()],
-  css: {
-    modules: {
-      scopeBehaviour: 'local',
+export default defineConfig(({ mode }) => {
+  return {
+    base: mode === 'development' ? '' : '/webapp/',
+    build: {
+      outDir: 'build',
     },
-  },
-  server: {
-    proxy: {
-      '/api': {
-        target: 'http://localhost:8000',
-        changeOrigin: true,
+    plugins: [react(), legacy()],
+    css: {
+      modules: {
+        scopeBehaviour: 'local',
       },
     },
-  },
+    server: {
+      proxy: {
+        '/api': {
+          target: 'http://localhost:8000',
+          changeOrigin: true,
+        },
+      },
+    },
+  };
 });

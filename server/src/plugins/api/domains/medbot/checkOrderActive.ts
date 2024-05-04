@@ -22,6 +22,13 @@ export const checkOrderActiveRoute: RouteOptions = {
         },
       },
     },
+    params: {
+      type: 'object',
+      properties: {
+        id: { type: 'number' },
+      },
+      required: ['id'],
+    },
   },
   async handler(req) {
     const params = req.params as iParams;

@@ -12,7 +12,7 @@ export interface iRegister extends iLogin {}
 
 export interface iAdminConfig {
   forumUrlTemplate: string;
-  googleEmail: string;
+  calendarId: string;
 }
 
 export interface iPaginatorResp<T> {
@@ -31,6 +31,8 @@ export interface iUser {
   botChatId?: number;
   phone?: string;
   email?: string;
+  timezoneOffset?: number;
+  timeZone?: string;
 }
 
 export interface iProduct {
@@ -60,11 +62,11 @@ export interface iAppointment {
   medicine: string;
   chronicDiseases: string;
   time: string;
-  timezoneOffset: string;
   status: 'ACTIVE' | 'DONE' | 'DELETED';
   calendarEventId: string;
   report: string;
   treatment: string;
+  notes: string;
 }
 
 export interface iFreeSlot {
