@@ -20,7 +20,9 @@ export function ScheduleMeeting() {
   const themeParams = getThemeParams();
 
   return (
-    <>
+    <div className={styles.wrapper}>
+      <ValidationError fieldMeta={meta} className={styles.error} />
+
       <ReactScheduleMeeting
         className={styles.container}
         locale={uk}
@@ -46,7 +48,6 @@ export function ScheduleMeeting() {
         format_selectedDateMonthTitleFormatString="LLLL Y"
         format_startTimeFormatString="HH:mm"
       />
-      <ValidationError fieldMeta={meta} />
-    </>
+    </div>
   );
 }

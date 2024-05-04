@@ -10,7 +10,7 @@ interface iOptions<tFormValues> {
 
 export function createPersistDecorator<tFormValues = Record<string, any>>({
   lsKey,
-  populateValues,
+  populateValues = {},
   exclude = [],
 }: iOptions<tFormValues>): Decorator<tFormValues> {
   return function persistDecorator(form) {

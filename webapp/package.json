@@ -15,6 +15,7 @@
     "classnames": "^2.3.2",
     "date-fns": "^3.2.0",
     "final-form": "^4.20.10",
+    "final-form-focus": "^1.1.2",
     "nanostores": "^0.9.5",
     "react": "^18.2.0",
     "react-date-picker": "^10.6.0",
