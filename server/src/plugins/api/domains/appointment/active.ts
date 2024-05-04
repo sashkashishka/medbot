@@ -28,6 +28,16 @@ export const activeAppointmentRoute: RouteOptions = {
         userId: Number(userId),
         status: 'ACTIVE',
       },
+      select: {
+        orderId: true,
+        userId: true,
+        chronicDiseases: true,
+        medicine: true,
+        complaints: true,
+        complaintsStarted: true,
+        time: true,
+        status: true,
+      },
     });
   },
 };

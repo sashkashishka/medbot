@@ -540,6 +540,13 @@ test('active appointment', async (t) => {
     t.ok(data.complaints);
     t.ok(data.medicine);
     t.ok(data.complaintsStarted);
+    t.ok(data.chronicDiseases);
+    t.ok(data.orderId);
+    t.ok(data.userId);
+    t.ok(data.status);
+    t.equal(data.treatment, undefined);
+    t.equal(data.report, undefined);
+    t.equal(data.notes, undefined);
   });
 
   t.test('should return null if no active appointment', async (t) => {
