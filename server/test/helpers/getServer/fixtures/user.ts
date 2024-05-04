@@ -9,9 +9,11 @@ export const user: Prisma.UserUncheckedCreateInput = {
   email: 'kate@test.com',
   messageThreadId: 1,
   botChatId: 123,
+  timezoneOffset: 0,
+  timeZone: 'Etc',
 };
 
-export const user2: Prisma.UserUncheckedCreateInput = {
+export const user2: Prisma.UserUncheckedUpdateInput = {
   id: 2,
   name: 'David',
   surname: 'Owen',
@@ -20,4 +22,6 @@ export const user2: Prisma.UserUncheckedCreateInput = {
   email: 'david@test.com',
   messageThreadId: 2,
   botChatId: 124,
+  timezoneOffset: 60,
+  timeZone: 'America',
 };
