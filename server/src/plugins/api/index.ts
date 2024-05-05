@@ -49,6 +49,11 @@ import { adminConfigRoute } from './domains/admin/config.js';
 
 import { healthcheckRoute } from './domains/healthcheck/index.js';
 
+import { translationListRoute } from './domains/i18n/list.js';
+import { createTranslationRoute } from './domains/i18n/create.js';
+import { deleteTranslationRoute } from './domains/i18n/delete.js';
+import { refreshMedbotTranslationRoute } from './domains/i18n/refresh-medbot.js';
+
 import { validateIsMedbot } from './hooks/validateIsMedbot.js';
 import { validateIsWebapp } from './hooks/validateIsWebapp.js';
 import { errorHandler } from './hooks/errorHandler.js';
@@ -79,6 +84,7 @@ const userApi: FastifyPluginCallback = (fastify, _opts, done) => {
   fastify.route(updateAppointmentRoute);
   fastify.route(deleteAppointmentRoute);
   fastify.route(freeSlotsRoute);
+  fastify.route(translationListRoute);
 
   fastify.setErrorHandler(errorHandler);
   done();
@@ -95,6 +101,7 @@ const serviceApi: FastifyPluginCallback = (fastify, _opts, done) => {
   fastify.route(productRoute);
   fastify.route(checkOrderActiveRoute);
   fastify.route(ordersProductRoute);
+  fastify.route(translationListRoute);
 
   fastify.setErrorHandler(errorHandler);
   done();
@@ -133,6 +140,10 @@ const adminApi: FastifyPluginCallback = (fastify, _opts, done) => {
   fastify.route(tgUpdateAppointmentRoute);
   fastify.route(tgCompleteAppointmentRoute);
   fastify.route(tgDeleteAppointmentRoute);
+  fastify.route(translationListRoute);
+  fastify.route(createTranslationRoute);
+  fastify.route(deleteTranslationRoute);
+  fastify.route(refreshMedbotTranslationRoute);
 
   fastify.setErrorHandler(errorHandler);
 

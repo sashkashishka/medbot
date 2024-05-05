@@ -10,8 +10,6 @@ export class PrismaSessionStorage {
       },
     });
 
-    // NOTE: check here expiry and delete
-
     return value ? JSON.parse(value.session) : undefined;
   }
 

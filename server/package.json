@@ -21,10 +21,12 @@
     "@fastify/env": "^4.3.0",
     "@fastify/jwt": "^8.0.0",
     "@googleapis/calendar": "^9.5.0",
+    "@nanostores/i18n": "^0.12.1",
     "@prisma/client": "^5.5.2",
     "date-fns": "^3.2.0",
     "fastify": "^4.24.3",
     "fastify-plugin": "^4.5.1",
+    "nanostores": "^0.10.3",
     "pino": "^8.16.2",
     "rambda": "^9.1.0",
     "telegraf": "^4.16.3"

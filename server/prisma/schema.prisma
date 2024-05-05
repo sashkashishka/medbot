@@ -101,3 +101,9 @@ model Admin {
   name     String
   password String
 }
+
+model I18n {
+  key       String @id
+  namespace String
+  uk        String @db.MediumText
+}
