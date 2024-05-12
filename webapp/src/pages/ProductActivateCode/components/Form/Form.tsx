@@ -9,7 +9,7 @@ import { Input } from '../../../../components/Input';
 import { Datepicker } from '../../../../components/Datepicker';
 import {
   composeValidators,
-  email,
+  // email,
   required,
 } from '../../../../utils/final-form';
 import { createApi } from '../../../../utils/api';
@@ -125,7 +125,7 @@ export class ProductActivateCodeForm extends Component<iProps> {
                   fieldConfig={{
                     validate: composeValidators(
                       required('Обовʼязкове поле'),
-                      email('Email невірний'),
+                      // email('Email невірний'),
                     ),
                   }}
                 />
