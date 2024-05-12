@@ -1,6 +1,5 @@
 // add unit test that specific method of i18n plugin was called
 import t from 'tap';
-import type { Prisma } from '@prisma/client';
 import { getServer } from '../../helpers/getServer/index.js';
 
 const test = t.test;
