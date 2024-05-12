@@ -8,19 +8,19 @@ interface iProps {
 
 export const SubmitButton = forwardRef<HTMLButtonElement, iProps>(
   ({ handleSubmit }, ref) => {
-    const { hasValidationErrors } = useFormState({
-      subscription: { hasValidationErrors: true },
+    const { submitting } = useFormState({
+      subscription: { submitting: true },
     });
-
-    if (hasValidationErrors) {
-      return null;
-    }
 
     return (
       <>
         <button ref={ref} type="submit" style={{ display: 'none' }} />
 
-        <TgMainButton text="Активувати" handleClick={handleSubmit} />
+        <TgMainButton
+          progress={submitting}
+          text="Активувати"
+          handleClick={handleSubmit}
+        />
       </>
     );
   },

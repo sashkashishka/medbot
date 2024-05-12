@@ -2,6 +2,7 @@ import { Component, createRef } from 'react';
 import { FORM_ERROR } from 'final-form';
 import { Form, Field } from 'react-final-form';
 import { generatePath } from 'react-router-dom';
+import createDecorator from 'final-form-focus';
 
 import { TgBackButton } from '../../../../components/TgBackButton';
 import { Input } from '../../../../components/Input';
@@ -33,6 +34,8 @@ interface iProps {
   user?: iUser;
 }
 
+const focusOnErrors = createDecorator<iFormValues>();
+
 export class ProductCheckoutForm extends Component<iProps> {
   realSubmitButtonRef;
 
@@ -46,7 +49,7 @@ export class ProductCheckoutForm extends Component<iProps> {
   get decorators() {
     const { waitingForPaymentOrder } = this.props;
 
-    return [getPersistDecorator(waitingForPaymentOrder)];
+    return [getPersistDecorator(waitingForPaymentOrder), focusOnErrors];
   }
 
   componentDidMount(): void {
@@ -133,13 +136,10 @@ export class ProductCheckoutForm extends Component<iProps> {
                     }}
                   />
 
-                  <button
+                  <SubmitButton
                     ref={this.realSubmitButtonRef}
-                    type="submit"
-                    className={styles.realSubmitButton}
+                    handleSubmit={this.triggerSubmit}
                   />
-
-                  <SubmitButton handleSubmit={this.triggerSubmit} />
                 </form>
               </>
             );

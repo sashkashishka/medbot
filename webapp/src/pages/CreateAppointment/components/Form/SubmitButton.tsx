@@ -20,7 +20,6 @@ export const SubmitButton = forwardRef<HTMLButtonElement, iProps>(
         <TgMainButton
           progress={submitting}
           text={text}
-          disabled={true}
           handleClick={handleSubmit}
         />
       </>

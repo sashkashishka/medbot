@@ -2,6 +2,7 @@ import { Component, createRef } from 'react';
 import { FORM_ERROR } from 'final-form';
 import { Field, Form } from 'react-final-form';
 import { generatePath } from 'react-router-dom';
+import createDecorator from 'final-form-focus';
 
 import { TgBackButton } from '../../../../components/TgBackButton';
 import { Input } from '../../../../components/Input';
@@ -30,6 +31,9 @@ interface iProps {
   user?: iUser;
 }
 
+const focusOnErrors = createDecorator<iFormValues>();
+const persist = getPersistDecorator();
+
 export class ProductActivateCodeForm extends Component<iProps> {
   realSubmitButtonRef;
 
@@ -40,9 +44,7 @@ export class ProductActivateCodeForm extends Component<iProps> {
     this.triggerSubmit = this.triggerSubmit.bind(this);
   }
 
-  get decorators() {
-    return [getPersistDecorator()];
-  }
+  decorators = [persist, focusOnErrors];
 
   render() {
     return (
@@ -128,13 +130,10 @@ export class ProductActivateCodeForm extends Component<iProps> {
                   }}
                 />
 
-                <button
+                <SubmitButton
                   ref={this.realSubmitButtonRef}
-                  type="submit"
-                  className={styles.realSubmitButton}
+                  handleSubmit={this.triggerSubmit}
                 />
-
-                <SubmitButton handleSubmit={this.triggerSubmit} />
               </form>
             );
           }}
