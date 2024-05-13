@@ -17,8 +17,8 @@ model User {
   surname         String?
   patronymic      String?
   birthDate       DateTime?
-  messageThreadId Int?
-  botChatId       Int?
+  messageThreadId BigInt?
+  botChatId       BigInt?
   phone           String?
   email           String?
   order           Order[]

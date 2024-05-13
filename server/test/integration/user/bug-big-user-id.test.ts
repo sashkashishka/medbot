@@ -27,3 +27,38 @@ test('create user with big user id', async (t) => {
   t.match(resp, { status: 200 }, 'should return 200 status as user created');
   t.match(await resp.json(), u, 'should return created user');
 });
+
+test('update user with big user id', async (t) => {
+  const { request, webAppHeader, getUsers } = await getServer({
+    t,
+    scenarios: {
+      product: true,
+      admin: true,
+      user: [
+        {
+          order: {
+            type: 'none',
+            status: 'DONE',
+            appointment: 'none',
+          },
+        },
+      ],
+    },
+  });
+
+  const [user] = await getUsers();
+
+  const u = {
+    ...user,
+    id: 6603855683,
+  };
+
+  const resp = await request(`/api/user/update/${user.id}`, {
+    method: 'PATCH',
+    body: u,
+    headers: webAppHeader,
+  });
+
+  t.match(resp, { status: 200 }, 'should return 200 status as user created');
+  t.match(await resp.json(), u, 'should return created user');
+});

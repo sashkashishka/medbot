@@ -1,6 +1,11 @@
 import type { Prisma } from '@prisma/client';
 import type { preSerializationAsyncHookHandler } from 'fastify';
-import { userIdToNumber } from '../utils/userIdToNumber.js';
+import { userIdToNumber } from '../utils/serializers.js';
+import { compose } from 'rambda';
+
+const transformAppointment = compose(
+  userIdToNumber<Prisma.AppointmentUncheckedCreateInput>('userId'),
+);
 
 export const serializeAppointment: preSerializationAsyncHookHandler =
   async function serializeAppointment(
@@ -10,7 +15,7 @@ export const serializeAppointment: preSerializationAsyncHookHandler =
   ) {
     if (payload === null) return payload;
 
-    return userIdToNumber(payload, 'userId');
+    return transformAppointment(payload);
   };
 
 export const serializeAppointmentList: preSerializationAsyncHookHandler =
@@ -21,6 +26,6 @@ export const serializeAppointmentList: preSerializationAsyncHookHandler =
   ) {
     return {
       ...payload,
-      items: payload.items.map((a) => userIdToNumber(a, 'userId')),
+      items: payload.items.map(transformAppointment),
     };
   };

@@ -1,6 +1,17 @@
 import type { Prisma } from '@prisma/client';
 import type { preSerializationAsyncHookHandler } from 'fastify';
-import { userIdToNumber } from '../utils/userIdToNumber.js';
+import { compose } from 'rambda';
+import {
+  botChatIdToNumber,
+  messageThreadIdToNumber,
+  userIdToNumber,
+} from '../utils/serializers.js';
+
+const transformUser = compose(
+  userIdToNumber('id'),
+  botChatIdToNumber,
+  messageThreadIdToNumber,
+);
 
 export const serializeUser: preSerializationAsyncHookHandler =
   async function serializeUser(
@@ -10,7 +21,7 @@ export const serializeUser: preSerializationAsyncHookHandler =
   ) {
     if (payload === null) return payload;
 
-    return userIdToNumber(payload, 'id');
+    return transformUser(payload);
   };
 
 export const serializeUserList: preSerializationAsyncHookHandler =
@@ -21,6 +32,6 @@ export const serializeUserList: preSerializationAsyncHookHandler =
   ) {
     return {
       ...payload,
-      items: payload.items.map((u) => userIdToNumber(u, 'id')),
+      items: payload.items.map(transformUser),
     };
   };
