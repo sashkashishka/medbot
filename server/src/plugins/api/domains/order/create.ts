@@ -3,7 +3,6 @@ import type { Prisma } from '@prisma/client';
 import type { RouteOptions } from 'fastify';
 import { checkIfUserHasActiveOrder } from '../../hooks/checkIfUserHasActiveOrder.js';
 import { checkDuplicateOrderWithSameProduct } from '../../hooks/checkDuplicateOrderWithSameProduct.js';
-import { userIdToNumber } from '../../utils/userIdToNumber.js';
 import { serializeOrder } from '../../hooks/serializeOrder.js';
 
 export const createOrderRoute: RouteOptions = {
