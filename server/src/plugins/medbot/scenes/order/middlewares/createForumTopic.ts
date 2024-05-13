@@ -57,14 +57,12 @@ async function initTopicInfo(
   const { serviceApiSdk } = ctx;
   const update = ctx.update as Update.MessageUpdate;
 
-  const linkToUserPage = `${ctx.adminAreaUrl}/user/${
-    update.message.from.id
-  }`;
+  const linkToUserPage = `${ctx.adminAreaUrl}/user/${update.message.from.id}`;
 
   const botChatId = user.botChatId;
 
   const [product, err] = await serviceApiSdk.getActiveOrdersProduct(
-    botChatId,
+    Number(botChatId),
     'botChatId',
   );
 
@@ -78,6 +76,6 @@ async function initTopicInfo(
       product,
       linkToUserPage,
     }),
-    { message_thread_id: user.messageThreadId, parse_mode: 'Markdown' },
+    { message_thread_id: Number(user.messageThreadId), parse_mode: 'Markdown' },
   );
 }
