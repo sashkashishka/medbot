@@ -1,5 +1,6 @@
 import { Prisma } from '@prisma/client';
 import type { RouteOptions } from 'fastify';
+import { serializeOrderList } from '../../hooks/serializeOrder.js';
 
 interface iQuerystring {
   skip: number;
@@ -32,6 +33,7 @@ export const orderListRoute: RouteOptions = {
       },
     },
   },
+  preSerialization: [serializeOrderList],
   async handler(req) {
     const query = req.query as iQuerystring;
 

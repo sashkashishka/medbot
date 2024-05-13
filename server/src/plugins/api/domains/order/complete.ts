@@ -4,6 +4,7 @@ import { checkHasOrderActiveAppointments } from '../../hooks/checkHasOrderActive
 import { checkIsDoneOrder } from '../../hooks/checkIsDoneOrder.js';
 import { checkIfSubscriptionOrderExpired } from '../../hooks/checkIfSubscriptionOrderExpired.js';
 import { checkIfSubscriptionOrderAlive } from '../../hooks/checkIfSubscriptionOrderAlive.js';
+import { serializeOrder } from '../../hooks/serializeOrder.js';
 
 interface iParams {
   orderId: string;
@@ -28,6 +29,7 @@ export const completeOrderRoute: RouteOptions = {
     checkIfSubscriptionOrderAlive,
     checkHasOrderActiveAppointments,
   ],
+  preSerialization: [serializeOrder],
   async handler(req) {
     const params = req.params as iParams;
 

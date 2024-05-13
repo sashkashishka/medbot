@@ -1,6 +1,7 @@
 import type { Prisma } from '@prisma/client';
 import type { RouteOptions } from 'fastify';
 import { checkDuplicateUser } from '../../hooks/checkDuplicateUser.js';
+import { serializeUser } from '../../hooks/serializeUser.js';
 
 export const createUserRoute: RouteOptions = {
   method: 'POST',
@@ -14,7 +15,8 @@ export const createUserRoute: RouteOptions = {
         surname: { type: 'string' },
         patronymic: { type: 'string' },
         birthDate: { type: 'string' },
-        topicForumId: { type: 'number' },
+        messageThreadId: { type: 'number' },
+        botChatId: { type: 'number' },
         phone: { type: 'string' },
         email: { type: 'string' },
         timezoneOffset: { type: 'number' },
@@ -32,11 +34,36 @@ export const createUserRoute: RouteOptions = {
     },
   },
   preHandler: [checkDuplicateUser],
+  preSerialization: [serializeUser],
   handler(req) {
-    const body = req.body as Prisma.UserCreateInput;
+    const {
+      id,
+      name,
+      surname,
+      phone,
+      email,
+      timezoneOffset,
+      timeZone,
+      messageThreadId,
+      patronymic,
+      birthDate,
+      botChatId,
+    } = req.body as Prisma.UserUncheckedCreateInput;
 
     return this.prisma.user.create({
-      data: body,
+      data: {
+        id,
+        name,
+        surname,
+        phone,
+        email,
+        timezoneOffset,
+        timeZone,
+        messageThreadId,
+        patronymic,
+        birthDate,
+        botChatId,
+      },
     });
   },
 };

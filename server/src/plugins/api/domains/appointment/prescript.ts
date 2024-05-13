@@ -2,6 +2,7 @@ import { Prisma } from '@prisma/client';
 import type { RouteOptions } from 'fastify';
 
 import { checkIfAppointmentExists } from '../../hooks/checkIfAppointmentExists.js';
+import { serializeAppointment } from '../../hooks/serializeAppointment.js';
 
 interface iParams {
   appointmentId: string;
@@ -29,6 +30,7 @@ export const prescriptAppointmentRoute: RouteOptions = {
     },
   },
   preHandler: [checkIfAppointmentExists],
+  preSerialization: [serializeAppointment],
   async handler(request) {
     const params = request.params as iParams;
     const { treatment, report, notes } =

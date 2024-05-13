@@ -1,4 +1,5 @@
 import type { RouteOptions } from 'fastify';
+import { serializeUserList } from '../../hooks/serializeUser.js';
 
 interface iQuerystring {
   skip: number;
@@ -19,7 +20,7 @@ export const userListRoute: RouteOptions = {
       },
     },
   },
-
+  preSerialization: [serializeUserList],
   async handler(req) {
     const query = req.query as iQuerystring;
 

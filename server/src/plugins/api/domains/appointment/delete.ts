@@ -1,6 +1,7 @@
 import type { RouteOptions } from 'fastify';
 import { checkIfAppointmentActive } from '../../hooks/checkIfAppointmentActive.js';
 import { decorateWithGoogleCalendarEventId } from '../../hooks/decorateWithGoogleCalendarEventId.js';
+import { serializeAppointment } from '../../hooks/serializeAppointment.js';
 
 interface iParams {
   appointmentId: string;
@@ -19,6 +20,7 @@ export const deleteAppointmentRoute: RouteOptions = {
     },
   },
   preHandler: [checkIfAppointmentActive, decorateWithGoogleCalendarEventId],
+  preSerialization: [serializeAppointment],
   async handler(request) {
     const params = request.params as iParams;
 

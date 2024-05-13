@@ -1,6 +1,7 @@
 import type { Prisma } from '@prisma/client';
 import type { RouteOptions } from 'fastify';
 import { checkIsUserExists } from '../../hooks/checkIsUserExists.js';
+import { serializeUser } from '../../hooks/serializeUser.js';
 
 interface iParams {
   userId: string;
@@ -17,7 +18,6 @@ export const updateUserRoute: RouteOptions = {
         surname: { type: 'string' },
         patronymic: { type: 'string' },
         birthDate: { type: 'string' },
-        topicForumId: { type: 'number' },
         phone: { type: 'string' },
         email: { type: 'string' },
         messageThreadId: { type: 'number' },
@@ -43,13 +43,38 @@ export const updateUserRoute: RouteOptions = {
     },
   },
   preHandler: [checkIsUserExists],
+  preSerialization: [serializeUser],
   handler(req) {
     const params = req.params as iParams;
-    const body = req.body as Prisma.UserUncheckedUpdateInput;
+    const {
+      id,
+      name,
+      surname,
+      phone,
+      email,
+      timezoneOffset,
+      timeZone,
+      messageThreadId,
+      patronymic,
+      birthDate,
+      botChatId,
+    } = req.body as Prisma.UserUncheckedUpdateInput;
 
     return this.prisma.user.update({
       where: { id: Number(params.userId) },
-      data: body,
+      data: {
+        id,
+        name,
+        surname,
+        phone,
+        email,
+        timezoneOffset,
+        timeZone,
+        messageThreadId,
+        patronymic,
+        birthDate,
+        botChatId,
+      },
     });
   },
 };

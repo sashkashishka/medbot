@@ -125,7 +125,7 @@ export class ProductActivateCodeForm extends Component<iProps> {
                   fieldConfig={{
                     validate: composeValidators(
                       required('Обовʼязкове поле'),
-                      // email('Email невірний'),
+                      email('Email невірний'),
                     ),
                   }}
                 />

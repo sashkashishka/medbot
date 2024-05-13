@@ -5,6 +5,7 @@ import type { RouteOptions } from 'fastify';
 import { generateActivationCodes } from '../../utils/activation-code.js';
 import { createDecorateWithOrder } from '../../hooks/decorateWithOrder.js';
 import { checkIsDoneOrder } from '../../hooks/checkIsDoneOrder.js';
+import { serializeOrder } from '../../hooks/serializeOrder.js';
 
 interface iParams {
   orderId: string;
@@ -32,6 +33,7 @@ export const updateOrderRoute: RouteOptions = {
     },
   },
   preHandler: [createDecorateWithOrder('params'), checkIsDoneOrder],
+  preSerialization: [serializeOrder],
   async handler(req) {
     const params = req.params as iParams;
     const body = req.body as Prisma.OrderUncheckedCreateInput;
