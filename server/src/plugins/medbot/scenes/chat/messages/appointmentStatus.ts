@@ -1,13 +1,15 @@
 import type { Prisma } from '@prisma/client';
 import { formatDate } from '../../../../../utils/time.js';
+import type { iMedbotContext } from '../../../types.js';
 
 interface iOptions {
   appointment: Prisma.AppointmentUncheckedCreateInput;
   user: Prisma.UserUncheckedCreateInput;
+  $t: iMedbotContext['$t'];
 }
 
 export const APPOINTMENT_STATUS_MESSAGES = {
-  '/appointmentCreated': ({ appointment, user }: iOptions) => {
+  '/appointmentCreated': ({ appointment, user, $t }: iOptions) => {
     if (!appointment) return '';
 
     const date = formatDate(appointment.time, {
@@ -15,15 +17,9 @@ export const APPOINTMENT_STATUS_MESSAGES = {
       timeZone: user.timeZone,
     });
 
-    return (
-      `Зустріч з лікарем запланована на ${date}.\n` +
-      'Зустріч буде проводитися в онлайн форматі.\n' +
-      'Тривалість - 45 хвилин.\n' +
-      'Перед цим вам буде надіслано посилання на Google Meet.\n' +
-      'Для більш предметної консультації надішліть всі ваші попередні обстеження та аналізи тут в чаті.'
-    );
+    return $t.get().appointmentCreated({ date })
   },
-  '/appointmentUpdated': ({ appointment, user }: iOptions) => {
+  '/appointmentUpdated': ({ appointment, user, $t }: iOptions) => {
     if (!appointment) return '';
 
     const date = formatDate(appointment.time, {
@@ -31,16 +27,10 @@ export const APPOINTMENT_STATUS_MESSAGES = {
       timeZone: user.timeZone,
     });
 
-    return (
-      `Зустріч з лікарем була змінена. Запланована дата ${date}.\n` +
-      'Зустріч буде проводитися в онлайн форматі.\n' +
-      'Тривалість - 45 хвилин.\n' +
-      'Перед цим вам буде надіслано посилання на Google Meet\n' +
-      'Для більш предметної консультації не забудьте надіслати всі ваші попередні обстеження та аналізи тут в чаті.'
-    );
+    return $t.get().appointmentUpdated({ date })
   },
-  '/appointmentDeleted': () => {
-    return `Зустріч з лікарем була відмінена. Але ви завжди можете записатися на нову зустріч.`;
+  '/appointmentDeleted': ({ $t }) => {
+    return $t.get().appointmentDeleted;
   },
 } as const;
 

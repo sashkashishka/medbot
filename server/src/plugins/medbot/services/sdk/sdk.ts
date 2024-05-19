@@ -90,6 +90,7 @@ export class MedbotSdk {
         APPOINTMENT_STATUS_MESSAGES['/appointmentCreated']({
           appointment,
           user,
+          $t: this.$t,
         }),
         {
           parse_mode: 'Markdown',
@@ -111,6 +112,7 @@ export class MedbotSdk {
         APPOINTMENT_STATUS_MESSAGES['/appointmentUpdated']({
           appointment,
           user,
+          $t: this.$t,
         }),
         {
           parse_mode: 'Markdown',
@@ -157,7 +159,7 @@ export class MedbotSdk {
       await this.telegram.answerWebAppQuery(tgQueryId, {
         id: `${Math.random()}`,
         type: 'article',
-        title: 'Оновлення статусу зустрічі',
+        title: 'Update appointment status',
         input_message_content: {
           message_text: `/appointment${capitalize(status)}`,
         },
@@ -172,7 +174,7 @@ export class MedbotSdk {
       await this.telegram.answerWebAppQuery(tgQueryId, {
         id: '0',
         type: 'article',
-        title: 'Дякуємо за замовлення!',
+        title: 'Successfull order',
         input_message_content: {
           message_text: '/successfullOrder',
         },

@@ -1,10 +1,10 @@
 import type { FastifyInstance } from 'fastify';
-import type { tLangs, tNamespaces } from '../../../../src/plugins/i18n/i18n.js';
+import type { tLang, tNamespace } from '../../../../src/plugins/i18n/i18n.js';
 import { medbotNs } from '../../../../src/plugins/i18n/ns/medbot.js';
 
 export interface iI18nOptions {
-  lang: tLangs;
-  ns: tNamespaces;
+  lang: tLang;
+  ns: tNamespace;
 }
 
 export async function i18n(

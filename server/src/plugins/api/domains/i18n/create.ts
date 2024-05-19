@@ -1,10 +1,10 @@
 import type { RouteOptions } from 'fastify';
-import type { tLangs, tNamespaces } from '../../../i18n/i18n.js';
+import type { tLang, tNamespace } from '../../../i18n/i18n.js';
 
 interface iBody {
   id: number;
-  lang: tLangs;
-  ns: tNamespaces;
+  lang: tLang;
+  ns: tNamespace;
   key: string;
   translation: string;
 }

@@ -58,7 +58,7 @@ test('refresh medbot - integration', async (t) => {
     };
 
     t.equal(
-      fastify.i18n.getNs('uk', 'medbot').test,
+      fastify.i18n.getNs('uk', 'medbot').get().test,
       '',
       'should be empty translations',
     );
@@ -70,7 +70,7 @@ test('refresh medbot - integration', async (t) => {
     });
 
     t.equal(
-      fastify.i18n.getNs('uk', 'medbot').test,
+      fastify.i18n.getNs('uk', 'medbot').get().test,
       '',
       'still should be empty translations',
     );
@@ -78,7 +78,7 @@ test('refresh medbot - integration', async (t) => {
     await request(`/api/admin/i18n/refresh`, { method: 'GET', cookie });
 
     t.equal(
-      fastify.i18n.getNs('uk', 'medbot').test,
+      fastify.i18n.getNs('uk', 'medbot').get().test,
       translation.translation,
       'should be populated with new translation',
     );
