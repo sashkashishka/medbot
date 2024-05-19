@@ -12,7 +12,7 @@ const orderHandler = new Composer<iMedbotContext>();
 orderHandler.start(async (ctx) => {
   await Promise.all([
     ctx.reply(entryMsg()),
-    ctx.setChatMenuButton(menuButton.order(ctx.webAppUrl)),
+    ctx.setChatMenuButton(menuButton.order(ctx.webAppUrl, ctx.$t)),
   ]);
 });
 

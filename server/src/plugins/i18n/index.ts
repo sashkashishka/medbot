@@ -27,6 +27,4 @@ export const i18nPlugin: FastifyPluginAsync = fp(async (fastify) => {
   fastify.addHook('onClose', async () => {
     i18n.unsubscribe();
   });
-
-  await i18n.loading();
 });
