@@ -33,6 +33,6 @@ export const chatEnter: MiddlewareFn<iMedbotContext> = async function chatEnter(
       }),
       { parse_mode: 'Markdown' },
     ),
-    ctx.setChatMenuButton(menuButton.appointment(ctx.webAppUrl)),
+    ctx.setChatMenuButton(menuButton.appointment(ctx.webAppUrl, ctx.$t)),
   ]);
 };
