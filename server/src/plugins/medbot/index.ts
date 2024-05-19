@@ -42,6 +42,9 @@ export const medbotPlugin: FastifyPluginAsync = fp(async (fastify) => {
   });
   const store = new PrismaSessionStorage(fastify.prisma);
 
+  // TODO detect language by user preferences
+  const $t = fastify.i18n.getNs('uk', 'medbot');
+
   bot.use(session({ store, getSessionKey }));
   bot.use(
     populateContext({
@@ -52,6 +55,7 @@ export const medbotPlugin: FastifyPluginAsync = fp(async (fastify) => {
       adminAreaUrl: fastify.config.ADMIN_AREA_URL,
       serviceApiSdk: fastify.serviceApiSdk,
       logger: medbotLogger,
+      $t,
     }),
   );
   bot.use(loggerMiddleware);
@@ -78,6 +82,7 @@ export const medbotPlugin: FastifyPluginAsync = fp(async (fastify) => {
       telegram: bot.telegram,
       webAppUrl: fastify.config.TG_BOT_WEBAPP_URL,
       logger: medbotLogger,
+      $t,
     }),
   );
 

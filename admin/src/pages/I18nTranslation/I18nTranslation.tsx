@@ -141,7 +141,7 @@ export function I18nTranslationPage() {
         <Form.Item<iI18nTranslation>
           label="Key"
           name="key"
-          rules={[{ required: true, message: 'Please input your username!' }]}
+          rules={[{ required: true, message: 'Please write down the translation key' }]}
         >
           <Input />
         </Form.Item>
@@ -149,7 +149,7 @@ export function I18nTranslationPage() {
         <Form.Item<iI18nTranslation>
           label="Translation"
           name="translation"
-          rules={[{ required: true, message: 'Please input price!' }]}
+          rules={[{ required: true, message: 'Please write down the translation itself' }]}
         >
           <TextArea rows={10} />
         </Form.Item>

@@ -9,18 +9,18 @@ import { atom, computed, type WritableAtom } from 'nanostores';
 import type { medbotNs } from './ns/medbot.js';
 import type { ServiceApiSdk } from '../serviceApiSdk/sdk.js';
 
-export type tLangs = 'uk';
-export interface iTranslationBases extends Record<Namespace, any> {
-  medbot: typeof medbotNs;
-}
-export type tNamespaces = Namespace;
+export type tLang = 'uk';
+export type tNamespace = Namespace;
+export type tTranslationBases = {
+  [Key in tNamespace]: Key extends 'medbot' ? typeof medbotNs : {};
+};
 
 export class Internationalisation {
   private serviceApiSdk: ServiceApiSdk;
   private createI18n: typeof nanostoresCreateI18n;
 
   private ns: Map<
-    `${tLangs}:${tNamespaces}`,
+    `${tLang}:${tNamespace}`,
     { i18n: I18n; $timestamp: WritableAtom<number>; t: Messages }
   >;
 
@@ -42,14 +42,14 @@ export class Internationalisation {
     this.refreshTranslations = this.refreshTranslations.bind(this);
   }
 
-  private getKey(l: tLangs, n: tNamespaces) {
+  private getKey(l: tLang, n: tNamespace) {
     return `${l}:${n}` as const;
   }
 
-  public addNs<N extends tNamespaces>(
-    lang: tLangs,
+  public addNs<N extends tNamespace>(
+    lang: tLang,
     namespace: N,
-    base: iTranslationBases[N],
+    base: tTranslationBases[N],
   ) {
     const key = this.getKey(lang, namespace);
 
@@ -66,7 +66,7 @@ export class Internationalisation {
 
     const i18n = this.createI18n($locale, {
       async get(locale, [ns]) {
-        const [l] = locale.split('@') as [tLangs, string];
+        const [l] = locale.split('@') as [tLang, string];
 
         const [data] = await serviceApiSdk.getTranslations(l, ns);
 
@@ -86,10 +86,10 @@ export class Internationalisation {
     this.ns.set(key, { i18n, $timestamp, t });
   }
 
-  public getNs<N extends tNamespaces>(lang: tLangs, namespace: N) {
+  public getNs<N extends tNamespace>(lang: tLang, namespace: N) {
     const { t } = this.ns.get(this.getKey(lang, namespace));
 
-    return (t as Messages<iTranslationBases[N]>).get();
+    return t as Messages<tTranslationBases[N]>;
   }
 
   public subscribe() {

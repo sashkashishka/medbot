@@ -1,21 +1,23 @@
 import type { Telegraf } from 'telegraf';
 import type { Logger } from 'pino';
 import type { Prisma } from '@prisma/client';
+import type { Messages } from '@nanostores/i18n';
 import type { iMedbotContext } from '../../types.js';
-import { oneTimeOrderCompleteMsg } from '../../scenes/chat/messages/oneTimeOrderComplete.js';
+
 import { menuButton } from '../../buttons/menu.js';
 import {
   APPOINTMENT_STATUS_MESSAGES,
   completeAppointmentByDoctorMsg,
   deleteAppointmentByDoctorMsg,
 } from '../../scenes/chat/messages/appointmentStatus.js';
-import { subscriptionOrderCompleteMsg } from '../../scenes/chat/messages/subscriptionOrderComplete.js';
 import { capitalize } from '../../../../utils/string.js';
+import type { tTranslationBases } from '../../../i18n/i18n.js';
 
 export interface iMedbotSdkOptions {
   telegram: Telegraf<iMedbotContext>['telegram'];
   webAppUrl: string;
   logger: Logger;
+  $t: Messages<tTranslationBases['medbot']>;
 }
 
 export class MedbotSdk {
@@ -25,10 +27,13 @@ export class MedbotSdk {
 
   private logger: iMedbotSdkOptions['logger'];
 
-  constructor({ telegram, webAppUrl, logger }: iMedbotSdkOptions) {
+  private $t: iMedbotSdkOptions['$t'];
+
+  constructor({ telegram, webAppUrl, logger, $t }: iMedbotSdkOptions) {
     this.telegram = telegram;
     this.webAppUrl = webAppUrl;
     this.logger = logger;
+    this.$t = $t;
 
     this.completeSubscriptionOrder = this.completeSubscriptionOrder.bind(this);
     this.completeOneTimeOrder = this.completeOneTimeOrder.bind(this);
@@ -42,14 +47,14 @@ export class MedbotSdk {
     try {
       await this.telegram.sendMessage(
         botChatId,
-        subscriptionOrderCompleteMsg(),
+        this.$t.get().subscriptionOrderComplete,
         {
           parse_mode: 'Markdown',
         },
       );
       await this.telegram.setChatMenuButton({
         chatId: botChatId,
-        menuButton: menuButton.order(this.webAppUrl),
+        menuButton: menuButton.order(this.webAppUrl, this.$t),
       });
     } catch (e) {
       this.logger.error(e, 'medbotSdk:completeSubscriptionOrder');
@@ -58,12 +63,16 @@ export class MedbotSdk {
 
   public async completeOneTimeOrder(botChatId: number) {
     try {
-      await this.telegram.sendMessage(botChatId, oneTimeOrderCompleteMsg(), {
-        parse_mode: 'Markdown',
-      });
+      await this.telegram.sendMessage(
+        botChatId,
+        this.$t.get().oneTimeOrderComplete,
+        {
+          parse_mode: 'Markdown',
+        },
+      );
       await this.telegram.setChatMenuButton({
         chatId: botChatId,
-        menuButton: menuButton.order(this.webAppUrl),
+        menuButton: menuButton.order(this.webAppUrl, this.$t),
       });
     } catch (e) {
       this.logger.error(e, 'medbotSdk:completeOneTimeOrder');

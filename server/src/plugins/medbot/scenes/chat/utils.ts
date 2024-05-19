@@ -1,14 +1,12 @@
 import type { Update } from 'telegraf/types';
 import type { iMedbotContext } from '../../types.js';
 import { menuButton } from '../../buttons/menu.js';
-import { oneTimeOrderCompleteMsg } from './messages/oneTimeOrderComplete.js';
-import { subscriptionOrderCompleteMsg } from './messages/subscriptionOrderComplete.js';
 
 export async function teardownUserData(
   ctx: iMedbotContext,
 ): Promise<iMedbotContext> {
   try {
-    const { update, serviceApiSdk } = ctx;
+    const { update, serviceApiSdk, $t } = ctx;
 
     ctx.session = {};
 
@@ -31,12 +29,12 @@ export async function teardownUserData(
       ctx.telegram.sendMessage(
         (update as Update.MessageUpdate).message.from.id,
         activeOrder.subscriptionEndsAt
-          ? subscriptionOrderCompleteMsg()
-          : oneTimeOrderCompleteMsg(),
+          ? $t.get().subscriptionOrderComplete
+          : $t.get().oneTimeOrderComplete,
       ),
       ctx.telegram.setChatMenuButton({
         chatId: (update as Update.MessageUpdate).message.chat.id,
-        menuButton: menuButton.order(ctx.webAppUrl),
+        menuButton: menuButton.order(ctx.webAppUrl, $t),
       }),
     ]);
   } catch (e) {
