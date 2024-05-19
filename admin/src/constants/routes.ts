@@ -12,4 +12,8 @@ export enum ROUTES {
   USER_APPOINTMENTS = '/dashboard/user/:userId/appointments',
   ORDERS = '/dashboard/orders',
   APPOINTMENTS = '/dashboard/appointments',
+  I18N = '/dashboard/i18n',
+  I18N_NAMESPACE = '/dashboard/i18n/:lang/:namespace',
+  I18N_CREATE = '/dashboard/i18n/:lang/:namespace/create',
+  I18N_UPDATE = '/dashboard/i18n/:lang/:namespace/:id',
 }

@@ -3,8 +3,8 @@ import { getServer } from '../../helpers/getServer/index.js';
 
 const test = t.test;
 
-test('get namespaces list', async (t) => {
-  t.test('should return array of namespaces', async (t) => {
+test('get i18n config list', async (t) => {
+  t.test('should return array of configs', async (t) => {
     const { request, adminCookie } = await getServer({
       t,
       scenarios: {
@@ -14,7 +14,7 @@ test('get namespaces list', async (t) => {
 
     const cookie = await adminCookie();
 
-    const resp = await request(`/api/admin/i18n/namespaces`, {
+    const resp = await request(`/api/admin/i18n/config`, {
       method: 'GET',
       cookie,
     });
@@ -22,6 +22,9 @@ test('get namespaces list', async (t) => {
     const data = await resp.json();
 
     t.match(resp, { status: 200 });
-    t.matchStrict(data, ['medbot', 'webapp']);
+    t.matchStrict(data, [
+      { ns: 'medbot', lang: ['uk'] },
+      { ns: 'webapp', lang: ['uk'] },
+    ]);
   });
 });

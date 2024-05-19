@@ -20,6 +20,10 @@ const items: MenuProps['items'] = [
     key: ROUTES.APPOINTMENTS,
     label: <Link to={ROUTES.APPOINTMENTS}>Appointment list</Link>,
   },
+  {
+    key: ROUTES.I18N,
+    label: <Link to={ROUTES.I18N}>Translations</Link>,
+  },
 ];
 
 export function SidebarMenu() {

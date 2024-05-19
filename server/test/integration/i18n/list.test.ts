@@ -87,5 +87,7 @@ test('translation list', async (t) => {
       t.ok(data[0].key !== undefined);
       t.ok(data[0].uk !== undefined);
     });
+
+    // TODO test for not undefined translations in response
   });
 });
