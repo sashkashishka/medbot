@@ -19,7 +19,7 @@ export const i18nPlugin: FastifyPluginAsync = fp(async (fastify) => {
 
   fastify.decorate('i18n', i18n);
 
-  fastify.addHook('onRoute', async () => {
+  fastify.addHook('onListen', async () => {
     i18n.subscribe();
     await i18n.loading();
   });
