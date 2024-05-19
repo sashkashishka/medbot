@@ -1,3 +1,4 @@
+import type { Namespace } from '@prisma/client';
 import {
   createI18n as nanostoresCreateI18n,
   type I18n,
@@ -9,10 +10,10 @@ import type { medbotNs } from './ns/medbot.js';
 import type { ServiceApiSdk } from '../serviceApiSdk/sdk.js';
 
 export type tLangs = 'uk';
-export interface iTranslationBases {
+export interface iTranslationBases extends Record<Namespace, any> {
   medbot: typeof medbotNs;
 }
-export type tNamespaces = keyof iTranslationBases;
+export type tNamespaces = Namespace;
 
 export class Internationalisation {
   private serviceApiSdk: ServiceApiSdk;

@@ -13,7 +13,7 @@ test('translation list', async (t) => {
         t,
         scenarios: {
           admin: true,
-          i18n: { lang: 'uk', ns: 'medbot' },
+          i18n: { lang, ns },
         },
       });
 
@@ -41,7 +41,7 @@ test('translation list', async (t) => {
         t,
         scenarios: {
           admin: true,
-          i18n: { lang: 'uk', ns: 'medbot' },
+          i18n: { lang, ns },
         },
       });
 
@@ -67,7 +67,7 @@ test('translation list', async (t) => {
         t,
         scenarios: {
           admin: true,
-          i18n: { lang: 'uk', ns: 'medbot' },
+          i18n: { lang, ns },
         },
       });
 

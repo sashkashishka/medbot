@@ -53,6 +53,7 @@ import { translationListRoute } from './domains/i18n/list.js';
 import { createTranslationRoute } from './domains/i18n/create.js';
 import { deleteTranslationRoute } from './domains/i18n/delete.js';
 import { refreshMedbotTranslationRoute } from './domains/i18n/refresh-medbot.js';
+import { namespaceListRoute } from './domains/i18n/namespaces.js';
 
 import { validateIsMedbot } from './hooks/validateIsMedbot.js';
 import { validateIsWebapp } from './hooks/validateIsWebapp.js';
@@ -144,6 +145,7 @@ const adminApi: FastifyPluginCallback = (fastify, _opts, done) => {
   fastify.route(createTranslationRoute);
   fastify.route(deleteTranslationRoute);
   fastify.route(refreshMedbotTranslationRoute);
+  fastify.route(namespaceListRoute);
 
   fastify.setErrorHandler(errorHandler);
 

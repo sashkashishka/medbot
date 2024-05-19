@@ -1,9 +1,9 @@
 import type { RouteOptions } from 'fastify';
-import type { tLangs } from '../../../i18n/i18n.js';
+import type { tLangs, tNamespaces } from '../../../i18n/i18n.js';
 
 interface iParams {
   lang: tLangs;
-  ns: string;
+  ns: tNamespaces;
 }
 
 export const translationListRoute: RouteOptions = {
@@ -27,6 +27,7 @@ export const translationListRoute: RouteOptions = {
         [lang]: { not: undefined },
       },
       select: {
+        id: true,
         namespace: true,
         key: true,
         [lang]: true,

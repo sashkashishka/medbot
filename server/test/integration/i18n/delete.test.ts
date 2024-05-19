@@ -22,7 +22,7 @@ test('delete translation', async (t) => {
     const resp = await request(`/api/admin/i18n/delete`, {
       method: 'DELETE',
       cookie,
-      body: { key: translation.key },
+      body: { id: translation.id },
     });
 
     const data = (await resp.json()) as Prisma.I18nUncheckedCreateInput;
@@ -32,6 +32,7 @@ test('delete translation', async (t) => {
     t.equal(data.key, translation.key);
     t.equal(data.namespace, translation.namespace);
     t.equal(data.uk, translation.uk);
+    t.equal(data.id, translation.id);
 
     t.equal(
       translations.length - (await getTranslations()).length,

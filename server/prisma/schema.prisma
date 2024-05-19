@@ -102,8 +102,14 @@ model Admin {
   password String
 }
 
+enum Namespace {
+  medbot
+  webapp
+}
+
 model I18n {
-  key       String @id
-  namespace String
-  uk        String @db.MediumText
+  id        Int       @id @default(autoincrement())
+  key       String
+  namespace Namespace
+  uk        String    @db.MediumText
 }

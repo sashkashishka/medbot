@@ -34,6 +34,7 @@ test('create translation', async (t) => {
     t.equal(data.key, translation.key);
     t.equal(data.namespace, translation.ns);
     t.equal(data.uk, translation.translation);
+    t.ok(data.id);
   });
 
   t.test('when called on existing key - update it', async (t) => {
@@ -51,6 +52,7 @@ test('create translation', async (t) => {
     const cookie = await adminCookie();
 
     const newTranslation = {
+      id: translation.id,
       lang: 'uk',
       key: translation.key,
       ns: translation.namespace,
@@ -70,6 +72,7 @@ test('create translation', async (t) => {
     t.equal(data.key, newTranslation.key);
     t.equal(data.namespace, newTranslation.ns);
     t.equal(data.uk, newTranslation.translation);
+    t.equal(data.id, newTranslation.id);
 
     t.equal(
       translations.length,

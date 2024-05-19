@@ -1,7 +1,7 @@
 import type { RouteOptions } from 'fastify';
 
 interface iBody {
-  key: string;
+  id: number;
 }
 
 export const deleteTranslationRoute: RouteOptions = {
@@ -11,15 +11,15 @@ export const deleteTranslationRoute: RouteOptions = {
     body: {
       type: 'object',
       properties: {
-        key: { type: 'string' },
+        id: { type: 'number' },
       },
     },
   },
   handler(req) {
-    const { key } = req.body as iBody;
+    const { id } = req.body as iBody;
 
     return this.prisma.i18n.delete({
-      where: { key },
+      where: { id },
     });
   },
 };
