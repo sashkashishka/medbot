@@ -17,9 +17,13 @@ export const i18nPlugin: FastifyPluginAsync = fp(async (fastify) => {
 
   i18n.addNs('uk', 'medbot', medbotNs);
 
-  i18n.subscribe();
-
   fastify.decorate('i18n', i18n);
+
+  fastify.addHook('onRoute', async () => {
+    i18n.subscribe();
+    await i18n.loading();
+  });
+
   fastify.addHook('onClose', async () => {
     i18n.unsubscribe();
   });

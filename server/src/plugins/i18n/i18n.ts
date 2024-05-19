@@ -23,7 +23,7 @@ export class Internationalisation {
     { i18n: I18n; $timestamp: WritableAtom<number>; t: Messages }
   >;
 
-  private listeners: (() => void)[];
+  private listeners: (() => void)[] = [];
 
   constructor(
     serviceApiSdk: ServiceApiSdk,
