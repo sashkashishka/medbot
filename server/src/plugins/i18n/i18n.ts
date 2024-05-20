@@ -15,6 +15,10 @@ export type tTranslationBases = {
   [Key in tNamespace]: Key extends 'medbot' ? typeof medbotNs : {};
 };
 
+export type tNsTranslations = {
+  [Key in tNamespace]?: Record<string, string>;
+};
+
 export class Internationalisation {
   private serviceApiSdk: ServiceApiSdk;
   private createI18n: typeof nanostoresCreateI18n;
@@ -70,14 +74,7 @@ export class Internationalisation {
 
         const [data] = await serviceApiSdk.getTranslations(l, ns);
 
-        return (data || []).reduce(
-          (acc, curr) => {
-            acc[ns][curr.key] = curr[l];
-
-            return acc;
-          },
-          { [ns]: {} },
-        );
+        return data;
       },
     });
 

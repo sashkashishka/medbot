@@ -51,3 +51,28 @@ export interface iFreeSlot {
   startTime: string;
   endTime: string;
 }
+
+export type tNamespace = 'webapp' | 'medbot';
+
+export type tLang = 'uk';
+
+export interface iI18nConfig {
+  ns: tNamespace;
+  lang: tLang[];
+}
+
+export type tI18n = {
+  id: number;
+  key: string;
+  namespace: tNamespace;
+} & {
+  [key in tLang]?: string;
+};
+
+export interface iI18nTranslation {
+  id?: number;
+  key: string;
+  translation: string;
+  ns: tNamespace;
+  lang: tLang;
+}

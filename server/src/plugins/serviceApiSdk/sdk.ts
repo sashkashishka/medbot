@@ -1,6 +1,7 @@
 import type { BaseLogger } from 'pino';
 import type { Prisma } from '@prisma/client';
 import { NetworkError } from './errors.js';
+import type { tNsTranslations } from '../i18n/i18n.js';
 
 export class ServiceApiSdk {
   constructor(
@@ -10,9 +11,7 @@ export class ServiceApiSdk {
   ) {}
 
   public getTranslations(lang: string, ns: string) {
-    return this.request<Prisma.I18nUncheckedCreateInput[]>(
-      `/i18n/list/${lang}/${ns}`,
-    );
+    return this.request<tNsTranslations>(`/i18n/ns/${lang}/${ns}`);
   }
 
   public teardownUserData(userId: number) {

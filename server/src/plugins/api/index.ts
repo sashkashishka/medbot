@@ -54,6 +54,7 @@ import { createTranslationRoute } from './domains/i18n/create.js';
 import { deleteTranslationRoute } from './domains/i18n/delete.js';
 import { refreshMedbotTranslationRoute } from './domains/i18n/refresh-medbot.js';
 import { i18nConfigRoute } from './domains/i18n/config.js';
+import { namespaceRoute } from './domains/i18n/namespace.js';
 
 import { validateIsMedbot } from './hooks/validateIsMedbot.js';
 import { validateIsWebapp } from './hooks/validateIsWebapp.js';
@@ -85,7 +86,7 @@ const userApi: FastifyPluginCallback = (fastify, _opts, done) => {
   fastify.route(updateAppointmentRoute);
   fastify.route(deleteAppointmentRoute);
   fastify.route(freeSlotsRoute);
-  fastify.route(translationListRoute);
+  fastify.route(namespaceRoute);
 
   fastify.setErrorHandler(errorHandler);
   done();
@@ -102,7 +103,7 @@ const serviceApi: FastifyPluginCallback = (fastify, _opts, done) => {
   fastify.route(productRoute);
   fastify.route(checkOrderActiveRoute);
   fastify.route(ordersProductRoute);
-  fastify.route(translationListRoute);
+  fastify.route(namespaceRoute);
 
   fastify.setErrorHandler(errorHandler);
   done();
