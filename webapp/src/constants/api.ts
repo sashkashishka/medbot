@@ -14,4 +14,5 @@ export enum API {
   FREE_SLOTS = '/api/appointment/free-slots',
   CREATE_APPOINTMENT = '/api/appointment/create',
   UPDATE_DELETE_APPOINTMENT = '/api/appointment/:appointmentId',
+  I18N = '/api/i18n/ns/:lang/:namespace',
 }
