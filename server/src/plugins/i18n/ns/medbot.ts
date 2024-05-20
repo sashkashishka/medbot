@@ -25,4 +25,7 @@ export const medbotNs = {
   no: '',
   orderNotPaid: '',
   checkSubscriptionMiddlewareError: '',
+
+  debugInfo: params('{userId}{email}'),
+  debugCommandDescription: '',
 };

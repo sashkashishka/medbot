@@ -15,6 +15,7 @@ export interface iMedbotSession extends Scenes.WizardSession {
 
 export interface iMedbotContext extends Context {
   forumId: number;
+  googleEmail: string;
   googleCalendar: calendar_v3.Calendar;
   googleCalendarId: string;
   webAppUrl: string;

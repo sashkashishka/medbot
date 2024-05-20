@@ -7,7 +7,7 @@ import { medbotLogger } from '../../logger.js';
 
 import { medbotScenes, forumScenes } from './scenes/index.js';
 import { cleanupOnSecondStartCommand } from './commands/secondStart.js';
-// import { commands } from './commands/index.js';
+import { debugCommand } from './commands/debug.js';
 import { createIsForumUpdateFilter } from './filters/isForumUpdate.js';
 import { PrismaSessionStorage } from './services/storage/prisma.js';
 import { MedbotSdk } from './services/sdk/index.js';
@@ -49,6 +49,7 @@ export const medbotPlugin: FastifyPluginAsync = fp(async (fastify) => {
   bot.use(
     populateContext({
       forumId: fastify.config.TG_BOT_FORUM_ID,
+      googleEmail: fastify.config.GOOGLE_EMAIL,
       googleCalendar: fastify.googleCalendar,
       googleCalendarId: fastify.config.GOOGLE_CALENDAR_ID,
       webAppUrl: fastify.config.TG_BOT_WEBAPP_URL,
@@ -62,6 +63,7 @@ export const medbotPlugin: FastifyPluginAsync = fp(async (fastify) => {
 
   // clear scene and start from scratch
   bot.command('start', cleanupOnSecondStartCommand);
+  bot.command('debug', debugCommand);
   // bot.command('help')
   // bot.command('terms')
 

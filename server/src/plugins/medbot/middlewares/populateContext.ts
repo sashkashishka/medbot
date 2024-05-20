@@ -3,6 +3,7 @@ import type { iMedbotContext } from '../types.js';
 
 export function populateContext({
   forumId,
+  googleEmail,
   googleCalendar,
   googleCalendarId,
   webAppUrl,
@@ -13,6 +14,7 @@ export function populateContext({
 }: Partial<iMedbotContext>): MiddlewareFn<iMedbotContext> {
   return function populateContextMiddleware(ctx, next) {
     ctx.forumId = forumId;
+    ctx.googleEmail = googleEmail;
     ctx.googleCalendar = googleCalendar;
     ctx.googleCalendarId = googleCalendarId;
     ctx.webAppUrl = webAppUrl;

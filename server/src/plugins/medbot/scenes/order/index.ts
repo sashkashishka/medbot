@@ -1,6 +1,7 @@
 import { Scenes, Composer } from 'telegraf';
 import { SCENES } from '../../constants/scenes.js';
 import type { iMedbotContext } from '../../types.js';
+import { setMyCommands } from '../../commands/setMyCommands.js';
 import { entryMsg } from './messages/entry.js';
 import { checkIfViaBot } from '../../middlewares/checkIfViaBot.js';
 import { checkIfOrderIsPaid } from './middlewares/checkIfOrderIsPaid.js';
@@ -9,7 +10,7 @@ import { menuButton } from '../../buttons/menu.js';
 
 const orderHandler = new Composer<iMedbotContext>();
 
-orderHandler.start(async (ctx) => {
+orderHandler.start(setMyCommands, async (ctx) => {
   const { $t } = ctx;
 
   await Promise.all([
