@@ -10,9 +10,11 @@ import { menuButton } from '../../buttons/menu.js';
 const orderHandler = new Composer<iMedbotContext>();
 
 orderHandler.start(async (ctx) => {
+  const { $t } = ctx;
+
   await Promise.all([
-    ctx.reply(entryMsg()),
-    ctx.setChatMenuButton(menuButton.order(ctx.webAppUrl, ctx.$t)),
+    ctx.reply(entryMsg($t), { parse_mode: 'Markdown' }),
+    ctx.setChatMenuButton(menuButton.order(ctx.webAppUrl, $t)),
   ]);
 });
 

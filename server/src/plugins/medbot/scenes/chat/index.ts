@@ -29,7 +29,7 @@ chatScene.command(
     return next();
   },
   async (ctx) => {
-    const { update, serviceApiSdk, session } = ctx;
+    const { update, serviceApiSdk, session, $t } = ctx;
     const { user } = session;
 
     try {
@@ -44,6 +44,7 @@ chatScene.command(
       const message = APPOINTMENT_STATUS_MESSAGES[update.message.text]({
         appointment,
         user,
+        $t,
       });
 
       await Promise.all([

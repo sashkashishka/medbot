@@ -31,6 +31,7 @@ export async function teardownUserData(
         activeOrder.subscriptionEndsAt
           ? $t.get().subscriptionOrderComplete
           : $t.get().oneTimeOrderComplete,
+        { parse_mode: 'Markdown' },
       ),
       ctx.telegram.setChatMenuButton({
         chatId: (update as Update.MessageUpdate).message.chat.id,

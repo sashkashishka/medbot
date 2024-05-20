@@ -1,3 +1,5 @@
-export function orderNotPaidMsg() {
-  return 'Ваше замовлення не сплачене. Спробуйте ще раз'
+import type { iMedbotContext } from '../../../types.js';
+
+export function orderNotPaidMsg($t: iMedbotContext['$t']) {
+  return $t.get().orderNotPaid;
 }

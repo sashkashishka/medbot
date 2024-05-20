@@ -54,7 +54,7 @@ async function initTopicInfo(
   ctx: iMedbotContext,
   user: Prisma.UserUncheckedCreateInput,
 ) {
-  const { serviceApiSdk } = ctx;
+  const { $t, serviceApiSdk } = ctx;
   const update = ctx.update as Update.MessageUpdate;
 
   const linkToUserPage = `${ctx.adminAreaUrl}/user/${update.message.from.id}`;
@@ -75,6 +75,7 @@ async function initTopicInfo(
     forumTopicEntryMsg({
       product,
       linkToUserPage,
+      $t,
     }),
     { message_thread_id: Number(user.messageThreadId), parse_mode: 'Markdown' },
   );

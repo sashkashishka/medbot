@@ -89,6 +89,7 @@ export function I18nNamespacePage() {
         loading={loading}
         columns={columns}
         dataSource={data || []}
+        pagination={false}
       />
     </>
   );

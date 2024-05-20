@@ -17,7 +17,7 @@ export const APPOINTMENT_STATUS_MESSAGES = {
       timeZone: user.timeZone,
     });
 
-    return $t.get().appointmentCreated({ date })
+    return $t.get().appointmentCreated({ date });
   },
   '/appointmentUpdated': ({ appointment, user, $t }: iOptions) => {
     if (!appointment) return '';
@@ -27,7 +27,7 @@ export const APPOINTMENT_STATUS_MESSAGES = {
       timeZone: user.timeZone,
     });
 
-    return $t.get().appointmentUpdated({ date })
+    return $t.get().appointmentUpdated({ date });
   },
   '/appointmentDeleted': ({ $t }) => {
     return $t.get().appointmentDeleted;
@@ -36,14 +36,15 @@ export const APPOINTMENT_STATUS_MESSAGES = {
 
 export function completeAppointmentByDoctorMsg(
   order: Prisma.OrderUncheckedCreateInput,
+  $t: iMedbotContext['$t'],
 ) {
   if (order.subscriptionEndsAt) {
-    return `Дякуємо за візит. Ви можете назначити новий натиснувши кнопку "Запис"`;
+    return $t.get().completeAppointmentSubscriptionOrder;
   }
 
-  return `Дякуємо за візит. На жаль, за обраною послугою ви не можете знову записатись на прийом, але можете писати і отримувати повідомлення від лікаря, поки ваше замовлення лікар не закінчить.`;
+  return $t.get().completeAppointmentOneTimeOrder;
 }
 
-export function deleteAppointmentByDoctorMsg() {
-  return `Лікар відмінив зустріч.`;
+export function deleteAppointmentByDoctorMsg($t: iMedbotContext['$t']) {
+  return $t.get().appointmentDeleteByDoctor;
 }

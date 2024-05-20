@@ -130,7 +130,7 @@ export class MedbotSdk {
     try {
       await this.telegram.sendMessage(
         botChatId,
-        completeAppointmentByDoctorMsg(order),
+        completeAppointmentByDoctorMsg(order, this.$t),
         {
           parse_mode: 'Markdown',
         },
@@ -144,7 +144,7 @@ export class MedbotSdk {
     try {
       await this.telegram.sendMessage(
         botChatId,
-        deleteAppointmentByDoctorMsg(),
+        deleteAppointmentByDoctorMsg(this.$t),
         {
           parse_mode: 'Markdown',
         },

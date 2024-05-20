@@ -9,4 +9,20 @@ export const medbotNs = {
   appointmentCreated: params('{date}'),
   appointmentUpdated: params('{date}'),
   appointmentDeleted: '',
+  completeAppointmentSubscriptionOrder: '',
+  completeAppointmentOneTimeOrder: '',
+  appointmentDeleteByDoctor: '',
+  oneTimeProduct: '',
+  subscriptionProduct: '',
+  successfulPayment: params('{productName}{productDetails}{codes}'),
+  activationCodesInfo: params('{activationCodes}'),
+
+  forumOrderNotActive: '',
+
+  entryMessage: '',
+  forumNewOrder: params('{link}{productName}{subscription}'),
+  yes: '',
+  no: '',
+  orderNotPaid: '',
+  checkSubscriptionMiddlewareError: '',
 };
