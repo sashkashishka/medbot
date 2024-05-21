@@ -15,5 +15,5 @@ export function ProductActivateCodePage() {
     return <Loader />;
   }
 
-  return <ProductActivateCodeForm t={t} user={data} config={config} />;
+  return <ProductActivateCodeForm t={t} user={data} config={config!} />;
 }

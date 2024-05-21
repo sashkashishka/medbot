@@ -31,7 +31,7 @@ export function ProductCheckoutPage() {
       waitingForPaymentOrder={data}
       product={product!}
       user={userQuery.data}
-      config={config}
+      config={config!}
     />
   );
 }

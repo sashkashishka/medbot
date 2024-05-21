@@ -1,6 +1,18 @@
 import { tTranslations } from '../../../../stores/i18n';
 
-export const APPOINTMENT_ERRORS: Record<string, keyof tTranslations> = {
+type tAppointmentErrorKey = keyof Pick<
+  tTranslations,
+  | 'appointmentError_tooEarly'
+  | 'appointmentError_occupied'
+  | 'appointmentError_hasActive'
+  | 'appointmentError_cannotCreateAppointmentBehindOrderExpirationDate'
+  | 'appointmentError_oneTimeOrderCannotCreateTwice'
+  | 'appointmentError_outOfWorkingHours'
+  | 'appointmentError_cannotDeleteNotActiveAppointment'
+  | 'appointmentError_cannotUpdateNotActiveAppointment'
+>;
+
+export const APPOINTMENT_ERRORS: Record<string, tAppointmentErrorKey> = {
   'too-early': 'appointmentError_tooEarly',
   occupied: 'appointmentError_occupied',
   'has-active': 'appointmentError_hasActive',
