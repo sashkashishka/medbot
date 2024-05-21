@@ -1,12 +1,14 @@
 import { generatePath, useNavigate } from 'react-router-dom';
 import { useStore } from '@nanostores/react';
 import { $lastProduct } from '../../../../stores/product';
+import { $t } from '../../../../stores/i18n';
 import { ROUTES } from '../../../../constants/routes';
 
 import styles from './LastOrder.module.css';
 
 export function LastOrder() {
   const navigate = useNavigate();
+  const t = useStore($t);
   const lastProduct = useStore($lastProduct);
 
   if (!lastProduct) return null;
@@ -24,7 +26,7 @@ export function LastOrder() {
         )
       }
     >
-      <p className={styles.title}>Ви зупинились на покупці цього пакету:</p>
+      <p className={styles.title}>{t.youHaveStoppedBuyingThisProduct}</p>
 
       <div className={styles.card}>
         <span className={styles.name}>{name}</span>

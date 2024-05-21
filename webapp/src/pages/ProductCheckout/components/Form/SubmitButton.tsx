@@ -1,6 +1,8 @@
-import { useFormState } from 'react-final-form';
-import { TgMainButton } from '../../../../components/TgMainButton';
 import { forwardRef } from 'react';
+import { useFormState } from 'react-final-form';
+import { useStore } from '@nanostores/react';
+import { TgMainButton } from '../../../../components/TgMainButton';
+import { $t } from '../../../../stores/i18n';
 
 interface iProps {
   handleSubmit(): void;
@@ -8,6 +10,7 @@ interface iProps {
 
 export const SubmitButton = forwardRef<HTMLButtonElement, iProps>(
   ({ handleSubmit }, ref) => {
+    const t = useStore($t);
     const { submitting } = useFormState({
       subscription: { submitting: true },
     });
@@ -18,7 +21,7 @@ export const SubmitButton = forwardRef<HTMLButtonElement, iProps>(
 
         <TgMainButton
           progress={submitting}
-          text="Перейти до оплати"
+          text={t.goToPaymentBtn}
           handleClick={handleSubmit}
         />
       </>

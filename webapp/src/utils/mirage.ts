@@ -1,18 +1,18 @@
 import {
   Factory,
   Model,
-  Registry,
+  type Registry,
   Server,
   belongsTo,
   createServer,
   hasMany,
   Response,
 } from 'miragejs';
-import { RouteHandler, ServerConfig } from 'miragejs/server';
+import type { RouteHandler, ServerConfig } from 'miragejs/server';
 import { faker } from '@faker-js/faker';
 import { API } from '../constants/api';
 import type { iAppointment, iOrder, iProduct, iUser } from '../types';
-import { ModelDefinition } from 'miragejs/-types';
+import type { ModelDefinition } from 'miragejs/-types';
 
 // ==========================
 // ==========================

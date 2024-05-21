@@ -21,7 +21,8 @@ import { $user } from '../../../../stores/user';
 import { SubmitButton } from './SubmitButton';
 import { getPersistDecorator } from './decorators/persist';
 import type { iFormValues } from './types';
-import { tg } from '../../../../utils/tg';
+import type { tTranslations } from '../../../../stores/i18n';
+import { getUserId, tg } from '../../../../utils/tg';
 import { ORDER_ERRORS } from './constants';
 import { setLastProductId } from '../../../../stores/product';
 import { getTimeZone, getTimezoneOffset } from '../../../../utils/date';
@@ -32,6 +33,7 @@ interface iProps {
   waitingForPaymentOrder?: iOrder;
   product: iProduct;
   user?: iUser;
+  t: tTranslations;
 }
 
 const focusOnErrors = createDecorator<iFormValues>();
@@ -58,6 +60,8 @@ export class ProductCheckoutForm extends Component<iProps> {
   }
 
   render() {
+    const { t } = this.props;
+
     return (
       <>
         <TgBackButton />
@@ -91,47 +95,53 @@ export class ProductCheckoutForm extends Component<iProps> {
 
                   <Input
                     data-testid={TIDS.INPUT_SURNAME}
-                    labelName="Прізвище"
+                    labelName={t.surname}
                     fieldName="surname"
-                    fieldConfig={{ validate: required('Обовʼязкове поле') }}
+                    fieldConfig={{
+                      validate: required(t.validationRequiredField),
+                    }}
                   />
                   <Input
                     data-testid={TIDS.INPUT_NAME}
-                    labelName="Імʼя"
+                    labelName={t.name}
                     fieldName="name"
-                    fieldConfig={{ validate: required('Обовʼязкове поле') }}
+                    fieldConfig={{
+                      validate: required(t.validationRequiredField),
+                    }}
                   />
 
                   <Input
                     data-testid={TIDS.INPUT_PATRONYMIC}
-                    labelName="По батькові"
+                    labelName={t.patronymic}
                     fieldName="patronymic"
                   />
 
                   <Datepicker
                     testid={TIDS.INPUT_BIRTHDATE}
-                    labelName="Дата народження"
+                    labelName={t.birthDate}
                     fieldName="birthDate"
                     fieldConfig={{
-                      validate: required('Обовʼязкове поле'),
+                      validate: required(t.validationRequiredField),
                     }}
                   />
 
                   <Input
                     data-testid={TIDS.INPUT_PHONE}
-                    labelName="Номер телефону"
+                    labelName={t.phoneLabel}
                     fieldName="phone"
-                    fieldConfig={{ validate: required('Обовʼязкове поле') }}
+                    fieldConfig={{
+                      validate: required(t.validationRequiredField),
+                    }}
                   />
 
                   <Input
                     data-testid={TIDS.INPUT_EMAIL}
-                    labelName="Електронна пошта"
+                    labelName={t.emailLabel}
                     fieldName="email"
                     fieldConfig={{
                       validate: composeValidators(
-                        required('Обовʼязкове поле'),
-                        email('Email невірний'),
+                        required(t.validationRequiredField),
+                        email(t.validationEmailError),
                       ),
                     }}
                   />
@@ -154,6 +164,8 @@ export class ProductCheckoutForm extends Component<iProps> {
   }
 
   async handleSubmit(values: iFormValues) {
+    const { t } = this.props;
+
     try {
       tg.disableClosingConfirmation();
       const user = await this.getUserApi(values).request();
@@ -161,7 +173,9 @@ export class ProductCheckoutForm extends Component<iProps> {
       const order = await this.getOrderApi(values).request();
 
       if ('code' in order) {
-        const errorText = ORDER_ERRORS[order.error] || 'Невідома помилка';
+        const errorText =
+          t[ORDER_ERRORS[order.error]]?.({ userId: getUserId()!, email: '' }) ||
+          t.unexpectedError;
         tg.showPopup({ message: errorText, buttons: [{ type: 'close' }] });
         return FORM_ERROR;
       }

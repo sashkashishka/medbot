@@ -1,10 +1,14 @@
 import { generatePath } from 'react-router-dom';
 import { API } from '../../constants/api';
-import { iAppointment } from '../../types';
+import type { iAppointment } from '../../types';
 import { createApi } from '../../utils/api';
 import { tg } from '../../utils/tg';
+import type { tTranslations } from '../../stores/i18n';
 
-export function createDeleteAppointment(id: iAppointment['id']) {
+export function createDeleteAppointment(
+  id: iAppointment['id'],
+  t: tTranslations,
+) {
   return async function deleteAppointment() {
     const deleteApi = createApi(
       generatePath(API.UPDATE_DELETE_APPOINTMENT, {
@@ -27,7 +31,7 @@ export function createDeleteAppointment(id: iAppointment['id']) {
       await sendStatusApi.request();
     } catch (e) {
       tg.enableClosingConfirmation();
-      tg.showAlert('Сталась помилка при видаленні. Спробуйте пізніше');
+      tg.showAlert(t.deleteAppointmentAlert);
       console.error(e);
     }
   };

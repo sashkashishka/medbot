@@ -1,17 +1,25 @@
-import { differenceInMinutes, startOfMinute } from 'date-fns';
-import { getUserId } from '../../../../utils/tg';
+import type { tTranslations } from '../../../../stores/i18n';
 
-export const ORDER_ERRORS: Record<string, string> = {
-  'has-active': `Ви вже маєте замовлення. Якщо бачите цю помилку, то надішліть будь ласка скріншот цього повідомлення на пошту medihelp.ua@gmail.com. userId: ${getUserId()}`,
-  'invalid-activation-code': 'Код активації невірний',
-  'code-expired': 'Код активації прострочений',
+type tOrderErrorKeys = keyof Pick<
+  tTranslations,
+  | 'orderError_hasActive'
+  | 'orderError_invalidActivationCode'
+  | 'orderError_codeExpired'
+>;
+
+export const ORDER_ERRORS: Record<string, tOrderErrorKeys> = {
+  // TODO: use email from env variable
+  'has-active': 'orderError_hasActive',
+  'invalid-activation-code': 'orderError_invalidActivationCode',
+  'code-expired': 'orderError_codeExpired',
 };
 
-export const BLOCK_REASON: Record<string, (d: Date) => string> = {
-  maxAttempts: () => `Забагато спроб. Заблоковано на 1 добу`,
-  frequency: (date: Date) =>
-    `Забагато спроб. Заблоковано на ${differenceInMinutes(
-      date,
-      startOfMinute(new Date()),
-    )} хвилин`,
+type tBlockReasonKeys = keyof Pick<
+  tTranslations,
+  'blockReason_frequency' | 'blockReason_maxAttempts'
+>;
+
+export const BLOCK_REASON: Record<string, tBlockReasonKeys> = {
+  maxAttempts: 'blockReason_maxAttempts',
+  frequency: 'blockReason_frequency',
 };

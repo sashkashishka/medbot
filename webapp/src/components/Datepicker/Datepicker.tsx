@@ -2,11 +2,13 @@ import { useRef, useState } from 'react';
 import { DatePicker } from 'react-date-picker';
 import { useField, type UseFieldConfig } from 'react-final-form';
 import cn from 'classnames';
+import { useStore } from '@nanostores/react';
 
 import { ValidationError } from '../ValidationError';
 import { isError } from '../../utils/final-form';
 import { isDateValid } from '../../utils/date';
 import { lockScroll, unlockScroll } from '../../utils/lockScroll';
+import { $t } from '../../stores/i18n';
 
 import 'react-date-picker/dist/DatePicker.css';
 import 'react-calendar/dist/Calendar.css';
@@ -39,6 +41,7 @@ export function Datepicker<tValue extends string>({
   });
   const [isOpen, setIsOpen] = useState(false);
   const portalRef = useRef<HTMLDivElement>(null);
+  const t = useStore($t);
 
   return (
     <label className={styles.row}>
@@ -50,9 +53,9 @@ export function Datepicker<tValue extends string>({
             styles.datepicker,
             isError(meta) && styles.datepickerError,
           )}
-          dayPlaceholder="д"
-          monthPlaceholder="м"
-          yearPlaceholder="р"
+          dayPlaceholder={t.dayPlaceholder}
+          monthPlaceholder={t.monthPlaceholder}
+          yearPlaceholder={t.yearPlaceholder}
           format="dd/MM/y"
           locale="uk-UA"
           value={input.value}
