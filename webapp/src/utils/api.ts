@@ -1,6 +1,7 @@
 import { API } from '../constants/api';
 import type {
   iAppointment,
+  iConfig,
   iErrorResponse,
   iFreeSlot,
   iOrder,
@@ -49,6 +50,7 @@ interface iResponses {
   [API.WAITING_FOR_PAYMENT_ORDER]: iOrder;
   [API.I18N]: tNsTranslations;
   [API.PRODUCT_LIST]: iProduct[];
+  [API.CONFIG]: iConfig;
   [API.MEDBOT_PROCEED_TO_CHAT]: unknown;
   [API.MEDBOT_SEND_APPOINTMENT_STATUS]: unknown;
 }

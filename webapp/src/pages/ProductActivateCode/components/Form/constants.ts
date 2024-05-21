@@ -8,7 +8,6 @@ type tOrderErrorKeys = keyof Pick<
 >;
 
 export const ORDER_ERRORS: Record<string, tOrderErrorKeys> = {
-  // TODO: use email from env variable
   'has-active': 'orderError_hasActive',
   'invalid-activation-code': 'orderError_invalidActivationCode',
   'code-expired': 'orderError_codeExpired',

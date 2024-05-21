@@ -15,7 +15,7 @@ import {
 import { createApi } from '../../../../utils/api';
 import { API } from '../../../../constants/api';
 import { TIDS } from '../../../../constants/testIds';
-import type { iOrder, iProduct, iUser } from '../../../../types';
+import type { iConfig, iOrder, iProduct, iUser } from '../../../../types';
 import { $user } from '../../../../stores/user';
 
 import { SubmitButton } from './SubmitButton';
@@ -34,6 +34,7 @@ interface iProps {
   product: iProduct;
   user?: iUser;
   t: tTranslations;
+  config: iConfig;
 }
 
 const focusOnErrors = createDecorator<iFormValues>();
@@ -164,7 +165,7 @@ export class ProductCheckoutForm extends Component<iProps> {
   }
 
   async handleSubmit(values: iFormValues) {
-    const { t } = this.props;
+    const { t, config } = this.props;
 
     try {
       tg.disableClosingConfirmation();
@@ -174,8 +175,10 @@ export class ProductCheckoutForm extends Component<iProps> {
 
       if ('code' in order) {
         const errorText =
-          t[ORDER_ERRORS[order.error]]?.({ userId: getUserId()!, email: '' }) ||
-          t.unexpectedError;
+          t[ORDER_ERRORS[order.error]]?.({
+            userId: getUserId()!,
+            email: config.googleEmail,
+          }) || t.unexpectedError;
         tg.showPopup({ message: errorText, buttons: [{ type: 'close' }] });
         return FORM_ERROR;
       }

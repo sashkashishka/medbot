@@ -17,7 +17,7 @@ import { createApi } from '../../../../utils/api';
 import { getUserId, tg } from '../../../../utils/tg';
 import { API } from '../../../../constants/api';
 import { TIDS } from '../../../../constants/testIds';
-import type { iUser } from '../../../../types';
+import type { iConfig, iUser } from '../../../../types';
 import { $user } from '../../../../stores/user';
 
 import { SubmitButton } from './SubmitButton';
@@ -32,6 +32,7 @@ import styles from './Form.module.css';
 interface iProps {
   user?: iUser;
   t: tTranslations;
+  config: iConfig;
 }
 
 const focusOnErrors = createDecorator<iFormValues>();
@@ -160,7 +161,7 @@ export class ProductActivateCodeForm extends Component<iProps> {
   }
 
   async handleSubmit(values: iFormValues) {
-    const { t } = this.props;
+    const { t, config } = this.props;
 
     try {
       tg.disableClosingConfirmation();
@@ -179,7 +180,7 @@ export class ProductActivateCodeForm extends Component<iProps> {
           });
         } else {
           errorText = t[ORDER_ERRORS[order.error]]?.({
-            email: '',
+            email: config.googleEmail,
             userId: getUserId()!,
           });
         }

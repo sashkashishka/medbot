@@ -15,4 +15,5 @@ export enum API {
   CREATE_APPOINTMENT = '/api/appointment/create',
   UPDATE_DELETE_APPOINTMENT = '/api/appointment/:appointmentId',
   I18N = '/api/i18n/ns/:lang/:namespace',
+  CONFIG = '/api/config',
 }

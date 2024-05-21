@@ -1,13 +1,15 @@
+import { useStore } from '@nanostores/react';
 import { CopyToClipboard } from '../CopyToClipboard';
 import { Link } from '../Link';
-
-const EMAIL = 'medihelp.ua@gmail.com';
+import { $config } from '../../stores/config';
 
 export function CopyEmail() {
+  const { data } = useStore($config);
+
   return (
-    <CopyToClipboard text={EMAIL}>
+    <CopyToClipboard text={data?.googleEmail!}>
       <Link to="#" external>
-        {EMAIL}
+        {data?.googleEmail}
       </Link>
     </CopyToClipboard>
   );

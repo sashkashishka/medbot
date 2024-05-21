@@ -59,3 +59,7 @@ export type tLang = 'uk';
 export type tNsTranslations = {
   [Key in tNamespace]?: Record<string, string>;
 };
+
+export interface iConfig {
+  googleEmail: string;
+}
