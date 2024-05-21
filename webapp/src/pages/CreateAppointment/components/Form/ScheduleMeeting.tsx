@@ -7,14 +7,16 @@ import { $availableTimeslots } from '../../../../stores/appointment';
 import { getThemeParams } from '../../../../utils/tg';
 import { required } from '../../../../utils/final-form';
 import { ValidationError } from '../../../../components/ValidationError';
+import { $t } from '../../../../stores/i18n';
 
 import styles from './ScheduleMeeting.module.css';
 
 export function ScheduleMeeting() {
   const availableTimeslots = useStore($availableTimeslots);
+  const t = useStore($t);
   const { input, meta } = useField<string>('time', {
     validateFields: [],
-    validate: required('Обовʼязкове поле'),
+    validate: required(t.validationRequiredField),
   });
 
   const themeParams = getThemeParams();
@@ -37,12 +39,14 @@ export function ScheduleMeeting() {
           input.onChange(startTimeEvent.startTime.toISOString())
         }
         onSelectedDayChange={console.log}
-        lang_emptyListText="Немає вільних годин"
-        lang_confirmButtonText="Підтвердити"
-        lang_cancelButtonText="Скасувати"
-        lang_goToNextAvailableDayText="Найближчі доступні години"
-        lang_noFutureTimesText="Немає доступних годин"
-        lang_selectedButtonText="Обрано:"
+        lang_emptyListText={t.scheduleMeeting_emptyListText}
+        lang_confirmButtonText={t.scheduleMeeting_confirmButtonText}
+        lang_cancelButtonText={t.scheduleMeeting_cancelButtonText}
+        lang_goToNextAvailableDayText={
+          t.scheduleMeeting_goToNextAvailableDayText
+        }
+        lang_noFutureTimesText={t.scheduleMeeting_noFutureTimesText}
+        lang_selectedButtonText={t.scheduleMeeting_selectedButtonText}
         format_nextFutureStartTimeAvailableFormatString="cccc, do MMMM"
         format_selectedDateDayTitleFormatString="cccc, do MMMM"
         format_selectedDateMonthTitleFormatString="LLLL Y"

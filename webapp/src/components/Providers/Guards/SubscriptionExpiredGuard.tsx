@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { useStore } from '@nanostores/react';
 import { ErrorOrderExpired } from '../../ErrorStates/ErrorOrderExpired';
 import { $activeAppointment } from '../../../stores/appointment';

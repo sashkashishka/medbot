@@ -1,5 +1,6 @@
 import type { Prisma } from '@prisma/client';
 import type { RouteOptions } from 'fastify';
+import { serializeAppointmentList } from '../../hooks/serializeAppointment.js';
 
 interface iQuerystring {
   skip: number;
@@ -27,6 +28,7 @@ export const appointmentListRoute: RouteOptions = {
       },
     },
   },
+  preSerialization: [serializeAppointmentList],
   async handler(req) {
     const query = req.query as iQuerystring;
 

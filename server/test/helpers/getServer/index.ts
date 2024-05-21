@@ -116,6 +116,10 @@ export async function getServer({ t, scenarios }: iOptions) {
     return fastify.prisma.telegrafSessions.findMany();
   }
 
+  function getTranslations() {
+    return fastify.prisma.i18n.findMany();
+  }
+
   async function cleanDB() {
     await fastify.prisma.appointment.deleteMany();
     await fastify.prisma.activationCode.deleteMany();
@@ -126,6 +130,7 @@ export async function getServer({ t, scenarios }: iOptions) {
     await fastify.prisma.$transaction([
       fastify.prisma.admin.deleteMany(),
       fastify.prisma.telegrafSessions.deleteMany(),
+      fastify.prisma.i18n.deleteMany(),
     ]);
   }
 
@@ -150,5 +155,6 @@ export async function getServer({ t, scenarios }: iOptions) {
     findOrder,
     findAppointment,
     getTelegrafSessions,
+    getTranslations,
   };
 }

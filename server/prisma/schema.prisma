@@ -12,13 +12,13 @@ generator client {
 }
 
 model User {
-  id              Int           @id @default(autoincrement())
+  id              BigInt        @id
   name            String?
   surname         String?
   patronymic      String?
   birthDate       DateTime?
-  messageThreadId Int?
-  botChatId       Int?
+  messageThreadId BigInt?
+  botChatId       BigInt?
   phone           String?
   email           String?
   order           Order[]
@@ -47,7 +47,7 @@ enum OrderStatus {
 model Order {
   id                 Int              @id @default(autoincrement())
   user               User             @relation(fields: [userId], references: [id])
-  userId             Int
+  userId             BigInt
   product            Product          @relation(fields: [productId], references: [id])
   productId          Int
   status             OrderStatus
@@ -68,7 +68,7 @@ model Appointment {
   order             Order             @relation(fields: [orderId], references: [id])
   orderId           Int
   user              User              @relation(fields: [userId], references: [id])
-  userId            Int
+  userId            BigInt
   complaints        String            @db.MediumText
   complaintsStarted String            @db.MediumText
   medicine          String            @db.MediumText
@@ -100,4 +100,16 @@ model Admin {
   id       Int    @id @default(autoincrement())
   name     String
   password String
+}
+
+enum Namespace {
+  medbot
+  webapp
+}
+
+model I18n {
+  id        Int       @id @default(autoincrement())
+  key       String
+  namespace Namespace
+  uk        String    @db.MediumText
 }

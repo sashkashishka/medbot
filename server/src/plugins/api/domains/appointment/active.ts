@@ -1,5 +1,6 @@
 import type { RouteOptions } from 'fastify';
 import { checkIfSubscriptionOrderExpired2 } from '../../hooks/checkIfSubscriptionOrderExpired.js';
+import { serializeAppointment } from '../../hooks/serializeAppointment.js';
 
 interface iParams {
   userId: string;
@@ -18,6 +19,7 @@ export const activeAppointmentRoute: RouteOptions = {
     },
   },
   preHandler: [checkIfSubscriptionOrderExpired2],
+  preSerialization: [serializeAppointment],
   async handler(request) {
     const params = request.params as iParams;
 

@@ -12,6 +12,7 @@ import { checkIfTimeSlotFree } from '../../hooks/checkIfTimeSlotFree.js';
 import { checkIsDoneOrder } from '../../hooks/checkIsDoneOrder.js';
 import { checkIfAppointmentTimeBehindOrderExpirationDate } from '../../hooks/checkIfAppointmentTimeBehindOrderExpirationDate.js';
 import { checkIfSubscriptionOrderExpired } from '../../hooks/checkIfSubscriptionOrderExpired.js';
+import { serializeAppointment } from '../../hooks/serializeAppointment.js';
 
 export const createAppointmentRoute: RouteOptions = {
   method: 'PUT',
@@ -53,6 +54,7 @@ export const createAppointmentRoute: RouteOptions = {
     checkIfOneTimeOrderHasDoneAppointments,
     checkIfTimeSlotFree,
   ],
+  preSerialization: [serializeAppointment],
   async handler(req) {
     const {
       complaints,
@@ -117,7 +119,7 @@ export const createAppointmentRoute: RouteOptions = {
         chronicDiseases: true,
         time: true,
         status: true,
-      }
+      },
     });
   },
 };

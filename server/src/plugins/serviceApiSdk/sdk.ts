@@ -1,6 +1,7 @@
 import type { BaseLogger } from 'pino';
 import type { Prisma } from '@prisma/client';
 import { NetworkError } from './errors.js';
+import type { tNsTranslations } from '../i18n/i18n.js';
 
 export class ServiceApiSdk {
   constructor(
@@ -9,32 +10,33 @@ export class ServiceApiSdk {
     private tgToken: string,
   ) {}
 
-  public async teardownUserData(userId: number) {
+  public getTranslations(lang: string, ns: string) {
+    return this.request<tNsTranslations>(`/i18n/ns/${lang}/${ns}`);
+  }
+
+  public teardownUserData(userId: number) {
     return this.request<{ done: boolean }>(`/teardown-user-data/${userId}`);
   }
 
-  public async getBotChatId(messageThreadId: number) {
+  public getBotChatId(messageThreadId: number) {
     return this.request<{ botChatId: number }>(
       `/bot-chat-id/${messageThreadId}`,
     );
   }
 
-  public async activeOrder(userId: number) {
+  public activeOrder(userId: number) {
     return this.request<Prisma.OrderUncheckedCreateInput>(
       `/order/active/${userId}`,
     );
   }
 
-  public async checkOrderActive(
-    id: number,
-    idType: 'messageThreadId' | 'botChatId',
-  ) {
+  public checkOrderActive(id: number, idType: 'messageThreadId' | 'botChatId') {
     return this.request<{ active: boolean }>(
       `/check-order-active/${id}?id=${idType}`,
     );
   }
 
-  public async getActiveOrdersProduct(
+  public getActiveOrdersProduct(
     id: number,
     idType: 'messageThreadId' | 'botChatId',
   ) {
@@ -43,17 +45,17 @@ export class ServiceApiSdk {
     );
   }
 
-  public async activeAppointment(userId: number) {
+  public activeAppointment(userId: number) {
     return this.request<Prisma.AppointmentUncheckedCreateInput>(
       `/appointment/${userId}`,
     );
   }
 
-  public async user(userId: number) {
+  public user(userId: number) {
     return this.request<Prisma.UserCreateInput>(`/user/${userId}`);
   }
 
-  public async updateUser(userId: number, data: Prisma.UserCreateInput) {
+  public updateUser(userId: number, data: Prisma.UserCreateInput) {
     return this.request<Prisma.UserCreateInput>(`/user/update/${userId}`, {
       method: 'PATCH',
       body: JSON.stringify(data),

@@ -51,3 +51,15 @@ export interface iFreeSlot {
   startTime: string;
   endTime: string;
 }
+
+export type tNamespace = 'webapp' | 'medbot';
+
+export type tLang = 'uk';
+
+export type tNsTranslations = {
+  [Key in tNamespace]?: Record<string, string>;
+};
+
+export interface iConfig {
+  googleEmail: string;
+}

@@ -15,11 +15,13 @@ import { Button } from '../../components/Button';
 
 import { tg } from '../../utils/tg';
 import { createDeleteAppointment } from './utils';
+import { $t } from '../../stores/i18n';
 
 import styles from './AppointmentList.module.css';
 
 export function AppointmentListPage() {
   const [isDeleting, setIsDeleting] = useState(false);
+  const t = useStore($t);
   const { data: activeAppointment } = useStore($activeAppointment);
   const { data: activeOrder } = useStore($activeOrder);
   const navigate = useNavigate();
@@ -27,7 +29,7 @@ export function AppointmentListPage() {
   switch (true) {
     case Boolean(
       activeAppointment &&
-      'status' in activeAppointment &&
+        'status' in activeAppointment &&
         activeAppointment?.status === 'DONE' &&
         !activeOrder?.subscriptionEndsAt,
     ): {
@@ -35,9 +37,7 @@ export function AppointmentListPage() {
         <div className={styles.oneTimeOrderContainer}>
           <Emoji emoji="sunglasses" />
           <span className={styles.oneTimeOrderInfo}>
-            Дякуємо за візит! Нажаль, в рамках даної консультації ви вже не
-            можете записатись ще раз. Дочекайтесь як лікар випише Вам
-            рекомендації і замовте консультацію ще раз.
+            {t.warnOneTimeOrderAppointmentLimit}
           </span>
         </div>
       );
@@ -47,15 +47,15 @@ export function AppointmentListPage() {
       // TODO: fix type
       // @ts-ignore
       const { time, id } = activeAppointment!;
-      const deleteAppointment = createDeleteAppointment(id);
+      const deleteAppointment = createDeleteAppointment(id, t);
 
       return (
         <div className={styles.listContainer}>
-          <h2 className={styles.title}>Зустрічі</h2>
+          <h2 className={styles.title}>{t.meetings}</h2>
           <div className={styles.card}>
-            <b>Невролог</b>
+            <b>{t.neurologist}</b>
 
-            <span>Шмаргальова Катерина Юріївна</span>
+            <span>{t.doctorShmarhaliova}</span>
 
             <span>
               {format(new Date(time), 'HH:mm eeee, dd.LL.yyyy', { locale: uk })}
@@ -66,7 +66,7 @@ export function AppointmentListPage() {
                 type="button"
                 onClick={() => navigate(ROUTES.APPOINTMENT_CREATE)}
               >
-                Змінити
+                {t.change}
               </Button>
 
               <Button
@@ -74,7 +74,7 @@ export function AppointmentListPage() {
                 className={styles.buttonDelete}
                 disabled={isDeleting}
                 onClick={() =>
-                  tg.showConfirm('Відмінити зустріч?', async (confirm) => {
+                  tg.showConfirm(t.cancelAppointmentAlert, async (confirm) => {
                     if (!confirm) return;
 
                     setIsDeleting(true);
@@ -85,7 +85,7 @@ export function AppointmentListPage() {
                   })
                 }
               >
-                Відмінити
+                {t.cancel}
               </Button>
             </div>
           </div>
@@ -97,9 +97,9 @@ export function AppointmentListPage() {
       return (
         <div className={styles.emptyContainer}>
           <Emoji emoji="monocle" />
-          Список записів пустий
+          {t.appointmentListEmpty}
           <TgMainButton
-            text="Записатись на прийом"
+            text={t.makeAppointment}
             handleClick={() => navigate(ROUTES.APPOINTMENT_CREATE)}
           />
         </div>

@@ -1,49 +1,33 @@
 import type { Prisma } from '@prisma/client';
+import type { iMedbotContext } from '../../../types.js';
 
 export function entryMsg({
   product,
   activationCodes,
+  $t,
 }: {
   product: Prisma.ProductUncheckedCreateInput;
   activationCodes: number[];
+  $t: iMedbotContext['$t'];
 }) {
-  let productDetails =
-    '- Будь-яку кількість консультацій протягом терміну дії підписки\n' +
-    '- Можливість записатися на прийом багато разів, але тільки після закінчення попереднього\n';
+  const productDetails =
+    product.subscriptionDuration === 0
+      ? $t.get().oneTimeProduct
+      : $t.get().subscriptionProduct;
 
   let codes = '';
 
   if (activationCodes?.length) {
-    codes =
-      'Ви отримали активаційні коди:\n' +
-      activationCodes.map((c) => `*${c}*`).join('\n') +
-      '\n' +
-      '\n' +
-      'Щоб скористатись цими кодами:\n' +
-      '1. Відкрийте бот\n' +
-      '2. Натисніть кнопку "Замовити"\n' +
-      '3. У вікні, що відкрилось зверху натиснути на кнопку "Активувати код" і створити замовлення. Платити нічого не потрібно, так як все оплачено\n';
+    codes = $t
+      .get()
+      .activationCodesInfo({
+        activationCodes: activationCodes.map((c) => `*${c}*`).join('\n'),
+      });
   }
 
-  if (product.subscriptionDuration === 0) {
-    productDetails =
-      '- Разову консультацію\n' +
-      '- Можливість записатися на прийом один раз\n';
-  }
-
-  return (
-    'Оплата успішно здійснена!\n' +
-    `Ви замовили пакет *${product.name}*. Цей пакет включає:\n` +
-    productDetails +
-    '\n' +
-    codes +
-    '\n' +
-    'Процес запису на зустріч виглядає наступним чином:\n' +
-    '- Ви можете створити зустріч\n' +
-    '- Ви можете змінити час зустрічі і ваші скарги\n' +
-    '- Ви можете скасувати зустріч\n' +
-    '- Якщо у вас є файли, фото, відео - ви можете відправити їх у чат. Лікар їх перегляне\n' +
-    '\n' +
-    "Чат вам вже відкритий, тому можете писати повідомлення, і лікар їх побачить і відповість протягом дня. Ви можете відправити всі документи, пов'язані з хворобою у чат"
-  );
+  return $t.get().successfulPayment({
+    productDetails,
+    productName: product.name,
+    codes,
+  });
 }

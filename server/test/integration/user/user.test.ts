@@ -1,6 +1,6 @@
 import t from 'tap';
-import { getServer } from '../helpers/getServer/index.js';
-import { user } from '../helpers/getServer/fixtures/user.js';
+import { getServer } from '../../helpers/getServer/index.js';
+import { user } from '../../helpers/getServer/fixtures/user.js';
 
 const test = t.test;
 

@@ -1,5 +1,5 @@
-export function orderNotActiveMsg() {
-  return (
-    'Повідомлення не відправлено!\n' + 'Замовлення користувача не активне.'
-  );
+import type { iMedbotContext } from '../../../types.js';
+
+export function orderNotActiveMsg($t: iMedbotContext['$t']) {
+  return $t.get().forumOrderNotActive;
 }

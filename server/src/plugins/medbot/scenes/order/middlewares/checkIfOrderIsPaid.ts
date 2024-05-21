@@ -4,7 +4,7 @@ import { orderNotPaidMsg } from '../messages/orderNotPaid.js';
 
 export const checkIfOrderIsPaid: MiddlewareFn<iMedbotContext> =
   async function checkIfOrderIsPaid(ctx: iMedbotContext, next) {
-    const { message, serviceApiSdk } = ctx;
+    const { $t, message, serviceApiSdk } = ctx;
 
     try {
       const [order, err] = await serviceApiSdk.activeOrder(message.from.id);
@@ -14,7 +14,7 @@ export const checkIfOrderIsPaid: MiddlewareFn<iMedbotContext> =
       }
 
       if (!order) {
-        return ctx.reply(orderNotPaidMsg());
+        return ctx.reply(orderNotPaidMsg($t), { parse_mode: 'Markdown' });
       }
 
       return next();

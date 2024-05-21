@@ -3,6 +3,7 @@ import {
   ProductsProvider,
   WebAppProvider,
   AppointmentProvider,
+  I18nProvider,
 } from '../components/Providers';
 
 import { ROUTES } from '../constants/routes';
@@ -19,7 +20,9 @@ export const routes = [
     path: ROUTES.MAIN,
     element: (
       <WebAppProvider>
-        <MainPage />
+        <I18nProvider>
+          <MainPage />
+        </I18nProvider>
       </WebAppProvider>
     ),
     children: [

@@ -29,7 +29,7 @@ chatScene.command(
     return next();
   },
   async (ctx) => {
-    const { update, serviceApiSdk, session } = ctx;
+    const { update, serviceApiSdk, session, $t } = ctx;
     const { user } = session;
 
     try {
@@ -41,8 +41,11 @@ chatScene.command(
         throw err;
       }
 
-      const message =
-        APPOINTMENT_STATUS_MESSAGES[update.message.text]({ appointment, user });
+      const message = APPOINTMENT_STATUS_MESSAGES[update.message.text]({
+        appointment,
+        user,
+        $t,
+      });
 
       await Promise.all([
         ctx.deleteMessage(update.message.message_id),
@@ -62,7 +65,7 @@ chatScene.use(createCheckSubscription([teardownUserData]), async (ctx) => {
       ctx.forumId,
       ctx.message.chat.id,
       ctx.message.message_id,
-      { message_thread_id: ctx.session.user.messageThreadId },
+      { message_thread_id: Number(ctx.session.user.messageThreadId) },
     );
   } catch (e) {
     ctx.logger.error(e, 'chatScene');

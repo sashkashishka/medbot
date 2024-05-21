@@ -6,7 +6,7 @@ export function createCheckSubscription(
   fns: Array<(ctx: iMedbotContext) => Promise<iMedbotContext>>,
 ): MiddlewareFn<iMedbotContext> {
   return async function checkSubscription(ctx, next) {
-    const { session } = ctx;
+    const { $t, session } = ctx;
     const { order } = session;
 
     if (!order.subscriptionEndsAt) return next();
@@ -21,7 +21,9 @@ export function createCheckSubscription(
     } catch (e) {
       ctx.logger.error(e, 'checkSubscription');
 
-      return ctx.reply('Error occured in checkSubscription middleware');
+      return ctx.reply($t.get().checkSubscriptionMiddlewareError, {
+        parse_mode: 'Markdown',
+      });
     }
 
     return next();

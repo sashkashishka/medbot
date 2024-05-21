@@ -6,7 +6,3 @@
   background: var(--tg-theme-secondary-bg-color);
   border-radius: 16px;
 }
-
-.realSubmitButton {
-  display: none;
-}

@@ -37,6 +37,7 @@ export function ProductPage() {
       if (resp.ok) {
         return navigate(
           generatePath(ROUTES.EDIT_PRODUCT, { id: String(respData.id) }),
+          { replace: true },
         );
       }
 
@@ -57,7 +58,7 @@ export function ProductPage() {
       const respData = await resp.json();
 
       if (resp.ok) {
-        return navigate(generatePath(ROUTES.PRODUCTS));
+        return navigate(generatePath(ROUTES.PRODUCTS), { replace: true });
       }
 
       if ('error' in respData && typeof respData.error === 'string') {

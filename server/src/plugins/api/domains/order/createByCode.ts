@@ -7,6 +7,7 @@ import { checkIfBlockedByRateLimiter } from '../../hooks/checkIfBlockedByRateLim
 import { checkIfActivationCodeValid } from '../../hooks/checkIfActivationCodeValid.js';
 import { decorateWithActivationCode } from '../../hooks/decorateWithActivationCode.js';
 import { checkIfActivationCodeExpired } from '../../hooks/checkIfActivationCodeExpired.js';
+import { serializeOrder } from '../../hooks/serializeOrder.js';
 
 export const createByCode: RouteOptions = {
   method: 'POST',
@@ -34,6 +35,7 @@ export const createByCode: RouteOptions = {
     checkIfActivationCodeValid,
     checkIfActivationCodeExpired,
   ],
+  preSerialization: [serializeOrder],
   async handler(req) {
     const body = req.body as Prisma.OrderUncheckedCreateInput;
     const code = req.$activationCode;

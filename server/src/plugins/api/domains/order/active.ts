@@ -1,4 +1,5 @@
 import type { RouteOptions } from 'fastify';
+import { serializeOrder } from '../../hooks/serializeOrder.js';
 
 interface iParams {
   userId: number;
@@ -16,6 +17,7 @@ export const activeOrderRoute: RouteOptions = {
       required: ['userId'],
     },
   },
+  preSerialization: [serializeOrder],
   handler(req) {
     const { userId } = req.params as iParams;
 

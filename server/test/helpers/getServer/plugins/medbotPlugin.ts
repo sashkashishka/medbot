@@ -1,6 +1,7 @@
 import type { FastifyPluginAsync } from 'fastify';
 import type { Logger } from 'pino';
 import fp from 'fastify-plugin';
+import { map } from 'nanostores';
 import { Telegram } from 'telegraf';
 import { MedbotSdk } from '../../../../src/plugins/medbot/services/sdk/sdk.js';
 
@@ -11,6 +12,7 @@ export const medbotPluginMock: FastifyPluginAsync = fp(async (fastify) => {
       telegram: new Telegram(''),
       webAppUrl: '',
       logger: fastify.log as Logger,
+      $t: map({}),
     }),
   );
 });

@@ -1,4 +1,4 @@
-import { ReactNode, useLayoutEffect } from 'react';
+import { type ReactNode, useLayoutEffect } from 'react';
 import { useStore } from '@nanostores/react';
 import { useParams } from 'react-router-dom';
 import { tg } from '../../../utils/tg';

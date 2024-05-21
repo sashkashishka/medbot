@@ -19,6 +19,9 @@ import { UserPage } from './User';
 import { UserOrdersPage } from './UserOrders';
 import { UserAppointmentsPage } from './UserAppointments';
 import { UserInfoPage } from './UserInfo';
+import { I18nPage } from './I18n';
+import { I18nNamespacePage } from './I18nNamespace';
+import { I18nTranslationPage } from './I18nTranslation';
 
 export const routes = [
   {
@@ -113,6 +116,22 @@ export const routes = [
           {
             path: ROUTES.APPOINTMENTS,
             element: <AppointmentListPage />,
+          },
+          {
+            path: ROUTES.I18N,
+            element: <I18nPage />,
+          },
+          {
+            path: ROUTES.I18N_NAMESPACE,
+            element: <I18nNamespacePage />,
+          },
+          {
+            path: ROUTES.I18N_CREATE,
+            element: <I18nTranslationPage />,
+          },
+          {
+            path: ROUTES.I18N_UPDATE,
+            element: <I18nTranslationPage />,
           },
         ],
       },

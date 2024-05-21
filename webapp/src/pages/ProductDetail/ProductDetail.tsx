@@ -7,6 +7,7 @@ import { TIDS } from '../../constants/testIds';
 // import type { iProduct } from '../../types';
 import { TgBackButton } from '../../components/TgBackButton';
 import { TgMainButton } from '../../components/TgMainButton';
+import { $t } from '../../stores/i18n';
 
 import styles from './ProductDetail.module.css';
 
@@ -15,6 +16,7 @@ import styles from './ProductDetail.module.css';
 export function ProductDetailPage() {
   const navigate = useNavigate();
   const product = useStore($product);
+  const t = useStore($t);
 
   return (
     <div
@@ -27,10 +29,12 @@ export function ProductDetailPage() {
 
       <p>{product?.description}</p>
 
-      <p className={styles.price}>Ціна: ₴{product?.price}</p>
+      <p className={styles.price}>
+        {t.priceLabel({ price: `₴${product?.price}` })}{' '}
+      </p>
 
       <TgMainButton
-        text="Замовити"
+        text={t.orderBtn}
         handleClick={() =>
           navigate(
             generatePath(ROUTES.PRODUCT_CHECKOUT, {

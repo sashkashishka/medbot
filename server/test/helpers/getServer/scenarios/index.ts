@@ -4,6 +4,7 @@ import { admin } from './admin.js';
 import { order, type iOrderMock } from './order.js';
 import { user } from './user.js';
 import { telegrafSession } from './telegrafSession.js';
+import { i18n, type iI18nOptions } from './i18n.js';
 
 interface iUserScenarios {
   order: Omit<iOrderMock, 'userId'>;
@@ -14,6 +15,7 @@ export interface iScenarios {
   product?: boolean;
   admin?: boolean;
   user?: iUserScenarios[];
+  i18n?: iI18nOptions;
 }
 
 export interface iOptions<T extends FastifyInstance> {
@@ -49,6 +51,10 @@ function scenarioToSeeder(
           ]);
         });
       });
+    }
+
+    if (key === 'i18n') {
+      acc.push(() => i18n(fastify, scenarios[key]));
     }
 
     return acc;

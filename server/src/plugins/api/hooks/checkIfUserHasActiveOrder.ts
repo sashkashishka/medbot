@@ -8,7 +8,7 @@ export const checkIfUserHasActiveOrder: preHandlerAsyncHookHandler =
 
     const count = await this.prisma.order.count({
       where: {
-        userId: body.userId,
+        userId: Number(body.userId),
         status: 'ACTIVE',
       },
     });

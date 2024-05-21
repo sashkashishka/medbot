@@ -10,6 +10,7 @@ import { checkIfTimeSlotFree } from '../../hooks/checkIfTimeSlotFree.js';
 import { checkIfAppointmentTimeBehindOrderExpirationDate } from '../../hooks/checkIfAppointmentTimeBehindOrderExpirationDate.js';
 import { createDecorateWithOrder } from '../../hooks/decorateWithOrder.js';
 import { checkIfSubscriptionOrderExpired } from '../../hooks/checkIfSubscriptionOrderExpired.js';
+import { serializeAppointment } from '../../hooks/serializeAppointment.js';
 
 interface iParams {
   appointmentId: string;
@@ -60,6 +61,7 @@ export const updateAppointmentRoute: RouteOptions = {
     checkIfTimeSlotFree,
     checkIfAppointmentTimeBehindOrderExpirationDate,
   ],
+  preSerialization: [serializeAppointment],
   async handler(request) {
     const params = request.params as iParams;
     const {

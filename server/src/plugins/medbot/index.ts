@@ -7,7 +7,7 @@ import { medbotLogger } from '../../logger.js';
 
 import { medbotScenes, forumScenes } from './scenes/index.js';
 import { cleanupOnSecondStartCommand } from './commands/secondStart.js';
-// import { commands } from './commands/index.js';
+import { debugCommand } from './commands/debug.js';
 import { createIsForumUpdateFilter } from './filters/isForumUpdate.js';
 import { PrismaSessionStorage } from './services/storage/prisma.js';
 import { MedbotSdk } from './services/sdk/index.js';
@@ -42,22 +42,28 @@ export const medbotPlugin: FastifyPluginAsync = fp(async (fastify) => {
   });
   const store = new PrismaSessionStorage(fastify.prisma);
 
+  // TODO detect language by user preferences
+  const $t = fastify.i18n.getNs('uk', 'medbot');
+
   bot.use(session({ store, getSessionKey }));
   bot.use(
     populateContext({
       forumId: fastify.config.TG_BOT_FORUM_ID,
+      googleEmail: fastify.config.GOOGLE_EMAIL,
       googleCalendar: fastify.googleCalendar,
       googleCalendarId: fastify.config.GOOGLE_CALENDAR_ID,
       webAppUrl: fastify.config.TG_BOT_WEBAPP_URL,
       adminAreaUrl: fastify.config.ADMIN_AREA_URL,
       serviceApiSdk: fastify.serviceApiSdk,
       logger: medbotLogger,
+      $t,
     }),
   );
   bot.use(loggerMiddleware);
 
   // clear scene and start from scratch
   bot.command('start', cleanupOnSecondStartCommand);
+  bot.command('debug', debugCommand);
   // bot.command('help')
   // bot.command('terms')
 
@@ -78,6 +84,7 @@ export const medbotPlugin: FastifyPluginAsync = fp(async (fastify) => {
       telegram: bot.telegram,
       webAppUrl: fastify.config.TG_BOT_WEBAPP_URL,
       logger: medbotLogger,
+      $t,
     }),
   );
 

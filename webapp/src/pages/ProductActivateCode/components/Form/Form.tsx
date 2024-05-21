@@ -2,6 +2,8 @@ import { Component, createRef } from 'react';
 import { FORM_ERROR } from 'final-form';
 import { Field, Form } from 'react-final-form';
 import { generatePath } from 'react-router-dom';
+import createDecorator from 'final-form-focus';
+import { differenceInMinutes, startOfMinute } from 'date-fns';
 
 import { TgBackButton } from '../../../../components/TgBackButton';
 import { Input } from '../../../../components/Input';
@@ -12,10 +14,10 @@ import {
   required,
 } from '../../../../utils/final-form';
 import { createApi } from '../../../../utils/api';
-import { tg } from '../../../../utils/tg';
+import { getUserId, tg } from '../../../../utils/tg';
 import { API } from '../../../../constants/api';
 import { TIDS } from '../../../../constants/testIds';
-import type { iUser } from '../../../../types';
+import type { iConfig, iUser } from '../../../../types';
 import { $user } from '../../../../stores/user';
 
 import { SubmitButton } from './SubmitButton';
@@ -23,12 +25,18 @@ import { getPersistDecorator } from './decorators/persist';
 import { BLOCK_REASON, ORDER_ERRORS } from './constants';
 import type { iFormValues } from './types';
 import { getTimeZone, getTimezoneOffset } from '../../../../utils/date';
+import type { tTranslations } from '../../../../stores/i18n';
 
 import styles from './Form.module.css';
 
 interface iProps {
   user?: iUser;
+  t: tTranslations;
+  config: iConfig;
 }
+
+const focusOnErrors = createDecorator<iFormValues>();
+const persist = getPersistDecorator();
 
 export class ProductActivateCodeForm extends Component<iProps> {
   realSubmitButtonRef;
@@ -40,11 +48,11 @@ export class ProductActivateCodeForm extends Component<iProps> {
     this.triggerSubmit = this.triggerSubmit.bind(this);
   }
 
-  get decorators() {
-    return [getPersistDecorator()];
-  }
+  decorators = [persist, focusOnErrors];
 
   render() {
+    const { t } = this.props;
+
     return (
       <>
         <TgBackButton />
@@ -73,68 +81,73 @@ export class ProductActivateCodeForm extends Component<iProps> {
 
                 <Input
                   data-testid={TIDS.INPUT_CODE}
-                  labelName="Код активації"
+                  labelName={t.activationCodeLabel}
                   fieldName="code"
                   type="number"
                   min={0}
                   max={9999}
-                  fieldConfig={{ validate: required('Обовʼязкове поле') }}
+                  fieldConfig={{
+                    validate: required(t.validationRequiredField),
+                  }}
                 />
 
                 <Input
                   data-testid={TIDS.INPUT_SURNAME}
-                  labelName="Прізвище"
+                  labelName={t.surname}
                   fieldName="surname"
-                  fieldConfig={{ validate: required('Обовʼязкове поле') }}
+                  fieldConfig={{
+                    validate: required(t.validationRequiredField),
+                  }}
                 />
                 <Input
                   data-testid={TIDS.INPUT_NAME}
-                  labelName="Імʼя"
+                  labelName={t.name}
                   fieldName="name"
-                  fieldConfig={{ validate: required('Обовʼязкове поле') }}
+                  fieldConfig={{
+                    validate: required(t.validationRequiredField),
+                  }}
                 />
 
                 <Input
                   data-testid={TIDS.INPUT_PATRONYMIC}
-                  labelName="По батькові"
+                  labelName={t.patronymic}
                   fieldName="patronymic"
                 />
 
                 <Datepicker
                   testid={TIDS.INPUT_BIRTHDATE}
-                  labelName="Дата народження"
+                  labelName={t.birthDate}
                   fieldName="birthDate"
                   fieldConfig={{
-                    validate: required('Обовʼязкове поле'),
+                    validate: required(t.validationRequiredField),
                   }}
                 />
 
                 <Input
                   data-testid={TIDS.INPUT_PHONE}
-                  labelName="Номер телефону"
+                  labelName={t.phoneLabel}
                   fieldName="phone"
-                  fieldConfig={{ validate: required('Обовʼязкове поле') }}
+                  fieldConfig={{
+                    validate: required(t.validationRequiredField),
+                  }}
                 />
 
                 <Input
                   data-testid={TIDS.INPUT_EMAIL}
-                  labelName="Електронна пошта"
+                  labelName={t.emailLabel}
                   fieldName="email"
                   fieldConfig={{
                     validate: composeValidators(
-                      required('Обовʼязкове поле'),
-                      email('Email невірний'),
+                      required(t.validationRequiredField),
+                      email(t.validationEmailError),
                     ),
                   }}
                 />
 
-                <button
+                <SubmitButton
                   ref={this.realSubmitButtonRef}
-                  type="submit"
-                  className={styles.realSubmitButton}
+                  handleSubmit={this.triggerSubmit}
                 />
-
-                <SubmitButton handleSubmit={this.triggerSubmit} />
               </form>
             );
           }}
@@ -148,6 +161,8 @@ export class ProductActivateCodeForm extends Component<iProps> {
   }
 
   async handleSubmit(values: iFormValues) {
+    const { t, config } = this.props;
+
     try {
       tg.disableClosingConfirmation();
       const user = await this.getUserApi(values).request();
@@ -157,14 +172,20 @@ export class ProductActivateCodeForm extends Component<iProps> {
         let errorText = '';
 
         if (typeof order.error === 'object') {
-          errorText = BLOCK_REASON?.[order.error.reason]?.(
-            new Date(order.error.blockedUntil),
-          );
+          errorText = t[BLOCK_REASON?.[order.error.reason]]?.({
+            date: differenceInMinutes(
+              new Date(order.error.blockedUntil),
+              startOfMinute(new Date()),
+            ),
+          });
         } else {
-          errorText = ORDER_ERRORS[order.error];
+          errorText = t[ORDER_ERRORS[order.error]]?.({
+            email: config.googleEmail,
+            userId: getUserId()!,
+          });
         }
 
-        errorText ||= 'Невідома помилка';
+        errorText ||= t.unexpectedError;
 
         tg.showPopup({ message: errorText, buttons: [{ type: 'close' }] });
         return FORM_ERROR;

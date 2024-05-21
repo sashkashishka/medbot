@@ -1,4 +1,4 @@
-import { Link as RouterLink, LinkProps } from 'react-router-dom';
+import { Link as RouterLink, type LinkProps } from 'react-router-dom';
 import cn from 'classnames';
 
 import styles from './Link.module.css';

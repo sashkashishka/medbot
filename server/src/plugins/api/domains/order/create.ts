@@ -3,6 +3,7 @@ import type { Prisma } from '@prisma/client';
 import type { RouteOptions } from 'fastify';
 import { checkIfUserHasActiveOrder } from '../../hooks/checkIfUserHasActiveOrder.js';
 import { checkDuplicateOrderWithSameProduct } from '../../hooks/checkDuplicateOrderWithSameProduct.js';
+import { serializeOrder } from '../../hooks/serializeOrder.js';
 
 export const createOrderRoute: RouteOptions = {
   method: 'POST',
@@ -20,11 +21,13 @@ export const createOrderRoute: RouteOptions = {
     },
   },
   preHandler: [checkIfUserHasActiveOrder, checkDuplicateOrderWithSameProduct],
+  preSerialization: [serializeOrder],
   async handler(req) {
-    const body = req.body as Prisma.OrderUncheckedCreateInput;
+    const { productId, userId, status } =
+      req.body as Prisma.OrderUncheckedCreateInput;
 
     const product = await this.prisma.product.findUnique({
-      where: { id: Number(body.productId) },
+      where: { id: Number(productId) },
     });
 
     let subscriptionEndsAt: string = null;
@@ -38,7 +41,9 @@ export const createOrderRoute: RouteOptions = {
 
     return this.prisma.order.create({
       data: {
-        ...body,
+        productId,
+        userId,
+        status,
         subscriptionEndsAt,
         createdAt: new Date(),
       },

@@ -7,7 +7,7 @@ import { menuButton } from '../../../buttons/menu.js';
 export const chatEnter: MiddlewareFn<iMedbotContext> = async function chatEnter(
   ctx,
 ) {
-  const { serviceApiSdk } = ctx;
+  const { $t, serviceApiSdk } = ctx;
 
   const botChatId = (ctx.update as Update.MessageUpdate).message.chat.id;
   const userId = (ctx.update as Update.MessageUpdate).message.from.id;
@@ -30,9 +30,10 @@ export const chatEnter: MiddlewareFn<iMedbotContext> = async function chatEnter(
       entryMsg({
         product,
         activationCodes: (activeOrder?.activationCode as number[]) || [],
+        $t,
       }),
       { parse_mode: 'Markdown' },
     ),
-    ctx.setChatMenuButton(menuButton.appointment(ctx.webAppUrl)),
+    ctx.setChatMenuButton(menuButton.appointment(ctx.webAppUrl, $t)),
   ]);
 };

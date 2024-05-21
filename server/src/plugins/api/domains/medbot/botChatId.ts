@@ -1,4 +1,5 @@
 import type { RouteOptions } from 'fastify';
+import { serializeUser } from '../../hooks/serializeUser.js';
 
 interface iParams {
   messageThreadId: string;
@@ -16,6 +17,7 @@ export const botChatIdRoute: RouteOptions = {
       required: ['messageThreadId'],
     },
   },
+  preSerialization: [serializeUser],
   handler(req) {
     const params = req.params as iParams;
     const { messageThreadId } = params;

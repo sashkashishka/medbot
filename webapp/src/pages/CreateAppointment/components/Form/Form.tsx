@@ -18,7 +18,8 @@ import { createApi } from '../../../../utils/api';
 import { getUserId, tg } from '../../../../utils/tg';
 import { createPersistDecorator, required } from '../../../../utils/final-form';
 
-import { iAppointment, iOrder } from '../../../../types';
+import type { iAppointment, iOrder } from '../../../../types';
+import type { tTranslations } from '../../../../stores/i18n';
 import type { iFormValues } from './types';
 
 import styles from './Form.module.css';
@@ -26,6 +27,7 @@ import styles from './Form.module.css';
 interface iProps {
   activeAppointment?: iAppointment;
   activeOrder: iOrder;
+  t: tTranslations;
 }
 
 const focusOnErrors = createDecorator<iFormValues>();
@@ -45,29 +47,29 @@ export class CreateAppointmentForm extends Component<iProps> {
   }
 
   get submitButtonText() {
-    const { activeAppointment } = this.props;
+    const { t, activeAppointment } = this.props;
 
     if (activeAppointment) {
-      return 'Оновити дані зустрічі';
+      return t.updateAppointmentDataBtn;
     }
 
-    return 'Назначити зустріч';
+    return t.createAppointmentDataBtn;
   }
 
   private decorators = [focusOnErrors, persist];
 
   get title() {
-    const { activeAppointment } = this.props;
+    const { t, activeAppointment } = this.props;
 
     if (activeAppointment) {
-      return 'Змінити дані зустрічі';
+      return t.updateAppointmentFormTitle;
     }
 
-    return 'Записатись на зустріч';
+    return t.createAppointmentFormTitle;
   }
 
   render() {
-    const { activeAppointment } = this.props;
+    const { t, activeAppointment } = this.props;
 
     return (
       <>
@@ -86,31 +88,39 @@ export class CreateAppointmentForm extends Component<iProps> {
               <form onSubmit={handleSubmit}>
                 <div className={styles.container}>
                   <Textarea
-                    labelName="Скарги"
+                    labelName={t.complaints}
                     fieldName="complaints"
                     rows={5}
-                    fieldConfig={{ validate: required('Обовʼязкове поле') }}
+                    fieldConfig={{
+                      validate: required(t.validationRequiredField),
+                    }}
                   />
 
                   <Textarea
-                    labelName="Коли почались скарги?"
+                    labelName={t.whenComplaintsStarted}
                     fieldName="complaintsStarted"
                     rows={5}
-                    fieldConfig={{ validate: required('Обовʼязкове поле') }}
+                    fieldConfig={{
+                      validate: required(t.validationRequiredField),
+                    }}
                   />
 
                   <Textarea
-                    labelName="Які ліки приймали?"
+                    labelName={t.whichMedicineTook}
                     fieldName="medicine"
                     rows={5}
-                    fieldConfig={{ validate: required('Обовʼязкове поле') }}
+                    fieldConfig={{
+                      validate: required(t.validationRequiredField),
+                    }}
                   />
 
                   <Textarea
-                    labelName="Хронічні захворювання"
+                    labelName={t.chronicDiseases}
                     fieldName="chronicDiseases"
                     rows={5}
-                    fieldConfig={{ validate: required('Обовʼязкове поле') }}
+                    fieldConfig={{
+                      validate: required(t.validationRequiredField),
+                    }}
                   />
                 </div>
                 <ScheduleMeeting />
@@ -133,7 +143,7 @@ export class CreateAppointmentForm extends Component<iProps> {
   }
 
   async handleSubmit(values: iFormValues) {
-    const { activeAppointment, activeOrder } = this.props;
+    const { t, activeAppointment, activeOrder } = this.props;
 
     const isUpdate = Boolean(activeAppointment);
 
@@ -163,7 +173,7 @@ export class CreateAppointmentForm extends Component<iProps> {
 
         if (typeof data.error === 'object') {
           const errorText =
-            APPOINTMENT_ERRORS[data.error.time] || 'Невідома помилка';
+            t[APPOINTMENT_ERRORS[data.error.time]] || t.unexpectedError;
           tg.showPopup({ message: errorText, buttons: [{ type: 'close' }] });
 
           return {
@@ -174,7 +184,7 @@ export class CreateAppointmentForm extends Component<iProps> {
         if (data.error === 'subscription-order-completed') {
           tg.showPopup(
             {
-              message: 'Ваша підписка закінчилась',
+              message: t.yourSubscriptionHasEndedAlert,
               buttons: [{ type: 'close' }],
             },
             () => {
@@ -185,7 +195,8 @@ export class CreateAppointmentForm extends Component<iProps> {
           return FORM_ERROR;
         }
 
-        const errorText = APPOINTMENT_ERRORS[data.error] || 'Невідома помилка';
+        const errorText =
+          t[APPOINTMENT_ERRORS[data.error]] || t.unexpectedError;
         tg.showPopup({ message: errorText, buttons: [{ type: 'close' }] });
         return FORM_ERROR;
       }

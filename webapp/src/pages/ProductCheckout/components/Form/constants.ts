@@ -1,6 +1,11 @@
-import { getUserId } from '../../../../utils/tg';
+import { tTranslations } from '../../../../stores/i18n';
 
-export const ORDER_ERRORS: Record<string, string> = {
-  'has-active': `Ви вже маєте замовлення. Якщо бачите цю помилку, то надішліть будь ласка скріншот цього повідомлення на пошту medihelp.ua@gmail.com. userId: ${getUserId()}`,
-  'cannot-update-not-active-order': `Ви не можете оновити закінчене замовлення. Якщо бачите цю помилку, то надішліть будь ласка скріншот цього повідомлення на пошту medihelp.ua@gmail.com. userId: ${getUserId()}`,
+type tOrderErrorKeys = keyof Pick<
+  tTranslations,
+  'orderError_hasActive' | 'orderError_cannotUpdateNotActiveOrder'
+>;
+
+export const ORDER_ERRORS: Record<string, tOrderErrorKeys> = {
+  'has-active': 'orderError_hasActive',
+  'cannot-update-not-active-order': 'orderError_cannotUpdateNotActiveOrder',
 };

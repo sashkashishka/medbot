@@ -537,3 +537,35 @@ test('create appointment', async (t) => {
   t.equal(results.length, 1);
   t.equal(results[0].args.length, 3);
 });
+
+test('get bot chat id', async (t) => {
+  const { request, serviceHeader, getUsers } = await getServer({
+    t,
+    scenarios: {
+      product: true,
+      admin: true,
+      user: [
+        {
+          order: { type: 'none', status: 'DONE', appointment: 'none' },
+        },
+      ],
+    },
+  });
+
+  const [user] = await getUsers();
+
+  const resp = await request(
+    `/api/service/bot-chat-id/${user.messageThreadId}`,
+    {
+      method: 'GET',
+      headers: serviceHeader,
+    },
+  );
+
+  const data = (await resp.json()) as Pick<
+    Prisma.UserCreateWithoutOrderInput,
+    'botChatId'
+  >;
+  t.match(resp, { status: 200 });
+  t.match(data, { botChatId: user.botChatId });
+});

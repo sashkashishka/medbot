@@ -1,5 +1,5 @@
 import React from 'react';
-import { UseFieldConfig, useField } from 'react-final-form';
+import { type UseFieldConfig, useField } from 'react-final-form';
 import cn from 'classnames';
 import { ValidationError } from '../ValidationError';
 import { isError } from '../../utils/final-form';
