@@ -21,15 +21,17 @@ STAGE_DELETE_OLD_DUMPS="bash $dir/scripts/delete_old_files.sh $dir/stage/backup"
 PROD_DELETE_OLD_DUMPS="bash $dir/scripts/delete_old_files.sh $dir/prod/backup"
 DELETE_OLD_FASTIFY_IMAGES="bash $dir/scripts/delete_old_docker_images.sh medbot/fastify"
 
-echo "" > jobs.txt
+table=~/.crontab.d/medbot.cron
+echo "" > $table
 
-echo "0 0 * * * $STAGE_DB_DUMP_CMD" >> jobs.txt
-echo "0 0 * * * $PROD_DB_DUMP_CMD" >> jobs.txt
-echo "0 0 * * 0 $STAGE_DELETE_OLD_DUMPS" >> jobs.txt
-echo "0 0 * * 0 $PROD_DELETE_OLD_DUMPS" >> jobs.txt
-echo "0 0 * * 0 $DELETE_OLD_FASTIFY_IMAGES" >> jobs.txt
+echo "0 0 * * * $STAGE_DB_DUMP_CMD" >> $table
+echo "0 0 * * * $PROD_DB_DUMP_CMD" >> $table
+echo "0 0 * * 0 $STAGE_DELETE_OLD_DUMPS" >> $table
+echo "0 0 * * 0 $PROD_DELETE_OLD_DUMPS" >> $table
+echo "0 0 * * 0 $DELETE_OLD_FASTIFY_IMAGES" >> $table
 
-crontab jobs.txt
+crontab -r
+cat ~/.crontab.d/*.cron | crontab -
 
 echo "Cron job for added successfully."
 
